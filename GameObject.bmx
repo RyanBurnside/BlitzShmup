@@ -144,3 +144,65 @@ Type GameObject
 		Return mover.getY()
 	End Method
 End Type
+
+Enum EmitterOpFlags
+	NOP ' Dummy flag, does nothing
+	SET_NUMBULLETS
+	SET_SUBANGLE
+	SET_AIMDIRECTION
+	SET_BULLETSPEED
+	SET_BULLETSIZE
+	FIRE
+End Enum
+
+Type EmitterOp
+	Field action:EmitterOpFlags = EmitterOpFlags.NOP
+	Field parameters:Float[] ' TODO extend parameters for variables :D
+
+	Method New(action:EMitterOpFlags, parameters:Float[])
+		Self.action = action
+		Self.parameters = parameters
+	End Method
+End Type
+
+Type Emitter
+	' currently just works with literal values in parameters, easy to extend this with TObjects and eval parameters...
+	Field instructionPtr:Int = 0
+	Field numBullets:Float = 1.0
+	Field subAngle:Float = 0.0
+	Field aimDirection:Float = 270
+	Field bulletSpeed:Float = 1.0
+	Field bulletSize:Float = 8
+	Field bulletList:TObjectList = New TObjectList
+	Field position:SVec2D = New SVec2D
+	
+	Field actions:EmitterOp[]
+	
+	Method fire()
+		Local startAngle:Float = aimDirection - (subAngle * (numBullets - 1) / 2.0)
+		For Local i:Int = 0 Until numBullets
+			Local pos:SVec2D = New SVec2D(position.x, position.y)
+			bulletList.AddLast(New Bullet(pos, aimDirection, bulletSpeed, bulletSize))
+		Next
+	End Method
+	
+	Method ExecuteOp(e:EmitterOp)
+		Select e.action
+			Case EmitterOpFlags.NOP
+			Case EmitterOpFlags.SET_NUMBULLETS
+				numBullets = e.parameters[0]
+			Case EmitterOpFlags.SET_SUBANGLE
+				subAngle = e.parameters[0]
+			Case EmitterOpFlags.SET_AIMDIRECTION
+				aimDirection = e.parameters[0]
+			Case EmitterOpFlags.SET_BULLETSPEED
+				bulletSpeed = e.parameters[0]
+			Case EmitterOpFlags.SET_BULLETSIZE
+				bulletSize = e.parameters[0]
+			Case EmitterOpFlags.FIRE
+				fire()
+		End Select
+	End Method
+	
+End Type
+
