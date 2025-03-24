@@ -7,7 +7,8 @@ Import Math.Vector
 Type Mover
     Field position:SVec2D
 	Field direction:SVec2D
-    Method move:SVec2D() Abstract
+
+	Method move:SVec2D() Abstract
 
 	Method getX:Float()
 		Return position[0]
