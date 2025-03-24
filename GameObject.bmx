@@ -181,8 +181,9 @@ Type Emitter
 	Method fire()
 		Local startAngle:Float = aimDirection - (subAngle * (numBullets - 1) / 2.0)
 		For Local i:Int = 0 Until numBullets
+			Local thisAngle:Float = aimDirection + i * subAngle
 			Local pos:SVec2D = New SVec2D(position.x, position.y)
-			bulletList.AddLast(New Bullet(pos, aimDirection, bulletSpeed, bulletSize))
+			bulletList.AddLast(New Bullet(pos, thisAngle, bulletSpeed, bulletSize))
 		Next
 	End Method
 	
