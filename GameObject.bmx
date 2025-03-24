@@ -135,11 +135,11 @@ Type GameObject
 		Return mover.position
 	End Method
 	
-	Method getX:Float() ' These appear BROKEN!?
+	Method getX:Float()
 		Return mover.getX()
 	End Method
 	
-	Method getY:Float() ' These appear BROKEN!?
+	Method getY:Float()
 		Return mover.getY()
 	End Method
 End Type
