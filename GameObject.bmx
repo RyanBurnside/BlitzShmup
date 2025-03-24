@@ -219,9 +219,11 @@ Type Emitter
 	Method update()
 		If instructionPtr >= actions.Length Then Return
 		
-		If sleepTicks = 0  
-			ExecuteOp actions[instructionPtr]
-			instructionPtr :+ 1
+		If sleepTicks = 0 
+			While sleepTicks = 0 And instructionPtr < actions.Length
+				ExecuteOp actions[instructionPtr]
+				instructionPtr :+ 1
+			Wend
 		Else
 			sleepTicks :- 1
 		End If
