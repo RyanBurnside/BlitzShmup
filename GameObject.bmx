@@ -147,6 +147,8 @@ End Type
 
 Enum EmitterOpFlags
 	NOP ' Dummy flag, does nothing
+	SET_INSTRUCTIONPTR ' allows jumping
+	SET_SLEEPTICKS ' decrement with each update if > 0
 	SET_NUMBULLETS
 	SET_SUBANGLE
 	SET_AIMDIRECTION
@@ -168,6 +170,10 @@ End Type
 Type Emitter
 	' currently just works with literal values in parameters, easy to extend this with TObjects and eval parameters...
 	Field instructionPtr:Int = 0
+	
+	' gets decremented if > 0 actions only resume on 0
+	Field sleepTicks:Int = 0
+	
 	Field numBullets:Float = 1.0
 	Field subAngle:Float = 0.0
 	Field aimDirection:Float = 270
@@ -190,6 +196,11 @@ Type Emitter
 	Method ExecuteOp(e:EmitterOp)
 		Select e.action
 			Case EmitterOpFlags.NOP
+			' Ideally sleep ticks come after each burst
+			Case EmitterOpFlags.SET_INSTRUCTIONPTR ' allows jumping
+				instructionPtr = Int(e.parameters[0])
+			Case EmitterOpFlags.SET_SLEEPTICKS
+				sleepTicks = e.parameters[0]
 			Case EmitterOpFlags.SET_NUMBULLETS
 				numBullets = e.parameters[0]
 			Case EmitterOpFlags.SET_SUBANGLE
@@ -203,6 +214,12 @@ Type Emitter
 			Case EmitterOpFlags.FIRE
 				fire()
 		End Select
+	End Method
+	
+	Method update()
+		If instructionPtr >= actions.Length Then Return
+		If sleepTicks = 0 Then ExecuteOp actions[instructionPtr]
+		instructionPtr :+ 1
 	End Method
 	
 End Type
