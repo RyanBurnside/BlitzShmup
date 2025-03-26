@@ -145,7 +145,7 @@ Type GameObject
 	End Method
 End Type
 
-Enum EmitterOpFlags
+Enum operatorName
 	NOP ' Dummy flag, does nothing
 	SET_INSTRUCTIONPTR ' allows jumping
 	SET_SLEEPTICKS ' decrement with each update if > 0
@@ -157,23 +157,112 @@ Enum EmitterOpFlags
 	FIRE
 End Enum
 
-Type EmitterOp
-	Field action:EmitterOpFlags = EmitterOpFlags.NOP
-	Field parameters:Float[] ' TODO extend parameters for variables :D
+Function operatorNameToString:String(n:operatorName)
+	Select n
+		Case operatorName.NOP Return "NOP"
+		Case operatorName.SET_INSTRUCTIONPTR Return "SET_INSTRUCTIONPTR"
+		Case operatorName.SET_SLEEPTICKS Return "SET_SLEEPTICKS"
+		Case operatorName.SET_NUMBULLETS Return "SET_NUMBULLETS"
+		Case operatorName.SET_SUBANGLE Return "SET_SUBANGLE"
+		Case operatorName.SET_AIMDIRECTION Return "SET_AIMDIRECTION"
+		Case operatorName.SET_BULLETSPEED Return "SET_BULLETSPEED"
+		Case operatorName.SET_BULLETSIZE Return "SET_BULLETSIZE"
+		Case operatorName.FIRE Return "FIRE"
+		Default Return "operator name NOT in print function."
+	End Select
+End Function
 
-	Method New(action:EMitterOpFlags, parameters:Float[])
-		Self.action = action
-		Self.parameters = parameters
+Enum operandName
+	UNKNOWN
+	VALUE
+	MEMORY	
+End Enum
+
+Function operandNameToString:String(n:operandName)
+	Select n
+		Case operandName.UNKNOWN Return "UNKNOWN"
+		Case operandName.VALUE Return "VALUE"
+		Case operandName.MEMORY Return "MEMORY"
+		Default Return "operand name NOT in print function."
+	End Select
+End Function
+
+Type Operand ' parameters for 	
+	Method ToString:String() Abstract ' New operands MUST print
+End Type
+
+Type OperandValue Extends operand
+	Field value:Float
+	Field operandType:operandName = operandName.VALUE
+	Method New(value:Float)
+		Self.value = value
+	End Method
+	
+	Method ToString:String()
+		Return "OperandValue(" + operandNameToString(operandType) + ", " + value + ")"
 	End Method
 End Type
 
-Type Emitter
+Type OperandAddress Extends operand
+	Field value:Int
+	Field operandType:operandName = operandName.MEMORY
+	Method New(value:Int)
+		Self.value = value
+
+	End Method
+	
+	Method ToString:String()
+		Return "OperandAddress(" + operandNameToString(operandType) + ", " + value + ")"
+	End Method
+End Type
+
+Type BPUOperator
+	Field action:operatorName = operatorName.NOP
+	Field operands:Operand[] ' TODO extend parameters for variables :D
+
+	Method New(action:operatorName, operands:Operand[])
+		Self.action = action
+		Self.operands = operands
+	End Method
+	
+	Method ToString:String()
+		Local temp:String = "BPUOperator["
+		temp = temp + operatorNameToString(action) + " ," 
+		Local countdown:Int = operands.Length -1
+		For Local p:Operand = EachIn(operands)
+			temp = temp + p.ToString()
+			countdown :- 1
+			If countdown > 0 Then temp = temp + ","
+		Next
+		temp = temp + "]" 
+
+		Return temp
+	End Method
+End Type
+
+Type Tester
+	Type innertype
+	End Type
+End Type
+
+' Encoding direct opcodes to do the specific math you need, like "ANGLE Fdst, SVsrc0, SVsrc2" which computes the angle between two vectors and stores it in the F register is probably needed, etc, etc.
+' Dealing with memory shows up with "move instructions" like MOV dstreg, srcmem, or MOV dstmem, srcreg
+Rem
+<psilord> so basically, adding in a small set of IADD, IADC, ISUB, IMUL, IDIV, IROL, IROR, ISHL, ISHR, IAND, IOR, INOT instructions for integer registers, then FADD, FUB, FMUL, FDIV, maybe even FZERO Fsrc, tol-constant, etc, etc, etc.
+<psilord> You'll prolly have to tinker with status flags, like Z for "did the last integer operation result in a zero", you can look at the status flags for the C64 to see most of what you need.
+<psilord> Keep a list of all of these instructions too. :)
+<psilord> list as in in a buffer, so you remember what they are.
+<psilord> So what I mean by status flags, is that most or all of each bit in the 'status' field can be assigned a meaning. Pick one of them to be Z for "zero". Then in the IADD emulation, after doign the iadd, check to see if the destination register is zero, if so, turn Z on in the status register, othereise, turn it off.
+<psilord> http://www.6502.org/users/obelisk/6502/instructions.html
+End Rem
+
+Type BPU ' Bullet Processing Unit
 	' currently just works with literal values in parameters, easy to extend this with TObjects and eval parameters...
 	Field instructionPtr:Int = 0
 	
 	' gets decremented if > 0 actions only resume on 0
 	Field sleepTicks:Int = 0
-	
+
 	Field numBullets:Float = 1.0
 	Field subAngle:Float = 0.0
 	Field aimDirection:Float = 270
@@ -182,7 +271,25 @@ Type Emitter
 	Field bulletList:TObjectList = New TObjectList
 	Field position:SVec2D = New SVec2D
 	
-	Field actions:EmitterOp[]
+	Field actions:BPUOperator[]
+	
+	' Status register (full of bitflags like carry, negative, etc)
+	Field status:UInt = 0;
+ 
+	' *** General purpose registers ***
+	
+	' Integer registers
+	Field StaticArray IntRegister:Int[32]
+ 
+	' Floating point registers
+	Field StaticArray FloatRegister:Float[32]
+ 
+	' Vector2D registers
+	Field StaticArray SVec2DRegister:SVec2D[32]
+	
+	Method New(actions:BPUOperator[])
+		Self.actions = actions[..]
+	End Method
 	
 	Method fire()
 		Local startAngle:Float = aimDirection - (subAngle * (numBullets - 1) / 2.0)
@@ -193,25 +300,24 @@ Type Emitter
 		Next
 	End Method
 	
-	Method ExecuteOp(e:EmitterOp)
-		Select e.action
-			Case EmitterOpFlags.NOP
-			' Ideally sleep ticks come after each burst
-			Case EmitterOpFlags.SET_INSTRUCTIONPTR ' allows jumping
-				instructionPtr = Int(e.parameters[0])
-			Case EmitterOpFlags.SET_SLEEPTICKS
-				sleepTicks = e.parameters[0]
-			Case EmitterOpFlags.SET_NUMBULLETS
-				numBullets = e.parameters[0]
-			Case EmitterOpFlags.SET_SUBANGLE
-				subAngle = e.parameters[0]
-			Case EmitterOpFlags.SET_AIMDIRECTION
-				aimDirection = e.parameters[0]
-			Case EmitterOpFlags.SET_BULLETSPEED
-				bulletSpeed = e.parameters[0]
-			Case EmitterOpFlags.SET_BULLETSIZE
-				bulletSize = e.parameters[0]
-			Case EmitterOpFlags.FIRE
+	Method ExecuteOp(op:BPUOperator)
+		Select op.action
+			Case operatorName.NOP
+			Case operatorName.SET_INSTRUCTIONPTR ' allows jumping
+				instructionPtr = OperandValue(op.operands[0]).value
+			Case operatorName.SET_SLEEPTICKS
+				sleepTicks = OperandValue(op.operands[0]).value
+			Case operatorName.SET_NUMBULLETS
+				numBullets = OperandValue(op.operands[0]).value
+			Case operatorName.SET_SUBANGLE
+				subAngle = OperandValue(op.operands[0]).value
+			Case operatorName.SET_AIMDIRECTION
+				aimDirection = OperandValue(op.operands[0]).value
+			Case operatorName.SET_BULLETSPEED
+				bulletSpeed = OperandValue(op.operands[0]).value
+			Case operatorName.SET_BULLETSIZE
+				bulletSize = OperandValue(op.operands[0]).value
+			Case operatorName.FIRE
 				fire()
 		End Select
 	End Method
@@ -229,5 +335,49 @@ Type Emitter
 		End If
 	End Method
 	
+	Method dump()
+		Print "*registers*"
+		Print "instructionPtr: " + instructionPtr
+		Print "sleepTicks: " + sleepTicks
+
+		Print "numBullets: " + numBullets
+		Print "subAngle: " + subAngle
+		Print "aimDirection: " + aimDirection
+		Print "bulletSpeed: " + bulletSpeed
+		Print "bulletSize: " + bulletSize
+
+		Print "position (" + position.x + ", " + position.y + ")"
+	
+		' Status register (full of bitflags like carry, negative, etc)
+		'Print "status" + status
+ 
+		' *** General purpose registers ***
+	
+		' Integer registers
+		'Print "IntRegister" + IntRegister
+ 
+		' Floating point registers
+		'Print "FloatRegister" + FloatRegister
+ 
+		' Vector2D registers
+		'Print "SVec2DRegister" + SVec2DRegister
+		Print "*Operations Array*"
+		Local counter:Int = 0
+		For Local a:BPUOperator = EachIn actions
+			Print "index: " + counter + " " + a.ToString()
+			counter :+ 1
+		Next
+	End Method
+	
 End Type
+
+Local ops:BPUOperator[] = New BPUOperator[3]
+
+ops[0] = New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(3)])
+ops[1] = New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(45)])
+ops[2] = New BPUOperator(operatorName.SET_AIMDIRECTION, [New OperandValue(90)])
+
+Local B:BPU = New BPU(ops)
+B.Update()
+B.dump()
 
