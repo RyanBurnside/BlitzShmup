@@ -187,7 +187,7 @@ Function operandNameToString:String(n:operandName)
 	End Select
 End Function
 
-Type Operand ' parameters for 	
+Type Operand ' these are the "parameters" for the operators	
 	Method ToString:String() Abstract ' New operands MUST print
 End Type
 
@@ -218,7 +218,7 @@ End Type
 
 Type BPUOperator
 	Field action:operatorName = operatorName.NOP
-	Field operands:Operand[] ' TODO extend parameters for variables :D
+	Field operands:Operand[]
 
 	Method New(action:operatorName, operands:Operand[])
 		Self.action = action
@@ -256,8 +256,8 @@ Rem
 <psilord> http://www.6502.org/users/obelisk/6502/instructions.html
 End Rem
 
-Type BPU ' Bullet Processing Unit
-	' currently just works with literal values in parameters, easy to extend this with TObjects and eval parameters...
+' Bullet Processing Unit
+Type BPU 
 	Field instructionPtr:Int = 0
 	
 	' gets decremented if > 0 actions only resume on 0
@@ -371,6 +371,7 @@ Type BPU ' Bullet Processing Unit
 	
 End Type
 
+' some testing with debugging output
 Local ops:BPUOperator[] = New BPUOperator[3]
 
 ops[0] = New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(3)])
