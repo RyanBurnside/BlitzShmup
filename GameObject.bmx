@@ -227,12 +227,12 @@ Type BPUOperator
 	
 	Method ToString:String()
 		Local temp:String = "BPUOperator["
-		temp = temp + operatorNameToString(action) + " ," 
+		temp = temp + operatorNameToString(action) + ", " 
 		Local countdown:Int = operands.Length -1
 		For Local p:Operand = EachIn(operands)
 			temp = temp + p.ToString()
 			countdown :- 1
-			If countdown > 0 Then temp = temp + ","
+			If countdown > 0 Then temp = temp + ", "
 		Next
 		temp = temp + "]" 
 
@@ -255,6 +255,55 @@ Rem
 <psilord> So what I mean by status flags, is that most or all of each bit in the 'status' field can be assigned a meaning. Pick one of them to be Z for "zero". Then in the IADD emulation, after doign the iadd, check to see if the destination register is zero, if so, turn Z on in the status register, othereise, turn it off.
 <psilord> http://www.6502.org/users/obelisk/6502/instructions.html
 End Rem
+
+' 6502 opcode lookup https://www.masswerk.at/6502/6502_instruction_set.html
+
+Enum MemValueType
+  UNASSIGNED
+  MV_DOUBLE
+  MV_UINT
+  MV_UNINIT
+End Enum
+ 
+Type MemValue
+  Field dval:Double
+  Field uival:UInt
+  Field Flag:MemValueType
+ 
+  Method read_uival:UInt()
+    If Flag = MemValueType.MV_UINT Or Flag = MemValueType.MV_UNINIT
+      Return uival
+    EndIf
+ 
+    Throw "Type Mismatch: read_uival() but cell was double or unknown!"
+  End Method
+ 
+  Method write_uival(val:UInt)
+    uival = val
+    Flag = MemValueType.MV_UINT
+  End Method
+ 
+  Method read_dval:Double()
+    If Flag = MemValueType.MV_DOUBLE Or Flag = MemValueType.MV_UNINIT
+      Return dval
+    EndIf
+ 
+    Throw "Type Mismatch: read_dval() but cell was uint or unknown!"
+  End Method
+ 
+  Method write_dval(val:Double)
+    dval = val
+    Flag = MemValueType.MV_DOUBLE
+  End Method
+ 
+  Method New()
+    Flag = MemValueType.MV_UNINIT
+  End Method
+ 
+End Type
+ 
+' Then make an array of MemValue 128K long and that's how much memory a
+''BPU has for now.
 
 ' Bullet Processing Unit
 Type BPU 
@@ -286,6 +335,10 @@ Type BPU
  
 	' Vector2D registers
 	Field StaticArray SVec2DRegister:SVec2D[32]
+	
+	' Our "memory" is 128k of Memvals
+	Field StaticArray memory:MemValue[128 * 1024]
+	
 	
 	Method New(actions:BPUOperator[])
 		Self.actions = actions[..]
