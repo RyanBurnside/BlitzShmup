@@ -259,16 +259,18 @@ End Rem
 ' 6502 opcode lookup https://www.masswerk.at/6502/6502_instruction_set.html
 
 Enum MemValueType
-  UNASSIGNED
   MV_DOUBLE
   MV_UINT
   MV_UNINIT
 End Enum
- 
+
+
+' consider making this a virtual class and saving the memory ...
 Type MemValue
   Field dval:Double
   Field uival:UInt
-  Field Flag:MemValueType
+  Field Flag:MemValueType = MemValueType.MV_UNINIT
+
  
   Method read_uival:UInt()
     If Flag = MemValueType.MV_UINT Or Flag = MemValueType.MV_UNINIT
@@ -296,7 +298,7 @@ Type MemValue
     Flag = MemValueType.MV_DOUBLE
   End Method
  
-  Method New()
+  Method New(Flag:MemValueType = MemValueType.MV_UNINIT)
     Flag = MemValueType.MV_UNINIT
   End Method
  
@@ -425,12 +427,15 @@ Type BPU
 End Type
 
 ' some testing with debugging output
-Local ops:BPUOperator[] = New BPUOperator[3]
+Local ops:BPUOperator[5]
 
 ops[0] = New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(3)])
 ops[1] = New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(45)])
 ops[2] = New BPUOperator(operatorName.SET_AIMDIRECTION, [New OperandValue(90)])
+ops[3] = New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(10)])
+ops[4] = New BPUOperator(operatorName.FIRE, [New OperandValue(0)])
 
+Print "Size of Ops: " + ops.Length
 Local B:BPU = New BPU(ops)
 B.Update()
 B.dump()

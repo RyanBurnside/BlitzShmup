@@ -42,6 +42,33 @@ Function rand_color()
 	SetColor Rand(0, 255), Rand(0, 255), Rand(0, 255)
 End Function
 
+Global ops:BPUOperator[] = [ ..
+New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(1)]),
+New BPUOperator(operatorName.SET_BULLETSPEED, [New OperandValue(11)]),
+New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(5)]),
+New BPUOperator(operatorName.SET_AIMDIRECTION, [New OperandValue(270)]),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(2)]),
+New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(7)]),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(3)]),
+New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(9)]),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(4)]),
+New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(11)]),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(5)]),
+New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(11)]),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_INSTRUCTIONPTR, [New OperandValue(0)])]
+
+Global BulletProcessingUnit:BPU = New BPU(ops)
+
 
 Function main:Int()
 	Local ship:TImage = LoadImage("player.png", 0) ' Very important to set it to 0 so it doesn't blur pixels
@@ -50,7 +77,8 @@ Function main:Int()
 	MidHandleImage(bulletImage)
 	Local screen:Hitbox = New Hitbox(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 	Local bullets:TObjectList = New TObjectList
-	
+	BulletProcessingUnit.bulletList = bullets
+	BulletProcessingUnit.position = New SVec2D(120, 160)
 	Function updateBullets(bullets:TObjectList, screen:Hitbox)
 		For Local b:bullet = EachIn bullets
 			b.move()
@@ -69,10 +97,7 @@ Function main:Int()
 	End Function
 	
 	While Not KeyHit(KEY_ESCAPE)
-		For Local i:Int = 0 To 4
-			Local temp:Bullet = New Bullet(New SVec2d(120, 160), Rand(0, 360), 6.0, 8)
-			bullets.Addlast(temp)
-		Next
+		BulletProcessingUnit.update()
 		
 		updateBullets(bullets, screen)
 
