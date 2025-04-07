@@ -3,7 +3,7 @@ SuperStrict
 Import BRL.random
 Import "classes/BPU.bmx"
 Import "classes/GameObject.bmx"
-
+Import "misc.bmx"
 
 ' Virtual resolution
 Const VIRTUAL_WIDTH:Int = 240
@@ -47,24 +47,28 @@ New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(1)]),
 New BPUOperator(operatorName.SET_BULLETSPEED, [New OperandValue(11)]),
 New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(5)]),
 New BPUOperator(operatorName.SET_AIMDIRECTION, [New OperandValue(270)]),
-New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
 New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+
 New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(2)]),
 New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(7)]),
-New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
 New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+
 New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(3)]),
 New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(9)]),
-New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
 New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+
 New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(4)]),
 New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(11)]),
-New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
 New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
+
 New BPUOperator(operatorName.SET_NUMBULLETS, [New OperandValue(5)]),
 New BPUOperator(operatorName.SET_SUBANGLE, [New OperandValue(11)]),
-New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(2)]),
 New BPUOperator(operatorName.FIRE, []),
+New BPUOperator(operatorName.SET_SLEEPTICKS, [New OperandValue(10)]),
 New BPUOperator(operatorName.SET_INSTRUCTIONPTR, [New OperandValue(0)])]
 
 Global BulletProcessingUnit:BPU = New BPU(ops)

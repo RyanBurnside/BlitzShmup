@@ -264,8 +264,14 @@ Type BPU
 		
 		If sleepTicks = 0 
 			While sleepTicks = 0 And instructionPtr < actions.Length
-				ExecuteOp actions[instructionPtr]
-				instructionPtr :+ 1
+				' Keep in mind we ONLY iterate on non GOTOs
+				' Keep thees in IF ExecuteOp has side effects
+				If actions[instructionPtr].action = operatorName.SET_INSTRUCTIONPTR
+					ExecuteOp actions[instructionPtr]
+				Else
+					ExecuteOp actions[instructionPtr]
+					instructionPtr :+ 1
+				End If
 			Wend
 		Else
 			sleepTicks :- 1
