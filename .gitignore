@@ -6,5 +6,7 @@
 *.i
 *.i2
 *.o
+*.bak
+*.debug
 gmon.out
 ./.bmx/

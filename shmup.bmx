@@ -1,8 +1,8 @@
 SuperStrict
 
 Import BRL.random
-Import "BPU.bmx"
-Import "GameObject.bmx"
+Import "classes/BPU.bmx"
+Import "classes/GameObject.bmx"
 
 
 ' Virtual resolution
@@ -71,9 +71,9 @@ Global BulletProcessingUnit:BPU = New BPU(ops)
 
 
 Function main:Int()
-	Local ship:TImage = LoadImage("player.png", 0) ' Very important to set it to 0 so it doesn't blur pixels
+	Local ship:TImage = LoadImage("resources/player.png", 0) ' Very important to set it to 0 so it doesn't blur pixels
 	MidHandleImage(ship)
-	Local bulletImage:TImage = LoadImage("shotTiny.png", 0)
+	Local bulletImage:TImage = LoadImage("resources/shotTiny.png", 0)
 	MidHandleImage(bulletImage)
 	Local screen:Hitbox = New Hitbox(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 	Local bullets:TObjectList = New TObjectList
