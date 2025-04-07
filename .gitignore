@@ -7,3 +7,4 @@
 *.i2
 *.o
 gmon.out
+./.bmx/
