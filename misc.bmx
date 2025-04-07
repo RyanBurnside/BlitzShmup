@@ -29,12 +29,12 @@ Function HSLtoRGB(h:Double, sl:Double, l:Double, rBack:Byte Var, gBack:Byte Var,
 		mid1 = m + vsf
 		mid2 = v - vsf
 		Select sextant
-			Case 0 r = v; g = mid1; b = m
-			Case 1 r = mid2; g = v; b = m
-			Case 2 r = m; g = v; b = mid1
-			Case 3 r = m; g = mid2; b = v
-			Case 4 r = mid1; g = m; b = v
-			Case 5 r = v; g = m; b = mid2
+			Case 0 r = v;    g = mid1; b = m
+			Case 1 r = mid2; g = v;    b = m
+			Case 2 r = m;    g = v;    b = mid1
+			Case 3 r = m;    g = mid2; b = v
+			Case 4 r = mid1; g = m;    b = v
+			Case 5 r = v;    g = m;    b = mid2
 		End Select
 	End If
 	

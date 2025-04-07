@@ -1,9 +1,9 @@
 SuperStrict
 
-
-
 Import BRL.random
+Import "BPU.bmx"
 Import "GameObject.bmx"
+
 
 ' Virtual resolution
 Const VIRTUAL_WIDTH:Int = 240
