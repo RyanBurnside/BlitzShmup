@@ -1,0 +1,366 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+100.00      0.01     0.01                             GC_disable
+  0.00      0.01     0.00     3788     0.00     0.00  __m_Hitbox_Hitbox_getHeight
+  0.00      0.01     0.00     3556     0.00     0.00  __m_Hitbox_Hitbox_getWidth
+  0.00      0.01     0.00     1894     0.00     0.00  __m_Hitbox_Hitbox_getBottom
+  0.00      0.01     0.00     1894     0.00     0.00  __m_Hitbox_Hitbox_getTop
+  0.00      0.01     0.00     1778     0.00     0.00  __m_Hitbox_Hitbox_getLeft
+  0.00      0.01     0.00     1778     0.00     0.00  __m_Hitbox_Hitbox_getRight
+  0.00      0.01     0.00      947     0.00     0.00  __m_GameObject_GameObject_move
+  0.00      0.01     0.00      947     0.00     0.00  __m_Hitbox_Hitbox_collides_THitbox
+  0.00      0.01     0.00      947     0.00     0.00  __m_Mover_LinearMover_move
+  0.00      0.01     0.00      889     0.00     0.00  __m_GameObject_GameObject_getX
+  0.00      0.01     0.00      889     0.00     0.00  __m_GameObject_GameObject_getY
+  0.00      0.01     0.00      889     0.00     0.00  __m_Mover_Mover_getX
+  0.00      0.01     0.00      889     0.00     0.00  __m_Mover_Mover_getY
+  0.00      0.01     0.00      102     0.00     0.00  __m_BPU_BPU_ExecuteOp_TBPUOperator
+  0.00      0.01     0.00       97     0.00     0.00  __m_BPU_BPU_update
+  0.00      0.01     0.00       97     0.00     0.00  _m_shmup_DrawRectOutline
+  0.00      0.01     0.00       97     0.00     0.00  _m_shmup_main_drawBullets
+  0.00      0.01     0.00       97     0.00     0.00  _m_shmup_main_updateBullets
+  0.00      0.01     0.00       63     0.00     0.00  __m_GameObject_Bullet_New_TSVec2Dfff
+  0.00      0.01     0.00       63     0.00     0.00  __m_GameObject_Bullet_New_TSVec2Dfff_ObjectNew
+  0.00      0.01     0.00       63     0.00     0.00  __m_Hitbox_Hitbox_New
+  0.00      0.01     0.00       63     0.00     0.00  __m_Hitbox_Hitbox_New_TSVec2Dff
+  0.00      0.01     0.00       63     0.00     0.00  __m_Hitbox_Hitbox_New_TSVec2Dff_ObjectNew
+  0.00      0.01     0.00       63     0.00     0.00  __m_Mover_LinearMover_New
+  0.00      0.01     0.00       63     0.00     0.00  __m_Mover_LinearMover_New_TSVec2DTSVec2D
+  0.00      0.01     0.00       63     0.00     0.00  __m_Mover_LinearMover_New_TSVec2DTSVec2D_ObjectNew
+  0.00      0.01     0.00       23     0.00     0.00  __m_BPU_BPUOperator_New_eoperatorNameaTOperand
+  0.00      0.01     0.00       23     0.00     0.00  __m_BPU_BPUOperator_New_eoperatorNameaTOperand_ObjectNew
+  0.00      0.01     0.00       22     0.00     0.00  __m_BPU_BPU_fire
+  0.00      0.01     0.00       18     0.00     0.00  __m_BPU_OperandValue_New_f
+  0.00      0.01     0.00       18     0.00     0.00  __m_BPU_OperandValue_New_f_ObjectNew
+  0.00      0.01     0.00        1     0.00     0.00  __m_BPU_BPU_New_aTBPUOperator
+  0.00      0.01     0.00        1     0.00     0.00  __m_BPU_BPU_New_aTBPUOperator_ObjectNew
+  0.00      0.01     0.00        1     0.00     0.00  __m_Hitbox_Hitbox_New_ffff
+  0.00      0.01     0.00        1     0.00     0.00  __m_Hitbox_Hitbox_New_ffff_ObjectNew
+  0.00      0.01     0.00        1     0.00     0.00  _bb_blitzshmup_misc
+  0.00      0.01     0.00        1     0.00     0.00  _bb_classes_bpu
+  0.00      0.01     0.00        1     0.00     0.00  _bb_classes_gameobject
+  0.00      0.01     0.00        1     0.00     0.00  _bb_classes_hitbox
+  0.00      0.01     0.00        1     0.00     0.00  _bb_classes_mover
+  0.00      0.01     0.00        1     0.00     0.00  _bb_main
+  0.00      0.01     0.00        1     0.00     0.00  _m_shmup_main
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 100.00% of 0.01 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.01    0.00                 GC_disable [1]
+-----------------------------------------------
+                0.00    0.00    1894/3788        __m_Hitbox_Hitbox_getTop [4075]
+                0.00    0.00    1894/3788        __m_Hitbox_Hitbox_getBottom [4074]
+[4072]   0.0    0.00    0.00    3788         __m_Hitbox_Hitbox_getHeight [4072]
+-----------------------------------------------
+                0.00    0.00    1778/3556        __m_Hitbox_Hitbox_getLeft [4076]
+                0.00    0.00    1778/3556        __m_Hitbox_Hitbox_getRight [4077]
+[4073]   0.0    0.00    0.00    3556         __m_Hitbox_Hitbox_getWidth [4073]
+-----------------------------------------------
+                0.00    0.00    1894/1894        __m_Hitbox_Hitbox_collides_THitbox [4079]
+[4074]   0.0    0.00    0.00    1894         __m_Hitbox_Hitbox_getBottom [4074]
+                0.00    0.00    1894/3788        __m_Hitbox_Hitbox_getHeight [4072]
+-----------------------------------------------
+                0.00    0.00    1894/1894        __m_Hitbox_Hitbox_collides_THitbox [4079]
+[4075]   0.0    0.00    0.00    1894         __m_Hitbox_Hitbox_getTop [4075]
+                0.00    0.00    1894/3788        __m_Hitbox_Hitbox_getHeight [4072]
+-----------------------------------------------
+                0.00    0.00    1778/1778        __m_Hitbox_Hitbox_collides_THitbox [4079]
+[4076]   0.0    0.00    0.00    1778         __m_Hitbox_Hitbox_getLeft [4076]
+                0.00    0.00    1778/3556        __m_Hitbox_Hitbox_getWidth [4073]
+-----------------------------------------------
+                0.00    0.00    1778/1778        __m_Hitbox_Hitbox_collides_THitbox [4079]
+[4077]   0.0    0.00    0.00    1778         __m_Hitbox_Hitbox_getRight [4077]
+                0.00    0.00    1778/3556        __m_Hitbox_Hitbox_getWidth [4073]
+-----------------------------------------------
+                0.00    0.00     947/947         _m_shmup_main_updateBullets [4089]
+[4078]   0.0    0.00    0.00     947         __m_GameObject_GameObject_move [4078]
+                0.00    0.00     947/947         __m_Mover_LinearMover_move [4080]
+-----------------------------------------------
+                0.00    0.00     947/947         _m_shmup_main_updateBullets [4089]
+[4079]   0.0    0.00    0.00     947         __m_Hitbox_Hitbox_collides_THitbox [4079]
+                0.00    0.00    1894/1894        __m_Hitbox_Hitbox_getBottom [4074]
+                0.00    0.00    1894/1894        __m_Hitbox_Hitbox_getTop [4075]
+                0.00    0.00    1778/1778        __m_Hitbox_Hitbox_getRight [4077]
+                0.00    0.00    1778/1778        __m_Hitbox_Hitbox_getLeft [4076]
+-----------------------------------------------
+                0.00    0.00     947/947         __m_GameObject_GameObject_move [4078]
+[4080]   0.0    0.00    0.00     947         __m_Mover_LinearMover_move [4080]
+-----------------------------------------------
+                0.00    0.00     889/889         _m_shmup_main_drawBullets [4088]
+[4081]   0.0    0.00    0.00     889         __m_GameObject_GameObject_getX [4081]
+                0.00    0.00     889/889         __m_Mover_Mover_getX [4083]
+-----------------------------------------------
+                0.00    0.00     889/889         _m_shmup_main_drawBullets [4088]
+[4082]   0.0    0.00    0.00     889         __m_GameObject_GameObject_getY [4082]
+                0.00    0.00     889/889         __m_Mover_Mover_getY [4084]
+-----------------------------------------------
+                0.00    0.00     889/889         __m_GameObject_GameObject_getX [4081]
+[4083]   0.0    0.00    0.00     889         __m_Mover_Mover_getX [4083]
+-----------------------------------------------
+                0.00    0.00     889/889         __m_GameObject_GameObject_getY [4082]
+[4084]   0.0    0.00    0.00     889         __m_Mover_Mover_getY [4084]
+-----------------------------------------------
+                0.00    0.00     102/102         __m_BPU_BPU_update [4086]
+[4085]   0.0    0.00    0.00     102         __m_BPU_BPU_ExecuteOp_TBPUOperator [4085]
+                0.00    0.00      22/22          __m_BPU_BPU_fire [4100]
+-----------------------------------------------
+                0.00    0.00      97/97          _m_shmup_main [4113]
+[4086]   0.0    0.00    0.00      97         __m_BPU_BPU_update [4086]
+                0.00    0.00     102/102         __m_BPU_BPU_ExecuteOp_TBPUOperator [4085]
+-----------------------------------------------
+                0.00    0.00      97/97          _m_shmup_main [4113]
+[4087]   0.0    0.00    0.00      97         _m_shmup_DrawRectOutline [4087]
+-----------------------------------------------
+                0.00    0.00      97/97          _m_shmup_main [4113]
+[4088]   0.0    0.00    0.00      97         _m_shmup_main_drawBullets [4088]
+                0.00    0.00     889/889         __m_GameObject_GameObject_getY [4082]
+                0.00    0.00     889/889         __m_GameObject_GameObject_getX [4081]
+-----------------------------------------------
+                0.00    0.00      97/97          _m_shmup_main [4113]
+[4089]   0.0    0.00    0.00      97         _m_shmup_main_updateBullets [4089]
+                0.00    0.00     947/947         __m_GameObject_GameObject_move [4078]
+                0.00    0.00     947/947         __m_Hitbox_Hitbox_collides_THitbox [4079]
+-----------------------------------------------
+                0.00    0.00      63/63          __m_GameObject_Bullet_New_TSVec2Dfff_ObjectNew [4091]
+[4090]   0.0    0.00    0.00      63         __m_GameObject_Bullet_New_TSVec2Dfff [4090]
+                0.00    0.00      63/63          __m_Mover_LinearMover_New_TSVec2DTSVec2D_ObjectNew [4097]
+                0.00    0.00      63/63          __m_Hitbox_Hitbox_New_TSVec2Dff_ObjectNew [4094]
+-----------------------------------------------
+                0.00    0.00      63/63          __m_BPU_BPU_fire [4100]
+[4091]   0.0    0.00    0.00      63         __m_GameObject_Bullet_New_TSVec2Dfff_ObjectNew [4091]
+                0.00    0.00      63/63          __m_GameObject_Bullet_New_TSVec2Dfff [4090]
+-----------------------------------------------
+                0.00    0.00      63/63          bbObjectAtomicNew [868]
+[4092]   0.0    0.00    0.00      63         __m_Hitbox_Hitbox_New [4092]
+-----------------------------------------------
+                0.00    0.00      63/63          __m_Hitbox_Hitbox_New_TSVec2Dff_ObjectNew [4094]
+[4093]   0.0    0.00    0.00      63         __m_Hitbox_Hitbox_New_TSVec2Dff [4093]
+-----------------------------------------------
+                0.00    0.00      63/63          __m_GameObject_Bullet_New_TSVec2Dfff [4090]
+[4094]   0.0    0.00    0.00      63         __m_Hitbox_Hitbox_New_TSVec2Dff_ObjectNew [4094]
+                0.00    0.00      63/63          __m_Hitbox_Hitbox_New_TSVec2Dff [4093]
+-----------------------------------------------
+                0.00    0.00      63/63          bbObjectAtomicNew [868]
+[4095]   0.0    0.00    0.00      63         __m_Mover_LinearMover_New [4095]
+-----------------------------------------------
+                0.00    0.00      63/63          __m_Mover_LinearMover_New_TSVec2DTSVec2D_ObjectNew [4097]
+[4096]   0.0    0.00    0.00      63         __m_Mover_LinearMover_New_TSVec2DTSVec2D [4096]
+-----------------------------------------------
+                0.00    0.00      63/63          __m_GameObject_Bullet_New_TSVec2Dfff [4090]
+[4097]   0.0    0.00    0.00      63         __m_Mover_LinearMover_New_TSVec2DTSVec2D_ObjectNew [4097]
+                0.00    0.00      63/63          __m_Mover_LinearMover_New_TSVec2DTSVec2D [4096]
+-----------------------------------------------
+                0.00    0.00      23/23          __m_BPU_BPUOperator_New_eoperatorNameaTOperand_ObjectNew [4099]
+[4098]   0.0    0.00    0.00      23         __m_BPU_BPUOperator_New_eoperatorNameaTOperand [4098]
+-----------------------------------------------
+                0.00    0.00      23/23          _bb_main [4112]
+[4099]   0.0    0.00    0.00      23         __m_BPU_BPUOperator_New_eoperatorNameaTOperand_ObjectNew [4099]
+                0.00    0.00      23/23          __m_BPU_BPUOperator_New_eoperatorNameaTOperand [4098]
+-----------------------------------------------
+                0.00    0.00      22/22          __m_BPU_BPU_ExecuteOp_TBPUOperator [4085]
+[4100]   0.0    0.00    0.00      22         __m_BPU_BPU_fire [4100]
+                0.00    0.00      63/63          __m_GameObject_Bullet_New_TSVec2Dfff_ObjectNew [4091]
+-----------------------------------------------
+                0.00    0.00      18/18          __m_BPU_OperandValue_New_f_ObjectNew [4102]
+[4101]   0.0    0.00    0.00      18         __m_BPU_OperandValue_New_f [4101]
+-----------------------------------------------
+                0.00    0.00      18/18          _bb_main [4112]
+[4102]   0.0    0.00    0.00      18         __m_BPU_OperandValue_New_f_ObjectNew [4102]
+                0.00    0.00      18/18          __m_BPU_OperandValue_New_f [4101]
+-----------------------------------------------
+                0.00    0.00       1/1           __m_BPU_BPU_New_aTBPUOperator_ObjectNew [4104]
+[4103]   0.0    0.00    0.00       1         __m_BPU_BPU_New_aTBPUOperator [4103]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_main [4112]
+[4104]   0.0    0.00    0.00       1         __m_BPU_BPU_New_aTBPUOperator_ObjectNew [4104]
+                0.00    0.00       1/1           __m_BPU_BPU_New_aTBPUOperator [4103]
+-----------------------------------------------
+                0.00    0.00       1/1           __m_Hitbox_Hitbox_New_ffff_ObjectNew [4106]
+[4105]   0.0    0.00    0.00       1         __m_Hitbox_Hitbox_New_ffff [4105]
+-----------------------------------------------
+                0.00    0.00       1/1           _m_shmup_main [4113]
+[4106]   0.0    0.00    0.00       1         __m_Hitbox_Hitbox_New_ffff_ObjectNew [4106]
+                0.00    0.00       1/1           __m_Hitbox_Hitbox_New_ffff [4105]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_main [4112]
+[4107]   0.0    0.00    0.00       1         _bb_blitzshmup_misc [4107]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_main [4112]
+[4108]   0.0    0.00    0.00       1         _bb_classes_bpu [4108]
+                0.00    0.00       1/1           _bb_classes_gameobject [4109]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_classes_bpu [4108]
+[4109]   0.0    0.00    0.00       1         _bb_classes_gameobject [4109]
+                0.00    0.00       1/1           _bb_classes_hitbox [4110]
+                0.00    0.00       1/1           _bb_classes_mover [4111]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_classes_gameobject [4109]
+[4110]   0.0    0.00    0.00       1         _bb_classes_hitbox [4110]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_classes_gameobject [4109]
+[4111]   0.0    0.00    0.00       1         _bb_classes_mover [4111]
+-----------------------------------------------
+                0.00    0.00       1/1           __bb_brl_appstub_appstub [4202]
+[4112]   0.0    0.00    0.00       1         _bb_main [4112]
+                0.00    0.00      23/23          __m_BPU_BPUOperator_New_eoperatorNameaTOperand_ObjectNew [4099]
+                0.00    0.00      18/18          __m_BPU_OperandValue_New_f_ObjectNew [4102]
+                0.00    0.00       1/1           _bb_blitzshmup_misc [4107]
+                0.00    0.00       1/1           _bb_classes_bpu [4108]
+                0.00    0.00       1/1           __m_BPU_BPU_New_aTBPUOperator_ObjectNew [4104]
+                0.00    0.00       1/1           _m_shmup_main [4113]
+-----------------------------------------------
+                0.00    0.00       1/1           _bb_main [4112]
+[4113]   0.0    0.00    0.00       1         _m_shmup_main [4113]
+                0.00    0.00      97/97          __m_BPU_BPU_update [4086]
+                0.00    0.00      97/97          _m_shmup_main_updateBullets [4089]
+                0.00    0.00      97/97          _m_shmup_DrawRectOutline [4087]
+                0.00    0.00      97/97          _m_shmup_main_drawBullets [4088]
+                0.00    0.00       1/1           __m_Hitbox_Hitbox_New_ffff_ObjectNew [4106]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [1] GC_disable           [4092] __m_Hitbox_Hitbox_New [4080] __m_Mover_LinearMover_move
+ [4098] __m_BPU_BPUOperator_New_eoperatorNameaTOperand [4093] __m_Hitbox_Hitbox_New_TSVec2Dff [4083] __m_Mover_Mover_getX
+ [4099] __m_BPU_BPUOperator_New_eoperatorNameaTOperand_ObjectNew [4094] __m_Hitbox_Hitbox_New_TSVec2Dff_ObjectNew [4084] __m_Mover_Mover_getY
+ [4085] __m_BPU_BPU_ExecuteOp_TBPUOperator [4105] __m_Hitbox_Hitbox_New_ffff [4107] _bb_blitzshmup_misc
+ [4103] __m_BPU_BPU_New_aTBPUOperator [4106] __m_Hitbox_Hitbox_New_ffff_ObjectNew [4108] _bb_classes_bpu
+ [4104] __m_BPU_BPU_New_aTBPUOperator_ObjectNew [4079] __m_Hitbox_Hitbox_collides_THitbox [4109] _bb_classes_gameobject
+ [4100] __m_BPU_BPU_fire    [4074] __m_Hitbox_Hitbox_getBottom [4110] _bb_classes_hitbox
+ [4086] __m_BPU_BPU_update  [4072] __m_Hitbox_Hitbox_getHeight [4111] _bb_classes_mover
+ [4101] __m_BPU_OperandValue_New_f [4076] __m_Hitbox_Hitbox_getLeft [4112] _bb_main
+ [4102] __m_BPU_OperandValue_New_f_ObjectNew [4077] __m_Hitbox_Hitbox_getRight [4087] _m_shmup_DrawRectOutline
+ [4090] __m_GameObject_Bullet_New_TSVec2Dfff [4075] __m_Hitbox_Hitbox_getTop [4113] _m_shmup_main
+ [4091] __m_GameObject_Bullet_New_TSVec2Dfff_ObjectNew [4073] __m_Hitbox_Hitbox_getWidth [4088] _m_shmup_main_drawBullets
+ [4081] __m_GameObject_GameObject_getX [4095] __m_Mover_LinearMover_New [4089] _m_shmup_main_updateBullets
+ [4082] __m_GameObject_GameObject_getY [4096] __m_Mover_LinearMover_New_TSVec2DTSVec2D
+ [4078] __m_GameObject_GameObject_move [4097] __m_Mover_LinearMover_New_TSVec2DTSVec2D_ObjectNew
