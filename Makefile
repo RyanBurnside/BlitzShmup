@@ -1,7 +1,14 @@
 # Paths
-BCC_PATH = /home/ryan/Desktop/BlitzMax/bin/bcc
-BLITZMAX_PATH = /home/ryan/Desktop/BlitzMax
-PROJECT_PATH = /home/ryan/Desktop/BlitzShmup
+ifeq ($(BCC_PATH),)
+	BCC_PATH := /home/ryan/Desktop/BlitzMax/bin/bcc
+endif
+ifeq ($(BLITZMAX_PATH),)
+	BLITZMAX_PATH := /home/ryan/Desktop/BlitzMax
+endif
+ifeq ($(PROJECT_PATH),)
+	PROJECT_PATH := /home/ryan/Desktop/BlitzShmup
+endif
+
 OUTPUT_DIR = $(PROJECT_PATH)/.bmx
 OUTPUT_EXEC = $(PROJECT_PATH)/shmup
 
@@ -22,8 +29,13 @@ SRC_FILE = $(PROJECT_PATH)/shmup.bmx
 OBJ_FILE = $(OUTPUT_DIR)/shmup.bmx.console.release.linux.x64.o
 C_FILE = $(OUTPUT_DIR)/shmup.bmx.console.release.linux.x64.c
 
-release: $(SRC_FILE)
+release: $(OUTPUT_EXEC)
+
+$(OUTPUT_EXEC): $(SRC_FILE)
 	rm -f $(OUTPUT_EXEC)
 	$(BCC_PATH) $(BCC_FLAGS) -o $(OBJ_FILE).s $(SRC_FILE)
 	gcc $(MOD_INCLUDES) $(GCC_FLAGS) -o $(OBJ_FILE) $(C_FILE)
 	g++ $(LD_FLAGS) -o $(OUTPUT_EXEC) $(BLITZMAX_PATH)/tmp/ld.tmp
+
+clean:
+	rm -f $(OUTPUT_FILE) $(OBJ_FILE)
