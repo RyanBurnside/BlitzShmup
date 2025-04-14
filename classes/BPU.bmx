@@ -142,36 +142,35 @@ Type MemValue
   Field Flag:MemValueType = MemValueType.MV_UNINIT
 
  
-  Method read_uival:UInt()
-    If Flag = MemValueType.MV_UINT Or Flag = MemValueType.MV_UNINIT
-      Return uival
-    EndIf
+	Method read_uival:UInt()
+		If Flag = MemValueType.MV_UINT Or Flag = MemValueType.MV_UNINIT
+			Return uival
+		EndIf
  
-    Throw "Type Mismatch: read_uival() but cell was double or unknown!"
-  End Method
+		Throw "Type Mismatch: read_uival() but cell was double or unknown!"
+	End Method
  
-  Method write_uival(val:UInt)
-    uival = val
-    Flag = MemValueType.MV_UINT
-  End Method
+	Method write_uival(val:UInt)
+		uival = val
+		Flag = MemValueType.MV_UINT
+	End Method
  
-  Method read_dval:Double()
-    If Flag = MemValueType.MV_DOUBLE Or Flag = MemValueType.MV_UNINIT
-      Return dval
-    EndIf
+	Method read_dval:Double()
+		If Flag = MemValueType.MV_DOUBLE Or Flag = MemValueType.MV_UNINIT
+			Return dval
+		EndIf
  
-    Throw "Type Mismatch: read_dval() but cell was uint or unknown!"
-  End Method
+		Throw "Type Mismatch: read_dval() but cell was uint or unknown!"
+	End Method
  
-  Method write_dval(val:Double)
-    dval = val
-    Flag = MemValueType.MV_DOUBLE
-  End Method
+	Method write_dval(val:Double)
+		dval = val
+		Flag = MemValueType.MV_DOUBLE
+	End Method
  
-  Method New(Flag:MemValueType = MemValueType.MV_UNINIT)
-    Flag = MemValueType.MV_UNINIT
-  End Method
- 
+	Method New(Flag:MemValueType = MemValueType.MV_UNINIT)
+		Flag = MemValueType.MV_UNINIT
+	End Method
 End Type
  
 ' Then make an array of MemValue 128K long and that's how much memory a
@@ -266,10 +265,10 @@ Type BPU
 			While sleepTicks = 0 And instructionPtr < actions.Length
 				' Keep in mind we ONLY iterate on non GOTOs
 				' Keep thees in IF ExecuteOp has side effects
-				If actions[instructionPtr].action = operatorName.SET_INSTRUCTIONPTR
-					ExecuteOp actions[instructionPtr]
-				Else
-					ExecuteOp actions[instructionPtr]
+				Local opname:operatorName = actions[instructionPtr].action
+				ExecuteOp actions[instructionPtr] ' possibly mutates ptr pos - careful!
+				' ONLY increment if the last operation wasn't a jump
+				If opname <> operatorName.SET_INSTRUCTIONPTR
 					instructionPtr :+ 1
 				End If
 			Wend
