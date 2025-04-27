@@ -1,7 +1,9 @@
 Harvard Architecture
 ====================
-TODO: Decide if moving data to/from DataMemory is ONLY done by LOAD/STORE
-      instructions, or if each instruction like ADD can also do that too.
+
+This is a LOAD-STORE architecture. So most arithmetic operations and
+such only use registers. There are specific LOAD and STORE instructions
+to move data from memory to registers and back again.
 
 Registers:
   Single ULong type
