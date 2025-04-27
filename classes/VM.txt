@@ -4,44 +4,51 @@ TODO: Decide if moving data to/from DataMemory is ONLY done by LOAD/STORE
       instructions, or if each instruction like ADD can also do that too.
 
 Registers:
-  PC              - Program counter
-  SleepTicks      - Sleep Ticks
-  NumBullets      - Num Bullets
-  SubAngle        - Sub Angle
-  AimDirection    - Aim Direction
-  BulletSpeed     - Bullet Speed
-  BulletSize      - Bullet Size
-  BulletList      - Bullet List
-  Position        - Position (2D)
+  Single ULong type
+  PC        - Program counter
+  ST        - Status Register: Carry, Zero, Sign, Overflow, Negative
+  SL        - Sleep Ticks
+  NB        - Num Bullets
 
-  Status          - Status Register: Carry, Zero, Sign, Overflow, Negative
+  Single Double type
+  SA        - Sub Angle
+  AD        - Aim Direction
+  BS        - Bullet Speed
+  BZ        - Bullet Size
+
+  Single V2D type
+  PO        - Position (2D)
+
+  TObject type
+  BL        - Bullet List
+
 
   # Scalar registers
-  RegU            - Array 32 ULong
-  RegD            - Array 32 Double
+  RegU      - Array 32 ULong
+  RegD      - Array 32 Double
 
   # Vector Registers
-  RegV2D          - Array 32 SVec2D
-  RegV3D          - Array 32 SVec3D
-  RegV4D          - Array 32 SVec4D
-  RegV2I          - Array 32 SVec2I
-  RegV3I          - Array 32 SVec3I
-  RegV4I          - Array 32 SVec4I
-  
+  RegV2D    - Array 32 SVec2D
+  RegV3D    - Array 32 SVec3D
+  RegV4D    - Array 32 SVec4D
+  RegV2I    - Array 32 SVec2I
+  RegV3I    - Array 32 SVec3I
+  RegV4I    - Array 32 SVec4I
+ 
   # Matrix Registers
-  RegM2D          - Array 32 SMat2D
-  RegM3D          - Array 32 SMat3D
-  RegM4D          - Array 32 SMat4D
-  RegM2I          - Array 32 SMat2I
-  RegM3I          - Array 32 SMat3I
-  RegM4I          - Array 32 SMat4I
+  RegM2D    - Array 32 SMat2D
+  RegM3D    - Array 32 SMat3D
+  RegM4D    - Array 32 SMat4D
+  RegM2I    - Array 32 SMat2I
+  RegM3I    - Array 32 SMat3I
+  RegM4I    - Array 32 SMat4I
 
   # Quaternion Registers
-  QRegQ           - Array 32 Quaternion Registers
+  QRegQ     - Array 32 Quaternion Registers
 
 Memory:
-  memInst         - Array 256K MachInst types
-  memData         - Array 256K MemValue types
+  memInst   - Array 256K MachInst types
+  memData   - Array 256K MemValue types
 
 Operands Hierarchy:
 
@@ -70,9 +77,19 @@ lm3i     |       OpLitM3I
 lm4i     |       OpLitM4I
 lq       |     OpLitQ
          |   OpRegister
+rbl      |     OpRegBL
+rpc      |     OpRegPC
+rst      |     OpRegST
+rsl      |     OpRegSL
+rnb      |     OpRegNB
+rsa      |     OpRegSA
+rad      |     OpRegAD
+rbs      |     OpRegBS
+rbz      |     OpRegBZ
 ru       |     OpRegU
 rd       |     OpRegD
          |     OpRegV
+rpo      |       OpRegPO
 rv2d     |       OpRegV2D
 rv3d     |       OpRegV3D
 rv4d     |       OpRegV4D
@@ -101,8 +118,8 @@ Addressing modes for OpMemory:
   Used for the Instruction Memory or Data Memory as appropriate.
 
   "Absolute" is an OpLitU
-  "Base" is an OpRegU
-  "Index" is an OpRegU
+  "Base" is an OpRegU or OpRegPC
+  "Index" is an OpRegU or OpRegPC
   "Scale" is an OpLitU
 
   OpMemA:    Absolute
