@@ -10,3 +10,4 @@
 *.debug
 gmon.out
 ./.bmx/
+shmup

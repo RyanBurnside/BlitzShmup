@@ -1,0 +1,145 @@
+Harvard Architecture
+====================
+TODO: Decide if moving data to/from DataMemory is ONLY done by LOAD/STORE
+      instructions, or if each instruction like ADD can also do that too.
+
+Registers:
+  PC              - Program counter
+  SleepTicks      - Sleep Ticks
+  NumBullets      - Num Bullets
+  SubAngle        - Sub Angle
+  AimDirection    - Aim Direction
+  BulletSpeed     - Bullet Speed
+  BulletSize      - Bullet Size
+  BulletList      - Bullet List
+  Position        - Position (2D)
+
+  Status          - Status Register: Carry, Zero, Sign, Overflow, Negative
+
+  # Scalar registers
+  RegU            - Array 32 ULong
+  RegD            - Array 32 Double
+
+  # Vector Registers
+  RegV2D          - Array 32 SVec2D
+  RegV3D          - Array 32 SVec3D
+  RegV4D          - Array 32 SVec4D
+  RegV2I          - Array 32 SVec2I
+  RegV3I          - Array 32 SVec3I
+  RegV4I          - Array 32 SVec4I
+  
+  # Matrix Registers
+  RegM2D          - Array 32 SMat2D
+  RegM3D          - Array 32 SMat3D
+  RegM4D          - Array 32 SMat4D
+  RegM2I          - Array 32 SMat2I
+  RegM3I          - Array 32 SMat3I
+  RegM4I          - Array 32 SMat4I
+
+  # Quaternion Registers
+  QRegQ           - Array 32 Quaternion Registers
+
+Memory:
+  memInst         - Array 256K MachInst types
+  memData         - Array 256K MemValue types
+
+Operands Hierarchy:
+
+The operands with a specified category are actually instantiatable. The rest
+are base classes.
+
+Category | Operand Type
+---------------------------------------
+         | Operand
+         |   OpLiteral
+lu       |     OpLitU
+ld       |     OpLitD
+         |     OpLitV
+lv2d     |       OpLitV2D
+lv3d     |       OpLitV3D
+lv4d     |       OpLitV4D
+lv2i     |       OpLitV2I
+lv3i     |       OpLitV3I
+lv4i     |       OpLitV4I
+         |     OpLitM
+lm2d     |       OpLitM2D
+lm3d     |       OpLitM3D
+lm4d     |       OpLitM4D
+lm2i     |       OpLitM2I
+lm3i     |       OpLitM3I
+lm4i     |       OpLitM4I
+lq       |     OpLitQ
+         |   OpRegister
+ru       |     OpRegU
+rd       |     OpRegD
+         |     OpRegV
+rv2d     |       OpRegV2D
+rv3d     |       OpRegV3D
+rv4d     |       OpRegV4D
+rv2i     |       OpRegV2I
+rv3i     |       OpRegV3I
+rv4i     |       OpRegV4I
+         |     OpRegM
+rm2d     |       OpRegM2D
+rm3d     |       OpRegM3D
+rm4d     |       OpRegM4D
+rm2i     |       OpRegM2I
+rm3i     |       OpRegM3I
+rm4i     |       OpRegM4I
+rq       |     OpRegQ
+         |   OpMemory
+ma       |     OpMemA
+mb       |     OpMemB
+mbi      |     OpMemBI
+mba      |     OpMemBA
+mbia     |     OpMemBIA
+mbis     |     OpMemBIS
+misa     |     OpMemISA
+mbisa    |     OpMemBISA
+
+Addressing modes for OpMemory:
+  Used for the Instruction Memory or Data Memory as appropriate.
+
+  "Absolute" is an OpLitU
+  "Base" is an OpRegU
+  "Index" is an OpRegU
+  "Scale" is an OpLitU
+
+  OpMemA:    Absolute
+  OpMemB:    Base
+  OpMemBI:   Base + Index
+  OpMemBA:   Base + Absolute
+  OpMemBIA:  Base + Index + Absolute
+  OpMemBIS:  Base + (Index * Scale)
+  OpMemISA:  (Index * Scale) + Absolute
+  OpMemBISA: Base + (Index * Scale) + Absolute
+
+
+KEEP GOING
+
+Assembly Instructions:
+
+Notation like OpLitU1 simply identifies the OpLitU with ID number 1.
+
+Opc | MachOp                 | AssemOp | Operands
+------------------------------------------------------------------------------
+0   | NOP                    | NOP     |
+1   | ADD_ru_lu_lu           | ADD     | OpRegU, OpLitU0, OpLitU1
+2   | ADD_ru_lu_ru           | ADD     | OpRegU, OpLitU0, OpRegU1
+3   | ADD_ru_ru_lu           | ADD     | OpRegU, OpRegU0, OpLitU1
+4   | ADD_ru_ru_ru           | ADD     | OpRegU, OpRegU0, OpRegU1
+
+Add more ADD instructions for vectors, matricies, etc.
+
+ADC
+SUB
+MUL
+DIV
+ROL
+ROR
+SHL
+SHR
+AND
+OR
+NOT
+
