@@ -187,6 +187,22 @@ IDENT   | rm4d|     |     |     |     |     |
 IDENT   | rm4i|     |     |     |     |     |
 IDENT   | rq  |     |     |     |     |     |
 
+ADD     | rbl | rbl | lu  |     |     |     | # Simple ADD support for named reg
+ADD     | rbl | rbl | ru  |     |     |     |
+ADD     | rra | rra | lu  |     |     |     |
+ADD     | rra | rra | ru  |     |     |     |
+ADD     | rsl | rsl | lu  |     |     |     |
+ADD     | rsl | rsl | ru  |     |     |     |
+ADD     | rnb | rnb | lu  |     |     |     |
+ADD     | rnb | rnb | ru  |     |     |     |
+ADD     | rsa | rsa | ld  |     |     |     |
+ADD     | rsa | rsa | rd  |     |     |     |
+ADD     | rad | rad | ld  |     |     |     |
+ADD     | rad | rad | rd  |     |     |     |
+ADD     | rbs | rbs | ld  |     |     |     |
+ADD     | rbs | rbs | rd  |     |     |     |
+ADD     | rbz | rbz | ld  |     |     |     |
+ADD     | rbz | rbz | rd  |     |     |     |
 ADD     | ru  | ru  | lu  |     |     |     | # ADD group for Ulong
 ADD     | ru  | ru  | ru  |     |     |     |
 ADD     | rd  | rd  | ld  |     |     |     | # ADD group for Double
