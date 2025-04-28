@@ -155,60 +155,6 @@ NOP     |     |     |     |     |     |     |
 
 YIELD   | ru  |     |     |     |     |     | # Stop BPU & return value in ru
 
-ZERO    | ru  |     |     |     |     |     | # Put ZERO into it
-ZERO    | rd  |     |     |     |     |     |
-ZERO    | rbl |     |     |     |     |     |
-ZERO    | rra |     |     |     |     |     |
-ZERO    | rsl |     |     |     |     |     |
-ZERO    | rnb |     |     |     |     |     |
-ZERO    | rsa |     |     |     |     |     |
-ZERO    | rad |     |     |     |     |     |
-ZERO    | rbs |     |     |     |     |     |
-ZERO    | rbz |     |     |     |     |     |
-ZERO    | rv2d|     |     |     |     |     |
-ZERO    | rv2i|     |     |     |     |     |
-ZERO    | rv3d|     |     |     |     |     |
-ZERO    | rv3i|     |     |     |     |     |
-ZERO    | rv4d|     |     |     |     |     |
-ZERO    | rv4i|     |     |     |     |     |
-ZERO    | rm2d|     |     |     |     |     |
-ZERO    | rm2i|     |     |     |     |     |
-ZERO    | rm3d|     |     |     |     |     |
-ZERO    | rm3i|     |     |     |     |     |
-ZERO    | rm4d|     |     |     |     |     |
-ZERO    | rm4i|     |     |     |     |     |
-
-ONE     | ru  |     |     |     |     |     | # Put ONE into it
-ONE     | rd  |     |     |     |     |     |
-ONE     | rbl |     |     |     |     |     |
-ONE     | rra |     |     |     |     |     |
-ONE     | rsl |     |     |     |     |     |
-ONE     | rnb |     |     |     |     |     |
-ONE     | rsa |     |     |     |     |     |
-ONE     | rad |     |     |     |     |     |
-ONE     | rbs |     |     |     |     |     |
-ONE     | rbz |     |     |     |     |     |
-ONE     | rv2d|     |     |     |     |     |
-ONE     | rv2i|     |     |     |     |     |
-ONE     | rv3d|     |     |     |     |     |
-ONE     | rv3i|     |     |     |     |     |
-ONE     | rv4d|     |     |     |     |     |
-ONE     | rv4i|     |     |     |     |     |
-ONE     | rm2d|     |     |     |     |     |
-ONE     | rm2i|     |     |     |     |     |
-ONE     | rm3d|     |     |     |     |     |
-ONE     | rm3i|     |     |     |     |     |
-ONE     | rm4d|     |     |     |     |     |
-ONE     | rm4i|     |     |     |     |     |
-
-IDENT   | rm2d|     |     |     |     |     | # Put IDENTITY into it
-IDENT   | rm2i|     |     |     |     |     |
-IDENT   | rm3d|     |     |     |     |     |
-IDENT   | rm3i|     |     |     |     |     |
-IDENT   | rm4d|     |     |     |     |     |
-IDENT   | rm4i|     |     |     |     |     |
-IDENT   | rq  |     |     |     |     |     |
-
 VAL     | ru  | lu  |     |     |     |     | # Put literal value into it
 VAL     | rd  | ld  |     |     |     |     |
 VAL     | rbl | lu  |     |     |     |     |
@@ -232,6 +178,14 @@ VAL     | rm3i| lm3i|     |     |     |     |
 VAL     | rm4d| lm4d|     |     |     |     |
 VAL     | rm4i| lm4i|     |     |     |     |
 VAL     | rq  | lq  |     |     |     |     |
+
+IDENT   | rm2d|     |     |     |     |     | # Put IDENTITY into it
+IDENT   | rm2i|     |     |     |     |     |
+IDENT   | rm3d|     |     |     |     |     |
+IDENT   | rm3i|     |     |     |     |     |
+IDENT   | rm4d|     |     |     |     |     |
+IDENT   | rm4i|     |     |     |     |     |
+IDENT   | rq  |     |     |     |     |     |
 
 ADD     | ru  | ru  | lu  |     |     |     | # ADD group for Ulong
 ADD     | ru  | ru  | ru  |     |     |     |
