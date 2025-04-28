@@ -6,19 +6,20 @@ such only use registers. There are specific LOAD and STORE instructions
 to move data from memory to registers and back again.
 
 Registers:
-  Single ULong type
-  PC        - Program counter
-  ST        - Status Register: Carry, Zero, Sign, Overflow, Negative
-  SL        - Sleep Ticks
-  NB        - Num Bullets
+  RegNamedU   - Array 5 ULong, names start at 0 index.
+    PC        - Program counter
+    ST        - Status Register: Carry, Zero, Sign, Overflow, Negative
+    RA        - Return Address Stack Index
+    SL        - Sleep Ticks
+    NB        - Num Bullets
 
-  Single Double type
-  SA        - Sub Angle
-  AD        - Aim Direction
-  BS        - Bullet Speed
-  BZ        - Bullet Size
+  RegNamedD   - Array 4 ULong, names start at 0 index.
+    SA        - Sub Angle
+    AD        - Aim Direction
+    BS        - Bullet Speed
+    BZ        - Bullet Size
 
-  Single V2D type
+  Single V2D type # (maybe get rid of)
   PO        - Position (2D)
 
   TObject type
@@ -51,6 +52,7 @@ Registers:
 Memory:
   memInst   - Array 256K MachInst types
   memData   - Array 256K MemValue types
+  retStack  - Array 64K ULong: Return Address Stack (only affected by call/ret)
 
 Operands Hierarchy:
 
@@ -79,15 +81,18 @@ lm3i     |       OpLitM3I
 lm4i     |       OpLitM4I
 lq       |     OpLitQ
          |   OpRegister
-rbl      |     OpRegBL
-rpc      |     OpRegPC
-rst      |     OpRegST
-rsl      |     OpRegSL
-rnb      |     OpRegNB
-rsa      |     OpRegSA
-rad      |     OpRegAD
-rbs      |     OpRegBS
-rbz      |     OpRegBZ
+         |     OpRegNamedU
+rbl      |      OpRegBL
+rpc      |      OpRegPC
+rst      |      OpRegST
+rra      |      OpRegRA
+rsl      |      OpRegSL
+rnb      |      OpRegNB
+         |     OpRegNamedD
+rsa      |      OpRegSA
+rad      |      OpRegAD
+rbs      |      OpRegBS
+rbz      |      OpRegBZ
 ru       |     OpRegU
 rd       |     OpRegD
          |     OpRegV
@@ -138,17 +143,126 @@ KEEP GOING
 
 Assembly Instructions:
 
-Notation like OpLitU1 simply identifies the OpLitU with ID number 1.
+An assembly instruction looks like: ADD ru, lu, lu
+It gets encoded into MachOp encoding whose opcode is: ADD_ru_lu_lu
+and which has an enum specifying its machine opcode value.
+All of these MachOp codes are predictable like this, so we won't explicitly
+specify them in this table. They will go into a giant enum later.
 
-Opc | MachOp                 | AssemOp | Operands
-------------------------------------------------------------------------------
-0   | NOP                    | NOP     |
-1   | ADD_ru_lu_lu           | ADD     | OpRegU, OpLitU0, OpLitU1
-2   | ADD_ru_lu_ru           | ADD     | OpRegU, OpLitU0, OpRegU1
-3   | ADD_ru_ru_lu           | ADD     | OpRegU, OpRegU0, OpLitU1
-4   | ADD_ru_ru_ru           | ADD     | OpRegU, OpRegU0, OpRegU1
+AssemOp | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
+---------------------------------------------
+NOP     |     |     |     |     |     |     |
 
-Add more ADD instructions for vectors, matricies, etc.
+YIELD   | ru  |     |     |     |     |     | # Stop BPU & return value in ru
+
+ZERO    | ru  |     |     |     |     |     | # Put ZERO into it
+ZERO    | rd  |     |     |     |     |     |
+ZERO    | rbl |     |     |     |     |     |
+ZERO    | rra |     |     |     |     |     |
+ZERO    | rsl |     |     |     |     |     |
+ZERO    | rnb |     |     |     |     |     |
+ZERO    | rsa |     |     |     |     |     |
+ZERO    | rad |     |     |     |     |     |
+ZERO    | rbs |     |     |     |     |     |
+ZERO    | rbz |     |     |     |     |     |
+ZERO    | rv2d|     |     |     |     |     |
+ZERO    | rv2i|     |     |     |     |     |
+ZERO    | rv3d|     |     |     |     |     |
+ZERO    | rv3i|     |     |     |     |     |
+ZERO    | rv4d|     |     |     |     |     |
+ZERO    | rv4i|     |     |     |     |     |
+ZERO    | rm2d|     |     |     |     |     |
+ZERO    | rm2i|     |     |     |     |     |
+ZERO    | rm3d|     |     |     |     |     |
+ZERO    | rm3i|     |     |     |     |     |
+ZERO    | rm4d|     |     |     |     |     |
+ZERO    | rm4i|     |     |     |     |     |
+
+ONE     | ru  |     |     |     |     |     | # Put ONE into it
+ONE     | rd  |     |     |     |     |     |
+ONE     | rbl |     |     |     |     |     |
+ONE     | rra |     |     |     |     |     |
+ONE     | rsl |     |     |     |     |     |
+ONE     | rnb |     |     |     |     |     |
+ONE     | rsa |     |     |     |     |     |
+ONE     | rad |     |     |     |     |     |
+ONE     | rbs |     |     |     |     |     |
+ONE     | rbz |     |     |     |     |     |
+ONE     | rv2d|     |     |     |     |     |
+ONE     | rv2i|     |     |     |     |     |
+ONE     | rv3d|     |     |     |     |     |
+ONE     | rv3i|     |     |     |     |     |
+ONE     | rv4d|     |     |     |     |     |
+ONE     | rv4i|     |     |     |     |     |
+ONE     | rm2d|     |     |     |     |     |
+ONE     | rm2i|     |     |     |     |     |
+ONE     | rm3d|     |     |     |     |     |
+ONE     | rm3i|     |     |     |     |     |
+ONE     | rm4d|     |     |     |     |     |
+ONE     | rm4i|     |     |     |     |     |
+
+IDENT   | rm2d|     |     |     |     |     | # Put IDENTITY into it
+IDENT   | rm2i|     |     |     |     |     |
+IDENT   | rm3d|     |     |     |     |     |
+IDENT   | rm3i|     |     |     |     |     |
+IDENT   | rm4d|     |     |     |     |     |
+IDENT   | rm4i|     |     |     |     |     |
+IDENT   | rq  |     |     |     |     |     |
+
+VAL     | ru  | lu  |     |     |     |     | # Put literal value into it
+VAL     | rd  | ld  |     |     |     |     |
+VAL     | rbl | lu  |     |     |     |     |
+VAL     | rra | lu  |     |     |     |     |
+VAL     | rsl | lu  |     |     |     |     |
+VAL     | rnb | lu  |     |     |     |     |
+VAL     | rsa | ld  |     |     |     |     |
+VAL     | rad | ld  |     |     |     |     |
+VAL     | rbs | ld  |     |     |     |     |
+VAL     | rbz | ld  |     |     |     |     |
+VAL     | rv2d| lv2d|     |     |     |     |
+VAL     | rv2i| lv2i|     |     |     |     |
+VAL     | rv3d| lv3d|     |     |     |     |
+VAL     | rv3i| lv3i|     |     |     |     |
+VAL     | rv4d| lv4d|     |     |     |     |
+VAL     | rv4i| lv4i|     |     |     |     |
+VAL     | rm2d| lm2d|     |     |     |     |
+VAL     | rm2i| lm2i|     |     |     |     |
+VAL     | rm3d| lm3d|     |     |     |     |
+VAL     | rm3i| lm3i|     |     |     |     |
+VAL     | rm4d| lm4d|     |     |     |     |
+VAL     | rm4i| lm4i|     |     |     |     |
+VAL     | rq  | lq  |     |     |     |     |
+
+ADD     | ru  | ru  | lu  |     |     |     | # ADD group for Ulong
+ADD     | ru  | ru  | ru  |     |     |     |
+ADD     | rd  | rd  | ld  |     |     |     | # ADD group for Double
+ADD     | rd  | rd  | rd  |     |     |     |
+ADD     | rv2d| rv2d| lv2d|     |     |     | # ADD group for V2D
+ADD     | rv2d| rv2d| rv2d|     |     |     |
+ADD     | rv2i| rv2i| lv2i|     |     |     | # ADD group for V2I
+ADD     | rv2i| rv2i| rv2i|     |     |     |
+ADD     | rv3d| rv3d| lv3d|     |     |     | # ADD group for V3D
+ADD     | rv3d| rv3d| rv3d|     |     |     |
+ADD     | rv3i| rv3i| lv3i|     |     |     | # ADD group for V3I
+ADD     | rv3i| rv3i| rv3i|     |     |     |
+ADD     | rv4d| rv4d| lv4d|     |     |     | # ADD group for V4D
+ADD     | rv4d| rv4d| rv4d|     |     |     |
+ADD     | rv4i| rv4i| lv4i|     |     |     | # ADD group for V4I
+ADD     | rv4i| rv4i| rv4i|     |     |     |
+ADD     | rm2d| rm2d| lm2d|     |     |     | # ADD group for M2D
+ADD     | rm2d| rm2d| rm2d|     |     |     |
+ADD     | rm2i| rm2i| lm2i|     |     |     | # ADD group for M2I
+ADD     | rm2i| rm2i| rm2i|     |     |     |
+ADD     | rm3d| rm3d| lm3d|     |     |     | # ADD group for M3D
+ADD     | rm3d| rm3d| rm3d|     |     |     |
+ADD     | rm3i| rm3i| lm3i|     |     |     | # ADD group for M3I
+ADD     | rm3i| rm3i| rm3i|     |     |     |
+ADD     | rm4d| rm4d| lm4d|     |     |     | # ADD group for M4D
+ADD     | rm4d| rm4d| rm4d|     |     |     |
+ADD     | rm4i| rm4i| lm4i|     |     |     | # ADD group for M4I
+ADD     | rm4i| rm4i| rm4i|     |     |     |
+
+Keep Going
 
 ADC
 SUB
