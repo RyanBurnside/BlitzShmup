@@ -179,7 +179,7 @@ LITERAL  | rm4d| lm4d|     |     |     |     |
 LITERAL  | rm4i| lm4i|     |     |     |     |
 LITERAL  | rq  | lq  |     |     |     |     |
 
-IDENTITY | rm2d|     |     |     |     |     | # Put IDENTITYITY into it
+IDENTITY | rm2d|     |     |     |     |     | # Put IDENTITY into it
 IDENTITY | rm2i|     |     |     |     |     |
 IDENTITY | rm3d|     |     |     |     |     |
 IDENTITY | rm3i|     |     |     |     |     |
