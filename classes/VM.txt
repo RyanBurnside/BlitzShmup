@@ -149,88 +149,88 @@ and which has an enum specifying its machine opcode value.
 All of these MachOp codes are predictable like this, so we won't explicitly
 specify them in this table. They will go into a giant enum later.
 
-AssemOp | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
----------------------------------------------
-NOP     |     |     |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
+----------------------------------------------
+NOP      |     |     |     |     |     |     |
 
-YIELD   | ru  |     |     |     |     |     | # Stop BPU & return value in ru
+YIELD    | ru  |     |     |     |     |     | # Stop BPU & return value in ru
 
-VAL     | ru  | lu  |     |     |     |     | # Put literal value into it
-VAL     | rd  | ld  |     |     |     |     |
-VAL     | rbl | lu  |     |     |     |     |
-VAL     | rra | lu  |     |     |     |     |
-VAL     | rsl | lu  |     |     |     |     |
-VAL     | rnb | lu  |     |     |     |     |
-VAL     | rsa | ld  |     |     |     |     |
-VAL     | rad | ld  |     |     |     |     |
-VAL     | rbs | ld  |     |     |     |     |
-VAL     | rbz | ld  |     |     |     |     |
-VAL     | rv2d| lv2d|     |     |     |     |
-VAL     | rv2i| lv2i|     |     |     |     |
-VAL     | rv3d| lv3d|     |     |     |     |
-VAL     | rv3i| lv3i|     |     |     |     |
-VAL     | rv4d| lv4d|     |     |     |     |
-VAL     | rv4i| lv4i|     |     |     |     |
-VAL     | rm2d| lm2d|     |     |     |     |
-VAL     | rm2i| lm2i|     |     |     |     |
-VAL     | rm3d| lm3d|     |     |     |     |
-VAL     | rm3i| lm3i|     |     |     |     |
-VAL     | rm4d| lm4d|     |     |     |     |
-VAL     | rm4i| lm4i|     |     |     |     |
-VAL     | rq  | lq  |     |     |     |     |
+LITERAL  | ru  | lu  |     |     |     |     | # Put literal value into register
+LITERAL  | rd  | ld  |     |     |     |     |
+LITERAL  | rbl | lu  |     |     |     |     |
+LITERAL  | rra | lu  |     |     |     |     |
+LITERAL  | rsl | lu  |     |     |     |     |
+LITERAL  | rnb | lu  |     |     |     |     |
+LITERAL  | rsa | ld  |     |     |     |     |
+LITERAL  | rad | ld  |     |     |     |     |
+LITERAL  | rbs | ld  |     |     |     |     |
+LITERAL  | rbz | ld  |     |     |     |     |
+LITERAL  | rv2d| lv2d|     |     |     |     |
+LITERAL  | rv2i| lv2i|     |     |     |     |
+LITERAL  | rv3d| lv3d|     |     |     |     |
+LITERAL  | rv3i| lv3i|     |     |     |     |
+LITERAL  | rv4d| lv4d|     |     |     |     |
+LITERAL  | rv4i| lv4i|     |     |     |     |
+LITERAL  | rm2d| lm2d|     |     |     |     |
+LITERAL  | rm2i| lm2i|     |     |     |     |
+LITERAL  | rm3d| lm3d|     |     |     |     |
+LITERAL  | rm3i| lm3i|     |     |     |     |
+LITERAL  | rm4d| lm4d|     |     |     |     |
+LITERAL  | rm4i| lm4i|     |     |     |     |
+LITERAL  | rq  | lq  |     |     |     |     |
 
-IDENT   | rm2d|     |     |     |     |     | # Put IDENTITY into it
-IDENT   | rm2i|     |     |     |     |     |
-IDENT   | rm3d|     |     |     |     |     |
-IDENT   | rm3i|     |     |     |     |     |
-IDENT   | rm4d|     |     |     |     |     |
-IDENT   | rm4i|     |     |     |     |     |
-IDENT   | rq  |     |     |     |     |     |
+IDENTITY | rm2d|     |     |     |     |     | # Put IDENTITYITY into it
+IDENTITY | rm2i|     |     |     |     |     |
+IDENTITY | rm3d|     |     |     |     |     |
+IDENTITY | rm3i|     |     |     |     |     |
+IDENTITY | rm4d|     |     |     |     |     |
+IDENTITY | rm4i|     |     |     |     |     |
+IDENTITY | rq  |     |     |     |     |     |
 
-ADD     | rbl | rbl | lu  |     |     |     | # Simple ADD support for named reg
-ADD     | rbl | rbl | ru  |     |     |     |
-ADD     | rra | rra | lu  |     |     |     |
-ADD     | rra | rra | ru  |     |     |     |
-ADD     | rsl | rsl | lu  |     |     |     |
-ADD     | rsl | rsl | ru  |     |     |     |
-ADD     | rnb | rnb | lu  |     |     |     |
-ADD     | rnb | rnb | ru  |     |     |     |
-ADD     | rsa | rsa | ld  |     |     |     |
-ADD     | rsa | rsa | rd  |     |     |     |
-ADD     | rad | rad | ld  |     |     |     |
-ADD     | rad | rad | rd  |     |     |     |
-ADD     | rbs | rbs | ld  |     |     |     |
-ADD     | rbs | rbs | rd  |     |     |     |
-ADD     | rbz | rbz | ld  |     |     |     |
-ADD     | rbz | rbz | rd  |     |     |     |
-ADD     | ru  | ru  | lu  |     |     |     | # ADD group for Ulong
-ADD     | ru  | ru  | ru  |     |     |     |
-ADD     | rd  | rd  | ld  |     |     |     | # ADD group for Double
-ADD     | rd  | rd  | rd  |     |     |     |
-ADD     | rv2d| rv2d| lv2d|     |     |     | # ADD group for V2D
-ADD     | rv2d| rv2d| rv2d|     |     |     |
-ADD     | rv2i| rv2i| lv2i|     |     |     | # ADD group for V2I
-ADD     | rv2i| rv2i| rv2i|     |     |     |
-ADD     | rv3d| rv3d| lv3d|     |     |     | # ADD group for V3D
-ADD     | rv3d| rv3d| rv3d|     |     |     |
-ADD     | rv3i| rv3i| lv3i|     |     |     | # ADD group for V3I
-ADD     | rv3i| rv3i| rv3i|     |     |     |
-ADD     | rv4d| rv4d| lv4d|     |     |     | # ADD group for V4D
-ADD     | rv4d| rv4d| rv4d|     |     |     |
-ADD     | rv4i| rv4i| lv4i|     |     |     | # ADD group for V4I
-ADD     | rv4i| rv4i| rv4i|     |     |     |
-ADD     | rm2d| rm2d| lm2d|     |     |     | # ADD group for M2D
-ADD     | rm2d| rm2d| rm2d|     |     |     |
-ADD     | rm2i| rm2i| lm2i|     |     |     | # ADD group for M2I
-ADD     | rm2i| rm2i| rm2i|     |     |     |
-ADD     | rm3d| rm3d| lm3d|     |     |     | # ADD group for M3D
-ADD     | rm3d| rm3d| rm3d|     |     |     |
-ADD     | rm3i| rm3i| lm3i|     |     |     | # ADD group for M3I
-ADD     | rm3i| rm3i| rm3i|     |     |     |
-ADD     | rm4d| rm4d| lm4d|     |     |     | # ADD group for M4D
-ADD     | rm4d| rm4d| rm4d|     |     |     |
-ADD     | rm4i| rm4i| lm4i|     |     |     | # ADD group for M4I
-ADD     | rm4i| rm4i| rm4i|     |     |     |
+ADD      | rbl | rbl | lu  |     |     |     | # Simple ADD support w/named reg
+ADD      | rbl | rbl | ru  |     |     |     |
+ADD      | rra | rra | lu  |     |     |     |
+ADD      | rra | rra | ru  |     |     |     |
+ADD      | rsl | rsl | lu  |     |     |     |
+ADD      | rsl | rsl | ru  |     |     |     |
+ADD      | rnb | rnb | lu  |     |     |     |
+ADD      | rnb | rnb | ru  |     |     |     |
+ADD      | rsa | rsa | ld  |     |     |     |
+ADD      | rsa | rsa | rd  |     |     |     |
+ADD      | rad | rad | ld  |     |     |     |
+ADD      | rad | rad | rd  |     |     |     |
+ADD      | rbs | rbs | ld  |     |     |     |
+ADD      | rbs | rbs | rd  |     |     |     |
+ADD      | rbz | rbz | ld  |     |     |     |
+ADD      | rbz | rbz | rd  |     |     |     |
+ADD      | ru  | ru  | lu  |     |     |     | # ADD group for Ulong
+ADD      | ru  | ru  | ru  |     |     |     |
+ADD      | rd  | rd  | ld  |     |     |     | # ADD group for Double
+ADD      | rd  | rd  | rd  |     |     |     |
+ADD      | rv2d| rv2d| lv2d|     |     |     | # ADD group for V2D
+ADD      | rv2d| rv2d| rv2d|     |     |     |
+ADD      | rv2i| rv2i| lv2i|     |     |     | # ADD group for V2I
+ADD      | rv2i| rv2i| rv2i|     |     |     |
+ADD      | rv3d| rv3d| lv3d|     |     |     | # ADD group for V3D
+ADD      | rv3d| rv3d| rv3d|     |     |     |
+ADD      | rv3i| rv3i| lv3i|     |     |     | # ADD group for V3I
+ADD      | rv3i| rv3i| rv3i|     |     |     |
+ADD      | rv4d| rv4d| lv4d|     |     |     | # ADD group for V4D
+ADD      | rv4d| rv4d| rv4d|     |     |     |
+ADD      | rv4i| rv4i| lv4i|     |     |     | # ADD group for V4I
+ADD      | rv4i| rv4i| rv4i|     |     |     |
+ADD      | rm2d| rm2d| lm2d|     |     |     | # ADD group for M2D
+ADD      | rm2d| rm2d| rm2d|     |     |     |
+ADD      | rm2i| rm2i| lm2i|     |     |     | # ADD group for M2I
+ADD      | rm2i| rm2i| rm2i|     |     |     |
+ADD      | rm3d| rm3d| lm3d|     |     |     | # ADD group for M3D
+ADD      | rm3d| rm3d| rm3d|     |     |     |
+ADD      | rm3i| rm3i| lm3i|     |     |     | # ADD group for M3I
+ADD      | rm3i| rm3i| rm3i|     |     |     |
+ADD      | rm4d| rm4d| lm4d|     |     |     | # ADD group for M4D
+ADD      | rm4d| rm4d| rm4d|     |     |     |
+ADD      | rm4i| rm4i| lm4i|     |     |     | # ADD group for M4I
+ADD      | rm4i| rm4i| rm4i|     |     |     |
 
 Keep Going
 
