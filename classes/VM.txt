@@ -287,15 +287,135 @@ SUB      | rm4d| rm4d| rm4d|     |     |     |
 SUB      | rm4i| rm4i| lm4i|     |     |     | # SUB group for M4I
 SUB      | rm4i| rm4i| rm4i|     |     |     |
 
-Keep Going
+UMUL     | ru  | rbl | lu  |     |     |     | # UMUL: ru is hi, ru+1 is lo
+UMUL     | ru  | rbl | ru  |     |     |     |
+UMUL     | ru  | rra | lu  |     |     |     |
+UMUL     | ru  | rra | ru  |     |     |     |
+UMUL     | ru  | rsl | lu  |     |     |     |
+UMUL     | ru  | rsl | ru  |     |     |     |
+UMUL     | ru  | rnb | lu  |     |     |     |
+UMUL     | ru  | rnb | ru  |     |     |     |
+UMUL     | ru  | ru  | lu  |     |     |     | # UMUL group for Ulong
+UMUL     | ru  | ru  | ru  |     |     |     |
 
-MUL
-DIV
+MUL      | ru  | rbl | lu  |     |     |     | # MUL w/named reg, ru, ru+1
+MUL      | ru  | rbl | ru  |     |     |     |
+MUL      | ru  | rra | lu  |     |     |     |
+MUL      | ru  | rra | ru  |     |     |     |
+MUL      | ru  | rsl | lu  |     |     |     |
+MUL      | ru  | rsl | ru  |     |     |     |
+MUL      | ru  | rnb | lu  |     |     |     |
+MUL      | ru  | rnb | ru  |     |     |     |
+MUL      | ru  | rsa | ld  |     |     |     |
+MUL      | rd  | rsa | rd  |     |     |     | # rd goes NaN if too big
+MUL      | rd  | rad | ld  |     |     |     |
+MUL      | rd  | rad | rd  |     |     |     |
+MUL      | rd  | rbs | ld  |     |     |     |
+MUL      | rd  | rbs | rd  |     |     |     |
+MUL      | rd  | rbz | ld  |     |     |     |
+MUL      | rd  | rbz | rd  |     |     |     |
+MUL      | ru  | ru  | lu  |     |     |     | # MUL group for Ulong ru, ru+1
+MUL      | ru  | ru  | ru  |     |     |     |
+MUL      | rd  | rd  | ld  |     |     |     | # MUL group for Double
+MUL      | rd  | rd  | rd  |     |     |     |
+MUL      | rv2d| rv2d| lv2d|     |     |     | # MUL group for V2D element-wise
+MUL      | rv2d| rv2d| rv2d|     |     |     |
+MUL      | rv2i| rv2i| lv2i|     |     |     | # MUL group for V2I element-wise
+MUL      | rv2i| rv2i| rv2i|     |     |     |
+MUL      | rv3d| rv3d| lv3d|     |     |     | # MUL group for V3D element-wise
+MUL      | rv3d| rv3d| rv3d|     |     |     |
+MUL      | rv3i| rv3i| lv3i|     |     |     | # MUL group for V3I element-wise
+MUL      | rv3i| rv3i| rv3i|     |     |     |
+MUL      | rv4d| rv4d| lv4d|     |     |     | # MUL group for V4D element-wise
+MUL      | rv4d| rv4d| rv4d|     |     |     |
+MUL      | rv4i| rv4i| lv4i|     |     |     | # MUL group for V4I element-wise
+MUL      | rv4i| rv4i| rv4i|     |     |     |
+MUL      | rm2d| rm2d| lm2d|     |     |     | # MUL group for M2D element-wise
+MUL      | rm2d| rm2d| rm2d|     |     |     |
+MUL      | rm2i| rm2i| lm2i|     |     |     | # MUL group for M2I element-wise
+MUL      | rm2i| rm2i| rm2i|     |     |     |
+MUL      | rm3d| rm3d| lm3d|     |     |     | # MUL group for M3D element-wise
+MUL      | rm3d| rm3d| rm3d|     |     |     |
+MUL      | rm3i| rm3i| lm3i|     |     |     | # MUL group for M3I element-wise
+MUL      | rm3i| rm3i| rm3i|     |     |     |
+MUL      | rm4d| rm4d| lm4d|     |     |     | # MUL group for M4D element-wise
+MUL      | rm4d| rm4d| rm4d|     |     |     |
+MUL      | rm4i| rm4i| lm4i|     |     |     | # MUL group for M4I element-wise
+MUL      | rm4i| rm4i| rm4i|     |     |     |
 
-ROLLL
-ROLLR
+DIV      | rbl | rbl | lu  |     |     |     | # Simple DIV support w/named reg
+DIV      | rbl | rbl | ru  |     |     |     |
+DIV      | rra | rra | lu  |     |     |     |
+DIV      | rra | rra | ru  |     |     |     |
+DIV      | rsl | rsl | lu  |     |     |     |
+DIV      | rsl | rsl | ru  |     |     |     |
+DIV      | rnb | rnb | lu  |     |     |     |
+DIV      | rnb | rnb | ru  |     |     |     |
+DIV      | rsa | rsa | ld  |     |     |     |
+DIV      | rsa | rsa | rd  |     |     |     |
+DIV      | rad | rad | ld  |     |     |     |
+DIV      | rad | rad | rd  |     |     |     |
+DIV      | rbs | rbs | ld  |     |     |     |
+DIV      | rbs | rbs | rd  |     |     |     |
+DIV      | rbz | rbz | ld  |     |     |     |
+DIV      | rbz | rbz | rd  |     |     |     |
+DIV      | ru  | ru  | lu  |     |     |     | # DIV group for Ulong
+DIV      | ru  | ru  | ru  |     |     |     |
+DIV      | rd  | rd  | ld  |     |     |     | # DIV group for Double
+DIV      | rd  | rd  | rd  |     |     |     |
+DIV      | rv2d| rv2d| lv2d|     |     |     | # DIV group for V2D element-wise
+DIV      | rv2d| rv2d| rv2d|     |     |     |
+DIV      | rv2i| rv2i| lv2i|     |     |     | # DIV group for V2I element-wise
+DIV      | rv2i| rv2i| rv2i|     |     |     |
+DIV      | rv3d| rv3d| lv3d|     |     |     | # DIV group for V3D element-wise
+DIV      | rv3d| rv3d| rv3d|     |     |     |
+DIV      | rv3i| rv3i| lv3i|     |     |     | # DIV group for V3I element-wise
+DIV      | rv3i| rv3i| rv3i|     |     |     |
+DIV      | rv4d| rv4d| lv4d|     |     |     | # DIV group for V4D element-wise
+DIV      | rv4d| rv4d| rv4d|     |     |     |
+DIV      | rv4i| rv4i| lv4i|     |     |     | # DIV group for V4I element-wise
+DIV      | rv4i| rv4i| rv4i|     |     |     |
+DIV      | rm2d| rm2d| lm2d|     |     |     | # DIV group for M2D element-wise
+DIV      | rm2d| rm2d| rm2d|     |     |     |
+DIV      | rm2i| rm2i| lm2i|     |     |     | # DIV group for M2I element-wise
+DIV      | rm2i| rm2i| rm2i|     |     |     |
+DIV      | rm3d| rm3d| lm3d|     |     |     | # DIV group for M3D element-wise
+DIV      | rm3d| rm3d| rm3d|     |     |     |
+DIV      | rm3i| rm3i| lm3i|     |     |     | # DIV group for M3I element-wise
+DIV      | rm3i| rm3i| rm3i|     |     |     |
+DIV      | rm4d| rm4d| lm4d|     |     |     | # DIV group for M4D element-wise
+DIV      | rm4d| rm4d| rm4d|     |     |     |
+DIV      | rm4i| rm4i| lm4i|     |     |     | # DIV group for M4I element-wise
+DIV      | rm4i| rm4i| rm4i|     |     |     |
+
+ROLLL    | rbl | rbl | lu  |     |     |     | # ROLLL support w/named reg
+ROLLL    | rbl | rbl | ru  |     |     |     |
+ROLLL    | rra | rra | lu  |     |     |     |
+ROLLL    | rra | rra | ru  |     |     |     |
+ROLLL    | rsl | rsl | lu  |     |     |     |
+ROLLL    | rsl | rsl | ru  |     |     |     |
+ROLLL    | rnb | rnb | lu  |     |     |     |
+ROLLL    | rnb | rnb | ru  |     |     |     |
+ROLLL    | ru  | ru  | lu  |     |     |     | # ROLLL group for Ulong
+ROLLL    | ru  | ru  | ru  |     |     |     |
+
+ROLLR    | rbl | rbl | lu  |     |     |     | # ROLLR support w/named reg
+ROLLR    | rbl | rbl | ru  |     |     |     |
+ROLLR    | rra | rra | lu  |     |     |     |
+ROLLR    | rra | rra | ru  |     |     |     |
+ROLLR    | rsl | rsl | lu  |     |     |     |
+ROLLR    | rsl | rsl | ru  |     |     |     |
+ROLLR    | rnb | rnb | lu  |     |     |     |
+ROLLR    | rnb | rnb | ru  |     |     |     |
+ROLLR    | ru  | ru  | lu  |     |     |     | # ROLLR group for Ulong
+ROLLR    | ru  | ru  | ru  |     |     |     |
+
+ROLLCL
+ROLLCR
 SHIFTL
 SHIFTR
+ASHIFTL
+ASHIFTR
 AND
 OR
 NOT
