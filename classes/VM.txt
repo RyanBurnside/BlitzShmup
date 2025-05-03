@@ -154,7 +154,7 @@ NOP      |     |     |     |     |     |     |
 
 YIELD    | ru  |     |     |     |     |     | # Stop BPU & return value in ru
 
-LITERAL  | ru  | lu  |     |     |     |     | # Put literal value into register
+LITERAL  | ru  | lu  |     |     |     |     | # Put literal value into reg
 LITERAL  | rd  | ld  |     |     |     |     |
 LITERAL  | rbl | lu  |     |     |     |     |
 LITERAL  | rra | lu  |     |     |     |     |
@@ -410,13 +410,102 @@ ROLLR    | rnb | rnb | ru  |     |     |     |
 ROLLR    | ru  | ru  | lu  |     |     |     | # ROLLR group for Ulong
 ROLLR    | ru  | ru  | ru  |     |     |     |
 
-ROLLCL
-ROLLCR
-SHIFTL
-SHIFTR
-ASHIFTL
-ASHIFTR
-AND
-OR
-NOT
+ROLLCL   | rbl | rbl | lu  |     |     |     | # ROLLCL support w/named reg
+ROLLCL   | rbl | rbl | ru  |     |     |     |
+ROLLCL   | rra | rra | lu  |     |     |     |
+ROLLCL   | rra | rra | ru  |     |     |     |
+ROLLCL   | rsl | rsl | lu  |     |     |     |
+ROLLCL   | rsl | rsl | ru  |     |     |     |
+ROLLCL   | rnb | rnb | lu  |     |     |     |
+ROLLCL   | rnb | rnb | ru  |     |     |     |
+ROLLCL   | ru  | ru  | lu  |     |     |     | # ROLLCL group for Ulong
+ROLLCL   | ru  | ru  | ru  |     |     |     |
+
+ROLLCR   | rbl | rbl | lu  |     |     |     | # ROLLCR support w/named reg
+ROLLCR   | rbl | rbl | ru  |     |     |     |
+ROLLCR   | rra | rra | lu  |     |     |     |
+ROLLCR   | rra | rra | ru  |     |     |     |
+ROLLCR   | rsl | rsl | lu  |     |     |     |
+ROLLCR   | rsl | rsl | ru  |     |     |     |
+ROLLCR   | rnb | rnb | lu  |     |     |     |
+ROLLCR   | rnb | rnb | ru  |     |     |     |
+ROLLCR   | ru  | ru  | lu  |     |     |     | # ROLLCR group for Ulong
+ROLLCR   | ru  | ru  | ru  |     |     |     |
+
+SHIFTL   | rbl | rbl | lu  |     |     |     | # SHIFTL support w/named reg
+SHIFTL   | rbl | rbl | ru  |     |     |     |
+SHIFTL   | rra | rra | lu  |     |     |     |
+SHIFTL   | rra | rra | ru  |     |     |     |
+SHIFTL   | rsl | rsl | lu  |     |     |     |
+SHIFTL   | rsl | rsl | ru  |     |     |     |
+SHIFTL   | rnb | rnb | lu  |     |     |     |
+SHIFTL   | rnb | rnb | ru  |     |     |     |
+SHIFTL   | ru  | ru  | lu  |     |     |     | # SHIFTL group for Ulong
+SHIFTL   | ru  | ru  | ru  |     |     |     |
+
+SHIFTR   | rbl | rbl | lu  |     |     |     | # SHIFTR support w/named reg
+SHIFTR   | rbl | rbl | ru  |     |     |     |
+SHIFTR   | rra | rra | lu  |     |     |     |
+SHIFTR   | rra | rra | ru  |     |     |     |
+SHIFTR   | rsl | rsl | lu  |     |     |     |
+SHIFTR   | rsl | rsl | ru  |     |     |     |
+SHIFTR   | rnb | rnb | lu  |     |     |     |
+SHIFTR   | rnb | rnb | ru  |     |     |     |
+SHIFTR   | ru  | ru  | lu  |     |     |     | # SHIFTR group for Ulong
+SHIFTR   | ru  | ru  | ru  |     |     |     |
+
+ASHIFTL  | rbl | rbl | lu  |     |     |     | # ASHIFTL support w/named reg
+ASHIFTL  | rbl | rbl | ru  |     |     |     |
+ASHIFTL  | rra | rra | lu  |     |     |     |
+ASHIFTL  | rra | rra | ru  |     |     |     |
+ASHIFTL  | rsl | rsl | lu  |     |     |     |
+ASHIFTL  | rsl | rsl | ru  |     |     |     |
+ASHIFTL  | rnb | rnb | lu  |     |     |     |
+ASHIFTL  | rnb | rnb | ru  |     |     |     |
+ASHIFTL  | ru  | ru  | lu  |     |     |     | # ASHIFTL group for Ulong
+ASHIFTL  | ru  | ru  | ru  |     |     |     |
+
+ASHIFTR  | rbl | rbl | lu  |     |     |     | # ASHIFTR support w/named reg
+ASHIFTR  | rbl | rbl | ru  |     |     |     |
+ASHIFTR  | rra | rra | lu  |     |     |     |
+ASHIFTR  | rra | rra | ru  |     |     |     |
+ASHIFTR  | rsl | rsl | lu  |     |     |     |
+ASHIFTR  | rsl | rsl | ru  |     |     |     |
+ASHIFTR  | rnb | rnb | lu  |     |     |     |
+ASHIFTR  | rnb | rnb | ru  |     |     |     |
+ASHIFTR  | ru  | ru  | lu  |     |     |     | # ASHIFTR group for Ulong
+ASHIFTR  | ru  | ru  | ru  |     |     |     |
+
+AND      | rbl | rbl | lu  |     |     |     | # AND support w/named reg
+AND      | rbl | rbl | ru  |     |     |     |
+AND      | rra | rra | lu  |     |     |     |
+AND      | rra | rra | ru  |     |     |     |
+AND      | rsl | rsl | lu  |     |     |     |
+AND      | rsl | rsl | ru  |     |     |     |
+AND      | rnb | rnb | lu  |     |     |     |
+AND      | rnb | rnb | ru  |     |     |     |
+AND      | ru  | ru  | lu  |     |     |     | # AND group for Ulong
+AND      | ru  | ru  | ru  |     |     |     |
+
+OR       | rbl | rbl | lu  |     |     |     | # OR support w/named reg
+OR       | rbl | rbl | ru  |     |     |     |
+OR       | rra | rra | lu  |     |     |     |
+OR       | rra | rra | ru  |     |     |     |
+OR       | rsl | rsl | lu  |     |     |     |
+OR       | rsl | rsl | ru  |     |     |     |
+OR       | rnb | rnb | lu  |     |     |     |
+OR       | rnb | rnb | ru  |     |     |     |
+OR       | ru  | ru  | lu  |     |     |     | # OR group for Ulong
+OR       | ru  | ru  | ru  |     |     |     |
+
+NOT      | rbl | rbl | lu  |     |     |     | # NOT support w/named reg
+NOT      | rbl | rbl | ru  |     |     |     |
+NOT      | rra | rra | lu  |     |     |     |
+NOT      | rra | rra | ru  |     |     |     |
+NOT      | rsl | rsl | lu  |     |     |     |
+NOT      | rsl | rsl | ru  |     |     |     |
+NOT      | rnb | rnb | lu  |     |     |     |
+NOT      | rnb | rnb | ru  |     |     |     |
+NOT      | ru  | ru  | lu  |     |     |     | # NOT group for Ulong
+NOT      | ru  | ru  | ru  |     |     |     |
 
