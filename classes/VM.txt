@@ -11,7 +11,7 @@ Registers:
                 instructions to deal with them. so they live in a different
                 operand space.
     PC        - Program counter
-    ST        - Status Register: Carry, Zero, Sign, Overflow, Negative
+    ST        - Status Register: Zero, Overflow, Negative, Carry (ZONC)
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
     RA        - Return Address Stack Index
@@ -108,32 +108,35 @@ rm2i     |       OpRegM2I
 rm3i     |       OpRegM3I
 rm4i     |       OpRegM4I
 rq       |     OpRegQ
-         |   OpMemory
-ma       |     OpMemA
-mb       |     OpMemB
-mbi      |     OpMemBI
-mba      |     OpMemBA
-mbia     |     OpMemBIA
-mbis     |     OpMemBIS
-misa     |     OpMemISA
-mbisa    |     OpMemBISA
+mem      |   OpMemory
+         |     OpMemA
+         |     OpMemB
+         |     OpMemBI
+         |     OpMemBA
+         |     OpMemBIA
+         |     OpMemBIS
+         |     OpMemISA
+         |     OpMemBISA
 
 Addressing modes for OpMemory:
   Used for the Instruction Memory or Data Memory as appropriate.
 
   "Absolute" is an: lu
-  "Base" is one of: ru, rpc
-  "Index" is one of: ru, rpc
+  "Base" is one of: ru, rnu, rpc
+  "Index" is one of: ru, rnu, rpc
   "Scale" is an: lu
 
-  OpMemA:    Absolute
-  OpMemB:    Base
-  OpMemBI:   Base + Index
-  OpMemBA:   Base + Absolute
-  OpMemBIA:  Base + Index + Absolute
-  OpMemBIS:  Base + (Index * Scale)
-  OpMemISA:  (Index * Scale) + Absolute
-  OpMemBISA: Base + (Index * Scale) + Absolute
+  OpMemory:
+    OpMemA:    Absolute
+    OpMemB:    Base
+    OpMemBI:   Base + Index
+    OpMemBA:   Base + Absolute
+    OpMemBIA:  Base + Index + Absolute
+    OpMemBIS:  Base + (Index * Scale)
+    OpMemISA:  (Index * Scale) + Absolute
+    OpMemBISA: Base + (Index * Scale) + Absolute
+
+However, all of the above are normalized into a 'mem' OpMemory operand.
 
 
 Assembly Instructions:
@@ -517,19 +520,97 @@ NOT      | ru  | rnu |     |     |     |     |
 NOT      | rnu | ru  |     |     |     |     |
 NOT      | rnu | rnu |     |     |     |     |
 
-# Comparison and control instructions
+CMP      | ru  | lu  |     |     |     |     | # CMP U regs (ZONC)
+CMP      | ru  | ru  |     |     |     |     |
+CMP      | ru  | rnu |     |     |     |     |
+CMP      | rnu | lu  |     |     |     |     |
+CMP      | rnu | ru  |     |     |     |     |
+CMP      | rnu | rnu |     |     |     |     |
+CMP      | rd  | ld  |     |     |     |     | # CMP D regs TODO Tol schema?
+CMP      | rd  | rd  |     |     |     |     |
+CMP      | rd  | rnd |     |     |     |     |
+CMP      | rnd | ld  |     |     |     |     |
+CMP      | rnd | rd  |     |     |     |     |
+CMP      | rnd | rnd |     |     |     |     |
 
 # First part, traditional architecture
 
-CMP that sets all flags
 J? That uses those flags, like x86
 
 # Second part op in CMP, sets all flags and T/F flag
 CMP< r, r
 JT/JF
 
-# Third part, convenience instructions (which are actual instructions)
-# act like second part
-JMP< r, r, offset
+# Convenience API, however, think about D comparisons.
+
+JMPNAN   | rd  | mem |     |     |     |     | 
+JMPNAN   | rnd | mem |     |     |     |     |
+
+# These set the flags as if CMP then JMP in one instruction.
+
+JMP<     | ru  | lu  | mem |     |     |     | 
+JMP<     | ru  | ru  | mem |     |     |     |
+JMP<     | ru  | rnu | mem |     |     |     |
+JMP<     | rnu | lu  | mem |     |     |     |
+JMP<     | rnu | ru  | mem |     |     |     |
+JMP<     | rnu | rnu | mem |     |     |     |
+JMP<     | rd  | ld  | mem |     |     |     | 
+JMP<     | rd  | rd  | mem |     |     |     |
+JMP<     | rd  | rnd | mem |     |     |     |
+JMP<     | rnd | ld  | mem |     |     |     |
+JMP<     | rnd | rd  | mem |     |     |     |
+JMP<     | rnd | rnd | mem |     |     |     |
+
+JMP<=    | ru  | lu  | mem |     |     |     | 
+JMP<=    | ru  | ru  | mem |     |     |     |
+JMP<=    | ru  | rnu | mem |     |     |     |
+JMP<=    | rnu | lu  | mem |     |     |     |
+JMP<=    | rnu | ru  | mem |     |     |     |
+JMP<=    | rnu | rnu | mem |     |     |     |
+JMP<=    | rd  | ld  | mem |     |     |     | 
+JMP<=    | rd  | rd  | mem |     |     |     |
+JMP<=    | rd  | rnd | mem |     |     |     |
+JMP<=    | rnd | ld  | mem |     |     |     |
+JMP<=    | rnd | rd  | mem |     |     |     |
+JMP<=    | rnd | rnd | mem |     |     |     |
+
+JMP=     | ru  | lu  | mem |     |     |     | 
+JMP=     | ru  | ru  | mem |     |     |     |
+JMP=     | ru  | rnu | mem |     |     |     |
+JMP=     | rnu | lu  | mem |     |     |     |
+JMP=     | rnu | ru  | mem |     |     |     |
+JMP=     | rnu | rnu | mem |     |     |     |
+JMP=     | rd  | ld  | mem |     |     |     | 
+JMP=     | rd  | rd  | mem |     |     |     |
+JMP=     | rd  | rnd | mem |     |     |     |
+JMP=     | rnd | ld  | mem |     |     |     |
+JMP=     | rnd | rd  | mem |     |     |     |
+JMP=     | rnd | rnd | mem |     |     |     |
+
+JMP>=    | ru  | lu  | mem |     |     |     | 
+JMP>=    | ru  | ru  | mem |     |     |     |
+JMP>=    | ru  | rnu | mem |     |     |     |
+JMP>=    | rnu | lu  | mem |     |     |     |
+JMP>=    | rnu | ru  | mem |     |     |     |
+JMP>=    | rnu | rnu | mem |     |     |     |
+JMP>=    | rd  | ld  | mem |     |     |     | 
+JMP>=    | rd  | rd  | mem |     |     |     |
+JMP>=    | rd  | rnd | mem |     |     |     |
+JMP>=    | rnd | ld  | mem |     |     |     |
+JMP>=    | rnd | rd  | mem |     |     |     |
+JMP>=    | rnd | rnd | mem |     |     |     |
+
+JMP>     | ru  | lu  | mem |     |     |     | 
+JMP>     | ru  | ru  | mem |     |     |     |
+JMP>     | ru  | rnu | mem |     |     |     |
+JMP>     | rnu | lu  | mem |     |     |     |
+JMP>     | rnu | ru  | mem |     |     |     |
+JMP>     | rnu | rnu | mem |     |     |     |
+JMP>     | rd  | ld  | mem |     |     |     | 
+JMP>     | rd  | rd  | mem |     |     |     |
+JMP>     | rd  | rnd | mem |     |     |     |
+JMP>     | rnd | ld  | mem |     |     |     |
+JMP>     | rnd | rd  | mem |     |     |     |
+JMP>     | rnd | rnd | mem |     |     |     |
 
 
