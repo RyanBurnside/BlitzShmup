@@ -6,14 +6,19 @@ such only use registers. There are specific LOAD and STORE instructions
 to move data from memory to registers and back again.
 
 Registers:
-  RegNamedU   - Array 5 ULong, names start at 0 index.
+  RegSysU     - Array 2 ULong, names start at 0 index. These registeres are
+                not normally targets of regular instructions and have special
+                instructions to deal with them. so they live in a different
+                operand space.
     PC        - Program counter
     ST        - Status Register: Carry, Zero, Sign, Overflow, Negative
+
+  RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
     RA        - Return Address Stack Index
     SL        - Sleep Ticks
     NB        - Num Bullets
 
-  RegNamedD   - Array 4 ULong, names start at 0 index.
+  RegNamD     - Array 4 ULong, names start at 0 index. Named registers.
     SA        - Sub Angle
     AD        - Aim Direction
     BS        - Bullet Speed
@@ -80,18 +85,11 @@ lm3i     |       OpLitM3I
 lm4i     |       OpLitM4I
 lq       |     OpLitQ
          |   OpRegister
-         |     OpRegNamedU
-rbl      |      OpRegBL
-rpc      |      OpRegPC
-rst      |      OpRegST
-rra      |      OpRegRA
-rsl      |      OpRegSL
-rnb      |      OpRegNB
-         |     OpRegNamedD
-rsa      |      OpRegSA
-rad      |      OpRegAD
-rbs      |      OpRegBS
-rbz      |      OpRegBZ
+         |     OpRegSysU
+rpc      |       OpRegPC
+rst      |       OpRegST
+rnu      |     OpRegNamU
+rnd      |     OpRegNamD
 ru       |     OpRegU
 rd       |     OpRegD
          |     OpRegV
@@ -138,8 +136,6 @@ Addressing modes for OpMemory:
   OpMemBISA: Base + (Index * Scale) + Absolute
 
 
-KEEP GOING
-
 Assembly Instructions:
 
 An assembly instruction looks like: ADD ru, lu, lu
@@ -152,18 +148,12 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
 ----------------------------------------------
 NOP      |     |     |     |     |     |     |
 
-YIELD    | ru  |     |     |     |     |     | # Stop BPU & return value in ru
+YIELD    | ru  |     |     |     |     |     | # Stop BPU & return reg values
 
-LITERAL  | ru  | lu  |     |     |     |     | # Put literal value into reg
+LITERAL  | rnu | lu  |     |     |     |     | # Put literal into reg
+LITERAL  | rnd | ld  |     |     |     |     | 
+LITERAL  | ru  | lu  |     |     |     |     |
 LITERAL  | rd  | ld  |     |     |     |     |
-LITERAL  | rbl | lu  |     |     |     |     |
-LITERAL  | rra | lu  |     |     |     |     |
-LITERAL  | rsl | lu  |     |     |     |     |
-LITERAL  | rnb | lu  |     |     |     |     |
-LITERAL  | rsa | ld  |     |     |     |     |
-LITERAL  | rad | ld  |     |     |     |     |
-LITERAL  | rbs | ld  |     |     |     |     |
-LITERAL  | rbz | ld  |     |     |     |     |
 LITERAL  | rv2d| lv2d|     |     |     |     |
 LITERAL  | rv2i| lv2i|     |     |     |     |
 LITERAL  | rv3d| lv3d|     |     |     |     |
@@ -186,26 +176,30 @@ IDENTITY | rm4d|     |     |     |     |     |
 IDENTITY | rm4i|     |     |     |     |     |
 IDENTITY | rq  |     |     |     |     |     |
 
-ADD      | rbl | rbl | lu  |     |     |     | # Simple ADD support w/named reg
-ADD      | rbl | rbl | ru  |     |     |     |
-ADD      | rra | rra | lu  |     |     |     |
-ADD      | rra | rra | ru  |     |     |     |
-ADD      | rsl | rsl | lu  |     |     |     |
-ADD      | rsl | rsl | ru  |     |     |     |
-ADD      | rnb | rnb | lu  |     |     |     |
-ADD      | rnb | rnb | ru  |     |     |     |
-ADD      | rsa | rsa | ld  |     |     |     |
-ADD      | rsa | rsa | rd  |     |     |     |
-ADD      | rad | rad | ld  |     |     |     |
-ADD      | rad | rad | rd  |     |     |     |
-ADD      | rbs | rbs | ld  |     |     |     |
-ADD      | rbs | rbs | rd  |     |     |     |
-ADD      | rbz | rbz | ld  |     |     |     |
-ADD      | rbz | rbz | rd  |     |     |     |
-ADD      | ru  | ru  | lu  |     |     |     | # ADD group for Ulong
+ADD      | rnu | rnu | lu  |     |     |     | # ADD for scalar U registers
+ADD      | rnu | ru  | lu  |     |     |     |
+ADD      | rnu | ru  | ru  |     |     |     |
+ADD      | rnu | ru  | rnu |     |     |     |
+ADD      | rnu | rnu | ru  |     |     |     |
+ADD      | rnu | rnu | rnu |     |     |     |
+ADD      | ru  | rnu | lu  |     |     |     |
+ADD      | ru  | ru  | lu  |     |     |     |
 ADD      | ru  | ru  | ru  |     |     |     |
-ADD      | rd  | rd  | ld  |     |     |     | # ADD group for Double
+ADD      | ru  | ru  | rnu |     |     |     |
+ADD      | ru  | rnu | ru  |     |     |     |
+ADD      | ru  | rnu | rnu |     |     |     |
+ADD      | rnd | rnd | ld  |     |     |     | # ADD for scalar D regisers
+ADD      | rnd | rd  | ld  |     |     |     |
+ADD      | rnd | rd  | rd  |     |     |     |
+ADD      | rnd | rd  | rnd |     |     |     |
+ADD      | rnd | rnd | rd  |     |     |     |
+ADD      | rnd | rnd | rnd |     |     |     |
+ADD      | rd  | rnd | ld  |     |     |     |
+ADD      | rd  | rd  | ld  |     |     |     |
 ADD      | rd  | rd  | rd  |     |     |     |
+ADD      | rd  | rd  | rnd |     |     |     |
+ADD      | rd  | rnd | rd  |     |     |     |
+ADD      | rd  | rnd | rnd |     |     |     |
 ADD      | rv2d| rv2d| lv2d|     |     |     | # ADD group for V2D
 ADD      | rv2d| rv2d| rv2d|     |     |     |
 ADD      | rv2i| rv2i| lv2i|     |     |     | # ADD group for V2I
@@ -231,37 +225,43 @@ ADD      | rm4d| rm4d| rm4d|     |     |     |
 ADD      | rm4i| rm4i| lm4i|     |     |     | # ADD group for M4I
 ADD      | rm4i| rm4i| rm4i|     |     |     |
 
-ADC      | rbl | rbl | lu  |     |     |     | # ADC group for named reg
-ADC      | rbl | rbl | ru  |     |     |     |
-ADC      | rra | rra | lu  |     |     |     |
-ADC      | rra | rra | ru  |     |     |     |
-ADC      | rsl | rsl | lu  |     |     |     |
-ADC      | rsl | rsl | ru  |     |     |     |
-ADC      | rnb | rnb | lu  |     |     |     |
-ADC      | rnb | rnb | ru  |     |     |     |
-ADC      | ru  | ru  | lu  |     |     |     | # ADC group for Ulong
+ADC      | rnu | rnu | lu  |     |     |     | # ADC for scalar U registers
+ADC      | rnu | ru  | lu  |     |     |     |
+ADC      | rnu | ru  | ru  |     |     |     |
+ADC      | rnu | ru  | rnu |     |     |     |
+ADC      | rnu | rnu | ru  |     |     |     |
+ADC      | rnu | rnu | rnu |     |     |     |
+ADC      | ru  | rnu | lu  |     |     |     |
+ADC      | ru  | ru  | lu  |     |     |     |
 ADC      | ru  | ru  | ru  |     |     |     |
+ADC      | ru  | ru  | rnu |     |     |     |
+ADC      | ru  | rnu | ru  |     |     |     |
+ADC      | ru  | rnu | rnu |     |     |     |
 
-SUB      | rbl | rbl | lu  |     |     |     | # Simple SUB support w/named reg
-SUB      | rbl | rbl | ru  |     |     |     |
-SUB      | rra | rra | lu  |     |     |     |
-SUB      | rra | rra | ru  |     |     |     |
-SUB      | rsl | rsl | lu  |     |     |     |
-SUB      | rsl | rsl | ru  |     |     |     |
-SUB      | rnb | rnb | lu  |     |     |     |
-SUB      | rnb | rnb | ru  |     |     |     |
-SUB      | rsa | rsa | ld  |     |     |     |
-SUB      | rsa | rsa | rd  |     |     |     |
-SUB      | rad | rad | ld  |     |     |     |
-SUB      | rad | rad | rd  |     |     |     |
-SUB      | rbs | rbs | ld  |     |     |     |
-SUB      | rbs | rbs | rd  |     |     |     |
-SUB      | rbz | rbz | ld  |     |     |     |
-SUB      | rbz | rbz | rd  |     |     |     |
-SUB      | ru  | ru  | lu  |     |     |     | # SUB group for Ulong
+SUB      | rnu | rnu | lu  |     |     |     | # SUB for scalar U registers
+SUB      | rnu | ru  | lu  |     |     |     |
+SUB      | rnu | ru  | ru  |     |     |     |
+SUB      | rnu | ru  | rnu |     |     |     |
+SUB      | rnu | rnu | ru  |     |     |     |
+SUB      | rnu | rnu | rnu |     |     |     |
+SUB      | ru  | rnu | lu  |     |     |     |
+SUB      | ru  | ru  | lu  |     |     |     |
 SUB      | ru  | ru  | ru  |     |     |     |
-SUB      | rd  | rd  | ld  |     |     |     | # SUB group for Double
+SUB      | ru  | ru  | rnu |     |     |     |
+SUB      | ru  | rnu | ru  |     |     |     |
+SUB      | ru  | rnu | rnu |     |     |     |
+SUB      | rnd | rnd | ld  |     |     |     | # SUB for scalar D regisers
+SUB      | rnd | rd  | ld  |     |     |     |
+SUB      | rnd | rd  | rd  |     |     |     |
+SUB      | rnd | rd  | rnd |     |     |     |
+SUB      | rnd | rnd | rd  |     |     |     |
+SUB      | rnd | rnd | rnd |     |     |     |
+SUB      | rd  | rnd | ld  |     |     |     |
+SUB      | rd  | rd  | ld  |     |     |     |
 SUB      | rd  | rd  | rd  |     |     |     |
+SUB      | rd  | rd  | rnd |     |     |     |
+SUB      | rd  | rnd | rd  |     |     |     |
+SUB      | rd  | rnd | rnd |     |     |     |
 SUB      | rv2d| rv2d| lv2d|     |     |     | # SUB group for V2D
 SUB      | rv2d| rv2d| rv2d|     |     |     |
 SUB      | rv2i| rv2i| lv2i|     |     |     | # SUB group for V2I
@@ -287,37 +287,25 @@ SUB      | rm4d| rm4d| rm4d|     |     |     |
 SUB      | rm4i| rm4i| lm4i|     |     |     | # SUB group for M4I
 SUB      | rm4i| rm4i| rm4i|     |     |     |
 
-UMUL     | ru  | rbl | lu  |     |     |     | # UMUL: ru is hi, ru+1 is lo
-UMUL     | ru  | rbl | ru  |     |     |     |
-UMUL     | ru  | rra | lu  |     |     |     |
-UMUL     | ru  | rra | ru  |     |     |     |
-UMUL     | ru  | rsl | lu  |     |     |     |
-UMUL     | ru  | rsl | ru  |     |     |     |
-UMUL     | ru  | rnb | lu  |     |     |     |
-UMUL     | ru  | rnb | ru  |     |     |     |
-UMUL     | ru  | ru  | lu  |     |     |     | # UMUL group for Ulong
+UMUL     | ru  | rnu | lu  |     |     |     | # UMUL: 128bit ru hi, ru+1 lo
+UMUL     | ru  | ru  | lu  |     |     |     |
 UMUL     | ru  | ru  | ru  |     |     |     |
+UMUL     | ru  | ru  | rnu |     |     |     |
+UMUL     | ru  | rnu | ru  |     |     |     |
+UMUL     | ru  | rnu | rnu |     |     |     |
 
-MUL      | ru  | rbl | lu  |     |     |     | # MUL w/named reg, ru, ru+1
-MUL      | ru  | rbl | ru  |     |     |     |
-MUL      | ru  | rra | lu  |     |     |     |
-MUL      | ru  | rra | ru  |     |     |     |
-MUL      | ru  | rsl | lu  |     |     |     |
-MUL      | ru  | rsl | ru  |     |     |     |
-MUL      | ru  | rnb | lu  |     |     |     |
-MUL      | ru  | rnb | ru  |     |     |     |
-MUL      | ru  | rsa | ld  |     |     |     |
-MUL      | rd  | rsa | rd  |     |     |     | # rd goes NaN if too big
-MUL      | rd  | rad | ld  |     |     |     |
-MUL      | rd  | rad | rd  |     |     |     |
-MUL      | rd  | rbs | ld  |     |     |     |
-MUL      | rd  | rbs | rd  |     |     |     |
-MUL      | rd  | rbz | ld  |     |     |     |
-MUL      | rd  | rbz | rd  |     |     |     |
-MUL      | ru  | ru  | lu  |     |     |     | # MUL group for Ulong ru, ru+1
+MUL      | ru  | rnu | lu  |     |     |     | # MUL: 128bit, ru hi, ru+1 lo
+MUL      | ru  | ru  | lu  |     |     |     |
 MUL      | ru  | ru  | ru  |     |     |     |
-MUL      | rd  | rd  | ld  |     |     |     | # MUL group for Double
+MUL      | ru  | ru  | rnu |     |     |     |
+MUL      | ru  | rnu | ru  |     |     |     |
+MUL      | ru  | rnu | rnu |     |     |     |
+MUL      | rd  | rnd | ld  |     |     |     | # MUL: rd is only result
+MUL      | rd  | rd  | ld  |     |     |     |
 MUL      | rd  | rd  | rd  |     |     |     |
+MUL      | rd  | rd  | rnd |     |     |     |
+MUL      | rd  | rnd | rd  |     |     |     |
+MUL      | rd  | rnd | rnd |     |     |     |
 MUL      | rv2d| rv2d| lv2d|     |     |     | # MUL group for V2D element-wise
 MUL      | rv2d| rv2d| rv2d|     |     |     |
 MUL      | rv2i| rv2i| lv2i|     |     |     | # MUL group for V2I element-wise
@@ -343,26 +331,18 @@ MUL      | rm4d| rm4d| rm4d|     |     |     |
 MUL      | rm4i| rm4i| lm4i|     |     |     | # MUL group for M4I element-wise
 MUL      | rm4i| rm4i| rm4i|     |     |     |
 
-DIV      | rbl | rbl | lu  |     |     |     | # Simple DIV support w/named reg
-DIV      | rbl | rbl | ru  |     |     |     |
-DIV      | rra | rra | lu  |     |     |     |
-DIV      | rra | rra | ru  |     |     |     |
-DIV      | rsl | rsl | lu  |     |     |     |
-DIV      | rsl | rsl | ru  |     |     |     |
-DIV      | rnb | rnb | lu  |     |     |     |
-DIV      | rnb | rnb | ru  |     |     |     |
-DIV      | rsa | rsa | ld  |     |     |     |
-DIV      | rsa | rsa | rd  |     |     |     |
-DIV      | rad | rad | ld  |     |     |     |
-DIV      | rad | rad | rd  |     |     |     |
-DIV      | rbs | rbs | ld  |     |     |     |
-DIV      | rbs | rbs | rd  |     |     |     |
-DIV      | rbz | rbz | ld  |     |     |     |
-DIV      | rbz | rbz | rd  |     |     |     |
-DIV      | ru  | ru  | lu  |     |     |     | # DIV group for Ulong
+DIV      | ru  | rnu | lu  |     |     |     | # DIV: U op0 <- op1 / op2
+DIV      | ru  | ru  | lu  |     |     |     |
 DIV      | ru  | ru  | ru  |     |     |     |
-DIV      | rd  | rd  | ld  |     |     |     | # DIV group for Double
+DIV      | ru  | ru  | rnu |     |     |     |
+DIV      | ru  | rnu | ru  |     |     |     |
+DIV      | ru  | rnu | rnu |     |     |     |
+DIV      | rd  | rnd | ld  |     |     |     | # DIV: D op0 <- op1 / op2
+DIV      | rd  | rd  | ld  |     |     |     |
 DIV      | rd  | rd  | rd  |     |     |     |
+DIV      | rd  | rd  | rnd |     |     |     |
+DIV      | rd  | rnd | rd  |     |     |     |
+DIV      | rd  | rnd | rnd |     |     |     |
 DIV      | rv2d| rv2d| lv2d|     |     |     | # DIV group for V2D element-wise
 DIV      | rv2d| rv2d| rv2d|     |     |     |
 DIV      | rv2i| rv2i| lv2i|     |     |     | # DIV group for V2I element-wise
@@ -388,139 +368,154 @@ DIV      | rm4d| rm4d| rm4d|     |     |     |
 DIV      | rm4i| rm4i| lm4i|     |     |     | # DIV group for M4I element-wise
 DIV      | rm4i| rm4i| rm4i|     |     |     |
 
-# Fixme for permutations
-ROLLL    | rbl | rbl | lu  |     |     |     | # ROLLL support w/named reg
-ROLLL    | rbl | rbl | ru  |     |     |     |
-ROLLL    | rra | rra | lu  |     |     |     |
-ROLLL    | rra | rra | ru  |     |     |     |
-ROLLL    | rsl | rsl | lu  |     |     |     |
-ROLLL    | rsl | rsl | ru  |     |     |     |
-ROLLL    | rnb | rnb | lu  |     |     |     |
-ROLLL    | rnb | rnb | ru  |     |     |     |
-ROLLL    | ru  | ru  | lu  |     |     |     | # ROLLL group for Ulong
+ROLLL    | rnu | rnu | lu  |     |     |     | # ROLLL for scalar U registers
+ROLLL    | rnu | ru  | lu  |     |     |     |
+ROLLL    | rnu | ru  | ru  |     |     |     |
+ROLLL    | rnu | ru  | rnu |     |     |     |
+ROLLL    | rnu | rnu | ru  |     |     |     |
+ROLLL    | rnu | rnu | rnu |     |     |     |
+ROLLL    | ru  | rnu | lu  |     |     |     |
+ROLLL    | ru  | ru  | lu  |     |     |     |
 ROLLL    | ru  | ru  | ru  |     |     |     |
+ROLLL    | ru  | ru  | rnu |     |     |     |
+ROLLL    | ru  | rnu | ru  |     |     |     |
+ROLLL    | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-ROLLR    | rbl | rbl | lu  |     |     |     | # ROLLR support w/named reg
-ROLLR    | rbl | rbl | ru  |     |     |     |
-ROLLR    | rra | rra | lu  |     |     |     |
-ROLLR    | rra | rra | ru  |     |     |     |
-ROLLR    | rsl | rsl | lu  |     |     |     |
-ROLLR    | rsl | rsl | ru  |     |     |     |
-ROLLR    | rnb | rnb | lu  |     |     |     |
-ROLLR    | rnb | rnb | ru  |     |     |     |
-ROLLR    | ru  | ru  | lu  |     |     |     | # ROLLR group for Ulong
+ROLLR    | rnu | rnu | lu  |     |     |     | # ROLLR for scalar U registers
+ROLLR    | rnu | ru  | lu  |     |     |     |
+ROLLR    | rnu | ru  | ru  |     |     |     |
+ROLLR    | rnu | ru  | rnu |     |     |     |
+ROLLR    | rnu | rnu | ru  |     |     |     |
+ROLLR    | rnu | rnu | rnu |     |     |     |
+ROLLR    | ru  | rnu | lu  |     |     |     |
+ROLLR    | ru  | ru  | lu  |     |     |     |
 ROLLR    | ru  | ru  | ru  |     |     |     |
+ROLLR    | ru  | ru  | rnu |     |     |     |
+ROLLR    | ru  | rnu | ru  |     |     |     |
+ROLLR    | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-ROLLCL   | rbl | rbl | lu  |     |     |     | # ROLLCL support w/named reg
-ROLLCL   | rbl | rbl | ru  |     |     |     |
-ROLLCL   | rra | rra | lu  |     |     |     |
-ROLLCL   | rra | rra | ru  |     |     |     |
-ROLLCL   | rsl | rsl | lu  |     |     |     |
-ROLLCL   | rsl | rsl | ru  |     |     |     |
-ROLLCL   | rnb | rnb | lu  |     |     |     |
-ROLLCL   | rnb | rnb | ru  |     |     |     |
-ROLLCL   | ru  | ru  | lu  |     |     |     | # ROLLCL group for Ulong
+ROLLCL   | rnu | rnu | lu  |     |     |     | # ROLLCL for scalar U registers
+ROLLCL   | rnu | ru  | lu  |     |     |     |
+ROLLCL   | rnu | ru  | ru  |     |     |     |
+ROLLCL   | rnu | ru  | rnu |     |     |     |
+ROLLCL   | rnu | rnu | ru  |     |     |     |
+ROLLCL   | rnu | rnu | rnu |     |     |     |
+ROLLCL   | ru  | rnu | lu  |     |     |     |
+ROLLCL   | ru  | ru  | lu  |     |     |     |
 ROLLCL   | ru  | ru  | ru  |     |     |     |
+ROLLCL   | ru  | ru  | rnu |     |     |     |
+ROLLCL   | ru  | rnu | ru  |     |     |     |
+ROLLCL   | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-ROLLCR   | rbl | rbl | lu  |     |     |     | # ROLLCR support w/named reg
-ROLLCR   | rbl | rbl | ru  |     |     |     |
-ROLLCR   | rra | rra | lu  |     |     |     |
-ROLLCR   | rra | rra | ru  |     |     |     |
-ROLLCR   | rsl | rsl | lu  |     |     |     |
-ROLLCR   | rsl | rsl | ru  |     |     |     |
-ROLLCR   | rnb | rnb | lu  |     |     |     |
-ROLLCR   | rnb | rnb | ru  |     |     |     |
-ROLLCR   | ru  | ru  | lu  |     |     |     | # ROLLCR group for Ulong
+ROLLCR   | rnu | rnu | lu  |     |     |     | # ROLLCR for scalar U registers
+ROLLCR   | rnu | ru  | lu  |     |     |     |
+ROLLCR   | rnu | ru  | ru  |     |     |     |
+ROLLCR   | rnu | ru  | rnu |     |     |     |
+ROLLCR   | rnu | rnu | ru  |     |     |     |
+ROLLCR   | rnu | rnu | rnu |     |     |     |
+ROLLCR   | ru  | rnu | lu  |     |     |     |
+ROLLCR   | ru  | ru  | lu  |     |     |     |
 ROLLCR   | ru  | ru  | ru  |     |     |     |
+ROLLCR   | ru  | ru  | rnu |     |     |     |
+ROLLCR   | ru  | rnu | ru  |     |     |     |
+ROLLCR   | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-SHIFTL   | rbl | rbl | lu  |     |     |     | # SHIFTL support w/named reg
-SHIFTL   | rbl | rbl | ru  |     |     |     |
-SHIFTL   | rra | rra | lu  |     |     |     |
-SHIFTL   | rra | rra | ru  |     |     |     |
-SHIFTL   | rsl | rsl | lu  |     |     |     |
-SHIFTL   | rsl | rsl | ru  |     |     |     |
-SHIFTL   | rnb | rnb | lu  |     |     |     |
-SHIFTL   | rnb | rnb | ru  |     |     |     |
-SHIFTL   | ru  | ru  | lu  |     |     |     | # SHIFTL group for Ulong
+SHIFTL   | rnu | rnu | lu  |     |     |     | # SHIFTL for scalar U registers
+SHIFTL   | rnu | ru  | lu  |     |     |     |
+SHIFTL   | rnu | ru  | ru  |     |     |     |
+SHIFTL   | rnu | ru  | rnu |     |     |     |
+SHIFTL   | rnu | rnu | ru  |     |     |     |
+SHIFTL   | rnu | rnu | rnu |     |     |     |
+SHIFTL   | ru  | rnu | lu  |     |     |     |
+SHIFTL   | ru  | ru  | lu  |     |     |     |
 SHIFTL   | ru  | ru  | ru  |     |     |     |
+SHIFTL   | ru  | ru  | rnu |     |     |     |
+SHIFTL   | ru  | rnu | ru  |     |     |     |
+SHIFTL   | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-SHIFTR   | rbl | rbl | lu  |     |     |     | # SHIFTR support w/named reg
-SHIFTR   | rbl | rbl | ru  |     |     |     |
-SHIFTR   | rra | rra | lu  |     |     |     |
-SHIFTR   | rra | rra | ru  |     |     |     |
-SHIFTR   | rsl | rsl | lu  |     |     |     |
-SHIFTR   | rsl | rsl | ru  |     |     |     |
-SHIFTR   | rnb | rnb | lu  |     |     |     |
-SHIFTR   | rnb | rnb | ru  |     |     |     |
-SHIFTR   | ru  | ru  | lu  |     |     |     | # SHIFTR group for Ulong
+SHIFTR   | rnu | rnu | lu  |     |     |     | # SHIFTR for scalar U registers
+SHIFTR   | rnu | ru  | lu  |     |     |     |
+SHIFTR   | rnu | ru  | ru  |     |     |     |
+SHIFTR   | rnu | ru  | rnu |     |     |     |
+SHIFTR   | rnu | rnu | ru  |     |     |     |
+SHIFTR   | rnu | rnu | rnu |     |     |     |
+SHIFTR   | ru  | rnu | lu  |     |     |     |
+SHIFTR   | ru  | ru  | lu  |     |     |     |
 SHIFTR   | ru  | ru  | ru  |     |     |     |
+SHIFTR   | ru  | ru  | rnu |     |     |     |
+SHIFTR   | ru  | rnu | ru  |     |     |     |
+SHIFTR   | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-ASHIFTL  | rbl | rbl | lu  |     |     |     | # ASHIFTL support w/named reg
-ASHIFTL  | rbl | rbl | ru  |     |     |     |
-ASHIFTL  | rra | rra | lu  |     |     |     |
-ASHIFTL  | rra | rra | ru  |     |     |     |
-ASHIFTL  | rsl | rsl | lu  |     |     |     |
-ASHIFTL  | rsl | rsl | ru  |     |     |     |
-ASHIFTL  | rnb | rnb | lu  |     |     |     |
-ASHIFTL  | rnb | rnb | ru  |     |     |     |
-ASHIFTL  | ru  | ru  | lu  |     |     |     | # ASHIFTL group for Ulong
+ASHIFTL  | rnu | rnu | lu  |     |     |     | # ASHIFTL for scalar U registers
+ASHIFTL  | rnu | ru  | lu  |     |     |     |
+ASHIFTL  | rnu | ru  | ru  |     |     |     |
+ASHIFTL  | rnu | ru  | rnu |     |     |     |
+ASHIFTL  | rnu | rnu | ru  |     |     |     |
+ASHIFTL  | rnu | rnu | rnu |     |     |     |
+ASHIFTL  | ru  | rnu | lu  |     |     |     |
+ASHIFTL  | ru  | ru  | lu  |     |     |     |
 ASHIFTL  | ru  | ru  | ru  |     |     |     |
+ASHIFTL  | ru  | ru  | rnu |     |     |     |
+ASHIFTL  | ru  | rnu | ru  |     |     |     |
+ASHIFTL  | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-ASHIFTR  | rbl | rbl | lu  |     |     |     | # ASHIFTR support w/named reg
-ASHIFTR  | rbl | rbl | ru  |     |     |     |
-ASHIFTR  | rra | rra | lu  |     |     |     |
-ASHIFTR  | rra | rra | ru  |     |     |     |
-ASHIFTR  | rsl | rsl | lu  |     |     |     |
-ASHIFTR  | rsl | rsl | ru  |     |     |     |
-ASHIFTR  | rnb | rnb | lu  |     |     |     |
-ASHIFTR  | rnb | rnb | ru  |     |     |     |
-ASHIFTR  | ru  | ru  | lu  |     |     |     | # ASHIFTR group for Ulong
+ASHIFTR  | rnu | rnu | lu  |     |     |     | # ASHIFTR for scalar U registers
+ASHIFTR  | rnu | ru  | lu  |     |     |     |
+ASHIFTR  | rnu | ru  | ru  |     |     |     |
+ASHIFTR  | rnu | ru  | rnu |     |     |     |
+ASHIFTR  | rnu | rnu | ru  |     |     |     |
+ASHIFTR  | rnu | rnu | rnu |     |     |     |
+ASHIFTR  | ru  | rnu | lu  |     |     |     |
+ASHIFTR  | ru  | ru  | lu  |     |     |     |
 ASHIFTR  | ru  | ru  | ru  |     |     |     |
+ASHIFTR  | ru  | ru  | rnu |     |     |     |
+ASHIFTR  | ru  | rnu | ru  |     |     |     |
+ASHIFTR  | ru  | rnu | rnu |     |     |     |
 
 # Fixme for permutations
-AND      | rbl | rbl | lu  |     |     |     | # AND support w/named reg
-AND      | rbl | rbl | ru  |     |     |     |
-AND      | rra | rra | lu  |     |     |     |
-AND      | rra | rra | ru  |     |     |     |
-AND      | rsl | rsl | lu  |     |     |     |
-AND      | rsl | rsl | ru  |     |     |     |
-AND      | rnb | rnb | lu  |     |     |     |
-AND      | rnb | rnb | ru  |     |     |     |
-AND      | ru  | ru  | lu  |     |     |     | # AND group for Ulong
+AND      | rnu | rnu | lu  |     |     |     | # AND for scalar U registers
+AND      | rnu | ru  | lu  |     |     |     |
+AND      | rnu | ru  | ru  |     |     |     |
+AND      | rnu | ru  | rnu |     |     |     |
+AND      | rnu | rnu | ru  |     |     |     |
+AND      | rnu | rnu | rnu |     |     |     |
+AND      | ru  | rnu | lu  |     |     |     |
+AND      | ru  | ru  | lu  |     |     |     |
 AND      | ru  | ru  | ru  |     |     |     |
+AND      | ru  | ru  | rnu |     |     |     |
+AND      | ru  | rnu | ru  |     |     |     |
+AND      | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
-OR       | rbl | rbl | lu  |     |     |     | # OR support w/named reg
-OR       | rbl | rbl | ru  |     |     |     |
-OR       | rra | rra | lu  |     |     |     |
-OR       | rra | rra | ru  |     |     |     |
-OR       | rsl | rsl | lu  |     |     |     |
-OR       | rsl | rsl | ru  |     |     |     |
-OR       | rnb | rnb | lu  |     |     |     |
-OR       | rnb | rnb | ru  |     |     |     |
-OR       | ru  | ru  | lu  |     |     |     | # OR group for Ulong
+OR       | rnu | rnu | lu  |     |     |     | # OR for scalar U registers
+OR       | rnu | ru  | lu  |     |     |     |
+OR       | rnu | ru  | ru  |     |     |     |
+OR       | rnu | ru  | rnu |     |     |     |
+OR       | rnu | rnu | ru  |     |     |     |
+OR       | rnu | rnu | rnu |     |     |     |
+OR       | ru  | rnu | lu  |     |     |     |
+OR       | ru  | ru  | lu  |     |     |     |
 OR       | ru  | ru  | ru  |     |     |     |
+OR       | ru  | ru  | rnu |     |     |     |
+OR       | ru  | rnu | ru  |     |     |     |
+OR       | ru  | rnu | rnu |     |     |     |
 
-NOT      | rbl | rbl |     |     |     |     | # NOT support w/named reg
-NOT      | rbl | ru  |     |     |     |     |
-NOT      | ru  | rbl |     |     |     |     |
-NOT      | rra | rra |     |     |     |     |
-NOT      | rra | ru  |     |     |     |     |
-NOT      | ru  | rra |     |     |     |     |
-NOT      | rsl | rsl |     |     |     |     |
-NOT      | rsl | ru  |     |     |     |     |
-NOT      | ru  | rsl |     |     |     |     |
-NOT      | rnb | rnb |     |     |     |     |
-NOT      | rnb | ru  |     |     |     |     |
-NOT      | ru  | rnb |     |     |     |     |
+XOR      | rnu | rnu | lu  |     |     |     | # XOR for scalar U registers
+XOR      | rnu | ru  | lu  |     |     |     |
+XOR      | rnu | ru  | ru  |     |     |     |
+XOR      | rnu | ru  | rnu |     |     |     |
+XOR      | rnu | rnu | ru  |     |     |     |
+XOR      | rnu | rnu | rnu |     |     |     |
+XOR      | ru  | rnu | lu  |     |     |     |
+XOR      | ru  | ru  | lu  |     |     |     |
+XOR      | ru  | ru  | ru  |     |     |     |
+XOR      | ru  | ru  | rnu |     |     |     |
+XOR      | ru  | rnu | ru  |     |     |     |
+XOR      | ru  | rnu | rnu |     |     |     |
+
 NOT      | ru  | ru  |     |     |     |     | # NOT group for Ulong
+NOT      | ru  | rnu |     |     |     |     |
+NOT      | rnu | ru  |     |     |     |     |
+NOT      | rnu | rnu |     |     |     |     |
 
 # Comparison and control instructions
 
