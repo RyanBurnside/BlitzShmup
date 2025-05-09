@@ -520,7 +520,9 @@ NOT      | ru  | rnu |     |     |     |     |
 NOT      | rnu | ru  |     |     |     |     |
 NOT      | rnu | rnu |     |     |     |     |
 
-CMP      | ru  | lu  |     |     |     |     | # CMP U regs (ZONC)
+# First part, traditional JMP instructions using CMP flags
+
+CMP      | ru  | lu  |     |     |     |     | # CMP U regs (set ZONC flags)
 CMP      | ru  | ru  |     |     |     |     |
 CMP      | ru  | rnu |     |     |     |     |
 CMP      | rnu | lu  |     |     |     |     |
@@ -533,20 +535,38 @@ CMP      | rnd | ld  |     |     |     |     |
 CMP      | rnd | rd  |     |     |     |     |
 CMP      | rnd | rnd |     |     |     |     |
 
-# First part, traditional architecture
+J        | mem |     |     |     |     |     | # unconditional jump
+JZERO    | mem |     |     |     |     |     | # Z = 0
+JNOTZERO | mem |     |     |     |     |     | # Z = 1
+JNEG     | mem |     |     |     |     |     | # N = 1
+JNOTNEG  | mem |     |     |     |     |     | # N = 0
+JCARRY   | mem |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+JNOTCARRY| mem |     |     |     |     |     | # C = 0
+JOVER    | mem |     |     |     |     |     | # O = 1
+JNOTOVER | mem |     |     |     |     |     | # O = 0
+JGREAT   | mem |     |     |     |     |     | # N = O and Z = 0
+JGREATEQ | mem |     |     |     |     |     | # N = O or Z = 1
+JABOVE   | mem |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+JABOVEEQ | mem |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+JLESS    | mem |     |     |     |     |     | # N != O
+JLESSEQ  | mem |     |     |     |     |     | # N != O or Z = 1
+JBELOW   | mem |     |     |     |     |     | # C = 1 (unsigned)
+JBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
-J? That uses those flags, like x86
 
 # Second part op in CMP, sets all flags and T/F flag
+
+KEEP GOING
+
 CMP< r, r
 JT/JF
 
-# Convenience API, however, think about D comparisons.
+# Third part, convenience API (think about D comparisons and tolerace, etc).
 
 JMPNAN   | rd  | mem |     |     |     |     | 
 JMPNAN   | rnd | mem |     |     |     |     |
 
-# These set the flags as if CMP then JMP in one instruction.
+# These set the flags as if CMP then JMP if possible in one instruction.
 
 JMP<     | ru  | lu  | mem |     |     |     | 
 JMP<     | ru  | ru  | mem |     |     |     |
