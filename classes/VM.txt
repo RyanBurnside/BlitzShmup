@@ -533,7 +533,9 @@ NOT      | ru  | rnu |     |     |     |     |
 NOT      | rnu | ru  |     |     |     |     |
 NOT      | rnu | rnu |     |     |     |     |
 
-# First part, traditional CMP instruction
+# [Part I]
+
+# Traditional CMP instructions: (op0 - op1) then set flags
 
 CMP      | ru  | lu  |     |     |     |     | # CMP U regs (set ZONC flags)
 CMP      | ru  | ru  |     |     |     |     |
@@ -548,17 +550,17 @@ CMP      | rnd | ld  |     |     |     |     |
 CMP      | rnd | rd  |     |     |     |     |
 CMP      | rnd | rnd |     |     |     |     |
 
-# Traditional JMP instructions
+# Traditional JUMP instructions that check ZONC flags
 
-JMP      | mem |     |     |     |     |     | # unconditional jump
+JUMP     | mem |     |     |     |     |     | # unconditional jump
 JZERO    | mem |     |     |     |     |     | # Z = 0
 JNOTZERO | mem |     |     |     |     |     | # Z = 1
 JNEG     | mem |     |     |     |     |     | # N = 1
 JNOTNEG  | mem |     |     |     |     |     | # N = 0
 JCARRY   | mem |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
 JNOTCARRY| mem |     |     |     |     |     | # C = 0
-JOVER    | mem |     |     |     |     |     | # O = 1
-JNOTOVER | mem |     |     |     |     |     | # O = 0
+JOVERF   | mem |     |     |     |     |     | # O = 1
+JNOTOVERF| mem |     |     |     |     |     | # O = 0
 JGREAT   | mem |     |     |     |     |     | # N = O and Z = 0
 JGREATEQ | mem |     |     |     |     |     | # N = O or Z = 1
 JABOVE   | mem |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
@@ -568,7 +570,29 @@ JLESSEQ  | mem |     |     |     |     |     | # N != O or Z = 1
 JBELOW   | mem |     |     |     |     |     | # C = 1 (unsigned)
 JBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
-# Second part: Compute COND-ition, sets all flags and Bool T/F flag
+# CALL instructions and varients using flags
+
+CALL     | mem |     |     |     |     |     | # unconditional CALL
+CZERO    | mem |     |     |     |     |     | # Z = 0
+CNOTZERO | mem |     |     |     |     |     | # Z = 1
+CNEG     | mem |     |     |     |     |     | # N = 1
+CNOTNEG  | mem |     |     |     |     |     | # N = 0
+CCARRY   | mem |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+CNOTCARRY| mem |     |     |     |     |     | # C = 0
+COVERF   | mem |     |     |     |     |     | # O = 1
+CNOTOVERF| mem |     |     |     |     |     | # O = 0
+CGREAT   | mem |     |     |     |     |     | # N = O and Z = 0
+CGREATEQ | mem |     |     |     |     |     | # N = O or Z = 1
+CABOVE   | mem |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+CABOVEEQ | mem |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+CLESS    | mem |     |     |     |     |     | # N != O
+CLESSEQ  | mem |     |     |     |     |     | # N != O or Z = 1
+CBELOW   | mem |     |     |     |     |     | # C = 1 (unsigned)
+CBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+
+# [Part II]
+
+# Evauate COND-ition, sets all flags including the Bool T/F flag
 
 COND     | ru  | rel | lu  |     |     |     | # set BZONC flags
 COND     | ru  | rel | ru  |     |     |     |
@@ -583,27 +607,49 @@ COND     | rnd | rel | ld  |     |     |     |
 COND     | rnd | rel | rd  |     |     |     |
 COND     | rnd | rel | rnd |     |     |     |
 
-JT       | mem |     |     |     |     |     | # B = 1
-JF       | mem |     |     |     |     |     | # B = 0
+# New control instructions to handle B flag.
 
-# Third part, convenience API (think about D comparisons and tolerace, etc).
+JUMPT    | mem |     |     |     |     |     | # B = 1
+JUMPF    | mem |     |     |     |     |     | # B = 0
+CALLT    | mem |     |     |     |     |     | # B = 1
+CALLF    | mem |     |     |     |     |     | # B = 0
 
-JMPIFNAN | rd  | mem |     |     |     |     | 
-JMPIFNAN | rnd | mem |     |     |     |     |
+# [PART III]
+# convenience control flow API (think about D comparisons and tolerace, etc).
 
-# These set the flags as if CMPOP then JMP if possible in one instruction.
+# These set the flags as if COND then JUMP if possible in one instruction.
 
-JMPIF    | ru  | rel | lu  | mem |     |     | 
-JMPIF    | ru  | rel | ru  | mem |     |     |
-JMPIF    | ru  | rel | rnu | mem |     |     |
-JMPIF    | rnu | rel | lu  | mem |     |     |
-JMPIF    | rnu | rel | ru  | mem |     |     |
-JMPIF    | rnu | rel | rnu | mem |     |     |
-JMPIF    | rd  | rel | ld  | mem |     |     | 
-JMPIF    | rd  | rel | rd  | mem |     |     |
-JMPIF    | rd  | rel | rnd | mem |     |     |
-JMPIF    | rnd | rel | ld  | mem |     |     |
-JMPIF    | rnd | rel | rd  | mem |     |     |
-JMPIF    | rnd | rel | rnd | mem |     |     |
+JUMPIF   | ru  | rel | lu  | mem |     |     | 
+JUMPIF   | ru  | rel | ru  | mem |     |     |
+JUMPIF   | ru  | rel | rnu | mem |     |     |
+JUMPIF   | rnu | rel | lu  | mem |     |     |
+JUMPIF   | rnu | rel | ru  | mem |     |     |
+JUMPIF   | rnu | rel | rnu | mem |     |     |
+JUMPIF   | rd  | rel | ld  | mem |     |     | 
+JUMPIF   | rd  | rel | rd  | mem |     |     |
+JUMPIF   | rd  | rel | rnd | mem |     |     |
+JUMPIF   | rnd | rel | ld  | mem |     |     |
+JUMPIF   | rnd | rel | rd  | mem |     |     |
+JUMPIF   | rnd | rel | rnd | mem |     |     |
+JUMPIFNAN| rd  | mem |     |     |     |     | 
+JUMPIFNAN| rnd | mem |     |     |     |     |
 
+# These set the flags as if COND then CALL if possible in one instruction.
+
+CALLIF   | ru  | rel | lu  | mem |     |     | 
+CALLIF   | ru  | rel | ru  | mem |     |     |
+CALLIF   | ru  | rel | rnu | mem |     |     |
+CALLIF   | rnu | rel | lu  | mem |     |     |
+CALLIF   | rnu | rel | ru  | mem |     |     |
+CALLIF   | rnu | rel | rnu | mem |     |     |
+CALLIF   | rd  | rel | ld  | mem |     |     | 
+CALLIF   | rd  | rel | rd  | mem |     |     |
+CALLIF   | rd  | rel | rnd | mem |     |     |
+CALLIF   | rnd | rel | ld  | mem |     |     |
+CALLIF   | rnd | rel | rd  | mem |     |     |
+CALLIF   | rnd | rel | rnd | mem |     |     |
+CALLIFNAN| rd  | mem |     |     |     |     | 
+CALLIFNAN| rnd | mem |     |     |     |     |
+
+RETURN   |     |     |     |     |     |     | # unconditional function return
 
