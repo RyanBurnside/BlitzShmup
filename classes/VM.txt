@@ -11,7 +11,7 @@ Registers:
                 instructions to deal with them. so they live in a different
                 operand space.
     PC        - Program counter
-    ST        - Status Register: Zero, Overflow, Negative, Carry (ZONC)
+    ST        - Status Register: Bool, Zero, Overflow, Negative, Carry (BZONC)
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
     RA        - Return Address Stack Index
@@ -117,6 +117,19 @@ mem      |   OpMemory
          |     OpMemBIS
          |     OpMemISA
          |     OpMemBISA
+rel      |   OpRelational < <= = >= > !=
+         |     OpSLT
+         |     OpSLTEQ
+         |     OpSEQ
+         |     OpSGTEQ
+         |     OpSGT
+         |     OpSNOTEQ
+         |     OpULT
+         |     OpULTEQ
+         |     OpUEQ
+         |     OpUGTEQ
+         |     OpUGT
+         |     OpUNOTEQ
 
 Addressing modes for OpMemory:
   Used for the Instruction Memory or Data Memory as appropriate.
@@ -520,7 +533,7 @@ NOT      | ru  | rnu |     |     |     |     |
 NOT      | rnu | ru  |     |     |     |     |
 NOT      | rnu | rnu |     |     |     |     |
 
-# First part, traditional JMP instructions using CMP flags
+# First part, traditional CMP instruction
 
 CMP      | ru  | lu  |     |     |     |     | # CMP U regs (set ZONC flags)
 CMP      | ru  | ru  |     |     |     |     |
@@ -535,7 +548,9 @@ CMP      | rnd | ld  |     |     |     |     |
 CMP      | rnd | rd  |     |     |     |     |
 CMP      | rnd | rnd |     |     |     |     |
 
-J        | mem |     |     |     |     |     | # unconditional jump
+# Traditional JMP instructions
+
+JMP      | mem |     |     |     |     |     | # unconditional jump
 JZERO    | mem |     |     |     |     |     | # Z = 0
 JNOTZERO | mem |     |     |     |     |     | # Z = 1
 JNEG     | mem |     |     |     |     |     | # N = 1
@@ -553,84 +568,42 @@ JLESSEQ  | mem |     |     |     |     |     | # N != O or Z = 1
 JBELOW   | mem |     |     |     |     |     | # C = 1 (unsigned)
 JBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
+# Second part: Compute COND-ition, sets all flags and Bool T/F flag
 
-# Second part op in CMP, sets all flags and T/F flag
+COND     | ru  | rel | lu  |     |     |     | # set BZONC flags
+COND     | ru  | rel | ru  |     |     |     |
+COND     | ru  | rel | rnu |     |     |     |
+COND     | rnu | rel | lu  |     |     |     |
+COND     | rnu | rel | ru  |     |     |     |
+COND     | rnu | rel | rnu |     |     |     |
+COND     | rd  | rel | ld  |     |     |     | 
+COND     | rd  | rel | rd  |     |     |     |
+COND     | rd  | rel | rnd |     |     |     |
+COND     | rnd | rel | ld  |     |     |     |
+COND     | rnd | rel | rd  |     |     |     |
+COND     | rnd | rel | rnd |     |     |     |
 
-KEEP GOING
-
-CMP< r, r
-JT/JF
+JT       | mem |     |     |     |     |     | # B = 1
+JF       | mem |     |     |     |     |     | # B = 0
 
 # Third part, convenience API (think about D comparisons and tolerace, etc).
 
-JMPNAN   | rd  | mem |     |     |     |     | 
-JMPNAN   | rnd | mem |     |     |     |     |
+JMPIFNAN | rd  | mem |     |     |     |     | 
+JMPIFNAN | rnd | mem |     |     |     |     |
 
-# These set the flags as if CMP then JMP if possible in one instruction.
+# These set the flags as if CMPOP then JMP if possible in one instruction.
 
-JMP<     | ru  | lu  | mem |     |     |     | 
-JMP<     | ru  | ru  | mem |     |     |     |
-JMP<     | ru  | rnu | mem |     |     |     |
-JMP<     | rnu | lu  | mem |     |     |     |
-JMP<     | rnu | ru  | mem |     |     |     |
-JMP<     | rnu | rnu | mem |     |     |     |
-JMP<     | rd  | ld  | mem |     |     |     | 
-JMP<     | rd  | rd  | mem |     |     |     |
-JMP<     | rd  | rnd | mem |     |     |     |
-JMP<     | rnd | ld  | mem |     |     |     |
-JMP<     | rnd | rd  | mem |     |     |     |
-JMP<     | rnd | rnd | mem |     |     |     |
-
-JMP<=    | ru  | lu  | mem |     |     |     | 
-JMP<=    | ru  | ru  | mem |     |     |     |
-JMP<=    | ru  | rnu | mem |     |     |     |
-JMP<=    | rnu | lu  | mem |     |     |     |
-JMP<=    | rnu | ru  | mem |     |     |     |
-JMP<=    | rnu | rnu | mem |     |     |     |
-JMP<=    | rd  | ld  | mem |     |     |     | 
-JMP<=    | rd  | rd  | mem |     |     |     |
-JMP<=    | rd  | rnd | mem |     |     |     |
-JMP<=    | rnd | ld  | mem |     |     |     |
-JMP<=    | rnd | rd  | mem |     |     |     |
-JMP<=    | rnd | rnd | mem |     |     |     |
-
-JMP=     | ru  | lu  | mem |     |     |     | 
-JMP=     | ru  | ru  | mem |     |     |     |
-JMP=     | ru  | rnu | mem |     |     |     |
-JMP=     | rnu | lu  | mem |     |     |     |
-JMP=     | rnu | ru  | mem |     |     |     |
-JMP=     | rnu | rnu | mem |     |     |     |
-JMP=     | rd  | ld  | mem |     |     |     | 
-JMP=     | rd  | rd  | mem |     |     |     |
-JMP=     | rd  | rnd | mem |     |     |     |
-JMP=     | rnd | ld  | mem |     |     |     |
-JMP=     | rnd | rd  | mem |     |     |     |
-JMP=     | rnd | rnd | mem |     |     |     |
-
-JMP>=    | ru  | lu  | mem |     |     |     | 
-JMP>=    | ru  | ru  | mem |     |     |     |
-JMP>=    | ru  | rnu | mem |     |     |     |
-JMP>=    | rnu | lu  | mem |     |     |     |
-JMP>=    | rnu | ru  | mem |     |     |     |
-JMP>=    | rnu | rnu | mem |     |     |     |
-JMP>=    | rd  | ld  | mem |     |     |     | 
-JMP>=    | rd  | rd  | mem |     |     |     |
-JMP>=    | rd  | rnd | mem |     |     |     |
-JMP>=    | rnd | ld  | mem |     |     |     |
-JMP>=    | rnd | rd  | mem |     |     |     |
-JMP>=    | rnd | rnd | mem |     |     |     |
-
-JMP>     | ru  | lu  | mem |     |     |     | 
-JMP>     | ru  | ru  | mem |     |     |     |
-JMP>     | ru  | rnu | mem |     |     |     |
-JMP>     | rnu | lu  | mem |     |     |     |
-JMP>     | rnu | ru  | mem |     |     |     |
-JMP>     | rnu | rnu | mem |     |     |     |
-JMP>     | rd  | ld  | mem |     |     |     | 
-JMP>     | rd  | rd  | mem |     |     |     |
-JMP>     | rd  | rnd | mem |     |     |     |
-JMP>     | rnd | ld  | mem |     |     |     |
-JMP>     | rnd | rd  | mem |     |     |     |
-JMP>     | rnd | rnd | mem |     |     |     |
+JMPIF    | ru  | rel | lu  | mem |     |     | 
+JMPIF    | ru  | rel | ru  | mem |     |     |
+JMPIF    | ru  | rel | rnu | mem |     |     |
+JMPIF    | rnu | rel | lu  | mem |     |     |
+JMPIF    | rnu | rel | ru  | mem |     |     |
+JMPIF    | rnu | rel | rnu | mem |     |     |
+JMPIF    | rd  | rel | ld  | mem |     |     | 
+JMPIF    | rd  | rel | rd  | mem |     |     |
+JMPIF    | rd  | rel | rnd | mem |     |     |
+JMPIF    | rnd | rel | ld  | mem |     |     |
+JMPIF    | rnd | rel | rd  | mem |     |     |
+JMPIF    | rnd | rel | rnd | mem |     |     |
 
 
