@@ -541,6 +541,146 @@ NOT      | ru  | rnu |     |     |     |     |
 NOT      | rnu | ru  |     |     |     |     |
 NOT      | rnu | rnu |     |     |     |     |
 
+UCAST    | ru  | ld  |     |     |     |     | # Perform cast of D to U
+UCAST    | ru  | rd  |     |     |     |     |
+UCAST    | ru  | rnd |     |     |     |     |
+UCAST    | rnu | ld  |     |     |     |     |
+UCAST    | rnu | rd  |     |     |     |     |
+UCAST    | rnu | rnd |     |     |     |     |
+
+DCAST    | rd  | lu  |     |     |     |     | # Perform cast of U to D
+DCAST    | rd  | ru  |     |     |     |     |
+DCAST    | rd  | rnu |     |     |     |     |
+DCAST    | rnd | lu  |     |     |     |     |
+DCAST    | rnd | ru  |     |     |     |     |
+DCAST    | rnd | rnu |     |     |     |     |
+
+SQRT     | rd  | ld  |     |     |     |     | # Perform SQRT
+SQRT     | rd  | rd  |     |     |     |     |
+SQRT     | rd  | rnd |     |     |     |     |
+SQRT     | rnd | ld  |     |     |     |     |
+SQRT     | rnd | rd  |     |     |     |     |
+SQRT     | rnd | rnd |     |     |     |     |
+
+SIN      | rd  | ld  |     |     |     |     | # Perform SIN
+SIN      | rd  | rd  |     |     |     |     |
+SIN      | rd  | rnd |     |     |     |     |
+SIN      | rnd | ld  |     |     |     |     |
+SIN      | rnd | rd  |     |     |     |     |
+SIN      | rnd | rnd |     |     |     |     |
+
+ASIN     | rd  | ld  |     |     |     |     | # Perform ARCSIN
+ASIN     | rd  | rd  |     |     |     |     |
+ASIN     | rd  | rnd |     |     |     |     |
+ASIN     | rnd | ld  |     |     |     |     |
+ASIN     | rnd | rd  |     |     |     |     |
+ASIN     | rnd | rnd |     |     |     |     |
+
+CSC      | rd  | ld  |     |     |     |     | # Perform CSC
+CSC      | rd  | rd  |     |     |     |     |
+CSC      | rd  | rnd |     |     |     |     |
+CSC      | rnd | ld  |     |     |     |     |
+CSC      | rnd | rd  |     |     |     |     |
+CSC      | rnd | rnd |     |     |     |     |
+
+ACSC     | rd  | ld  |     |     |     |     | # Perform ARCCSC
+ACSC     | rd  | rd  |     |     |     |     |
+ACSC     | rd  | rnd |     |     |     |     |
+ACSC     | rnd | ld  |     |     |     |     |
+ACSC     | rnd | rd  |     |     |     |     |
+ACSC     | rnd | rnd |     |     |     |     |
+
+COS      | rd  | ld  |     |     |     |     | # Perform COS
+COS      | rd  | rd  |     |     |     |     |
+COS      | rd  | rnd |     |     |     |     |
+COS      | rnd | ld  |     |     |     |     |
+COS      | rnd | rd  |     |     |     |     |
+COS      | rnd | rnd |     |     |     |     |
+
+ACOS     | rd  | ld  |     |     |     |     | # Perform ARCCOS
+ACOS     | rd  | rd  |     |     |     |     |
+ACOS     | rd  | rnd |     |     |     |     |
+ACOS     | rnd | ld  |     |     |     |     |
+ACOS     | rnd | rd  |     |     |     |     |
+ACOS     | rnd | rnd |     |     |     |     |
+
+SEC      | rd  | ld  |     |     |     |     | # Perform SEC
+SEC      | rd  | rd  |     |     |     |     |
+SEC      | rd  | rnd |     |     |     |     |
+SEC      | rnd | ld  |     |     |     |     |
+SEC      | rnd | rd  |     |     |     |     |
+SEC      | rnd | rnd |     |     |     |     |
+
+ASEC     | rd  | ld  |     |     |     |     | # Perform ARCSEC
+ASEC     | rd  | rd  |     |     |     |     |
+ASEC     | rd  | rnd |     |     |     |     |
+ASEC     | rnd | ld  |     |     |     |     |
+ASEC     | rnd | rd  |     |     |     |     |
+ASEC     | rnd | rnd |     |     |     |     |
+
+TAN      | rd  | ld  |     |     |     |     | # Perform TAN
+TAN      | rd  | rd  |     |     |     |     |
+TAN      | rd  | rnd |     |     |     |     |
+TAN      | rnd | ld  |     |     |     |     |
+TAN      | rnd | rd  |     |     |     |     |
+TAN      | rnd | rnd |     |     |     |     |
+
+ATAN     | rd  | ld  |     |     |     |     | # Perform ARCTAN
+ATAN     | rd  | rd  |     |     |     |     |
+ATAN     | rd  | rnd |     |     |     |     |
+ATAN     | rnd | ld  |     |     |     |     |
+ATAN     | rnd | rd  |     |     |     |     |
+ATAN     | rnd | rnd |     |     |     |     |
+
+COT      | rd  | ld  |     |     |     |     | # Perform COT
+COT      | rd  | rd  |     |     |     |     |
+COT      | rd  | rnd |     |     |     |     |
+COT      | rnd | ld  |     |     |     |     |
+COT      | rnd | rd  |     |     |     |     |
+COT      | rnd | rnd |     |     |     |     |
+
+ACOT     | rd  | ld  |     |     |     |     | # Perform ARCCOT
+ACOT     | rd  | rd  |     |     |     |     |
+ACOT     | rd  | rnd |     |     |     |     |
+ACOT     | rnd | ld  |     |     |     |     |
+ACOT     | rnd | rd  |     |     |     |     |
+ACOT     | rnd | rnd |     |     |     |     |
+
+LOG10    | rd  | ld  |     |     |     |     | # Perform LOG base 10
+LOG10    | rd  | rd  |     |     |     |     |
+LOG10    | rd  | rnd |     |     |     |     |
+LOG10    | rnd | ld  |     |     |     |     |
+LOG10    | rnd | rd  |     |     |     |     |
+LOG10    | rnd | rnd |     |     |     |     |
+
+LN       | rd  | ld  |     |     |     |     | # Perform LOG base e
+LN       | rd  | rd  |     |     |     |     |
+LN       | rd  | rnd |     |     |     |     |
+LN       | rnd | ld  |     |     |     |     |
+LN       | rnd | rd  |     |     |     |     |
+LN       | rnd | rnd |     |     |     |     |
+
+EXP      | rd  | ld  |     |     |     |     | # Perform EXP: op0 <- e ^ op1
+EXP      | rd  | rd  |     |     |     |     |
+EXP      | rd  | rnd |     |     |     |     |
+EXP      | rnd | ld  |     |     |     |     |
+EXP      | rnd | rd  |     |     |     |     |
+EXP      | rnd | rnd |     |     |     |     |
+
+POW      | rnd | rnd | ld  |     |     |     | # Perform POW: op0 < op1 ^ op2
+POW      | rnd | rd  | ld  |     |     |     |
+POW      | rnd | rd  | rd  |     |     |     |
+POW      | rnd | rd  | rnd |     |     |     |
+POW      | rnd | rnd | rd  |     |     |     |
+POW      | rnd | rnd | rnd |     |     |     |
+POW      | rd  | rnd | ld  |     |     |     |
+POW      | rd  | rd  | ld  |     |     |     |
+POW      | rd  | rd  | rd  |     |     |     |
+POW      | rd  | rd  | rnd |     |     |     |
+POW      | rd  | rnd | rd  |     |     |     |
+POW      | rd  | rnd | rnd |     |     |     |
+
+
 # [Part I]
 
 # Traditional CMP instructions: (op0 - op1) then set flags
