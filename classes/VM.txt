@@ -56,7 +56,10 @@ Registers:
 Memory:
   memInst   - Array 256K MachInst types
   memData   - Array 256K MemValue types
-  retStack  - Array 64K ULong: Return Address Stack (only affected by call/ret)
+
+  # TODO: Add reg ptrs to top of these stacks in RegSysU, they start at 0.
+  retStack  - Array 256K ULong: Return Address Stack (used only by call/ret)
+  dataStack - Array 256K ULong: Stack of MemValues (used by push/pop)
 
 Operands Hierarchy:
 
@@ -173,6 +176,12 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
 NOP      |     |     |     |     |     |     |
 
 YIELD    | ru  |     |     |     |     |     | # Stop BPU & return reg values
+
+PUSH     | ru  |     |     |     |     |     | # Push onto datastack
+PUSH     | rnu |     |     |     |     |     |
+
+POP      | rd  |     |     |     |     |     | # pop from datastack (raw cast?)
+POP      | rnd |     |     |     |     |     |
 
 LITERAL  | rnu | lu  |     |     |     |     | # Put literal into reg
 LITERAL  | rnd | ld  |     |     |     |     |
