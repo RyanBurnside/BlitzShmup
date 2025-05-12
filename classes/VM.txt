@@ -117,19 +117,27 @@ mem      |   OpMemory
          |     OpMemBIS
          |     OpMemISA
          |     OpMemBISA
-rel      |   OpRelational < <= = >= > !=
-         |     OpSLT
-         |     OpSLTEQ
-         |     OpSEQ
-         |     OpSGTEQ
-         |     OpSGT
-         |     OpSNOTEQ
-         |     OpULT
-         |     OpULTEQ
-         |     OpUEQ
-         |     OpUGTEQ
-         |     OpUGT
-         |     OpUNOTEQ
+         |   OpRelational < <= = >= > !=
+irel     |     OpIntegral
+         |       OpSLT
+         |       OpSLTEQ
+         |       OpSEQ
+         |       OpSGTEQ
+         |       OpSGT
+         |       OpSNOTEQ
+         |       OpULT
+         |       OpULTEQ
+         |       OpUEQ
+         |       OpUGTEQ
+         |       OpUGT
+         |       OpUNOTEQ
+drel     |     OpDouble
+         |       OpDLT
+         |       OpDLTEQ
+         |       OpDEQ
+         |       OpDGTEQ
+         |       OpDGT
+         |       OpDNOTEQ
 
 Addressing modes for OpMemory:
   Used for the Instruction Memory or Data Memory as appropriate.
@@ -167,7 +175,7 @@ NOP      |     |     |     |     |     |     |
 YIELD    | ru  |     |     |     |     |     | # Stop BPU & return reg values
 
 LITERAL  | rnu | lu  |     |     |     |     | # Put literal into reg
-LITERAL  | rnd | ld  |     |     |     |     | 
+LITERAL  | rnd | ld  |     |     |     |     |
 LITERAL  | ru  | lu  |     |     |     |     |
 LITERAL  | rd  | ld  |     |     |     |     |
 LITERAL  | rv2d| lv2d|     |     |     |     |
@@ -594,18 +602,18 @@ CBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
 # Evauate COND-ition, sets all flags including the Bool T/F flag
 
-COND     | ru  | rel | lu  |     |     |     | # set BZONC flags
-COND     | ru  | rel | ru  |     |     |     |
-COND     | ru  | rel | rnu |     |     |     |
-COND     | rnu | rel | lu  |     |     |     |
-COND     | rnu | rel | ru  |     |     |     |
-COND     | rnu | rel | rnu |     |     |     |
-COND     | rd  | rel | ld  |     |     |     | 
-COND     | rd  | rel | rd  |     |     |     |
-COND     | rd  | rel | rnd |     |     |     |
-COND     | rnd | rel | ld  |     |     |     |
-COND     | rnd | rel | rd  |     |     |     |
-COND     | rnd | rel | rnd |     |     |     |
+COND     | ru  | irel| lu  |     |     |     | # set BZONC flags
+COND     | ru  | irel| ru  |     |     |     |
+COND     | ru  | irel| rnu |     |     |     |
+COND     | rnu | irel| lu  |     |     |     |
+COND     | rnu | irel| ru  |     |     |     |
+COND     | rnu | irel| rnu |     |     |     |
+COND     | rd  | drel| ld  |     |     |     |
+COND     | rd  | drel| rd  |     |     |     |
+COND     | rd  | drel| rnd |     |     |     |
+COND     | rnd | drel| ld  |     |     |     |
+COND     | rnd | drel| rd  |     |     |     |
+COND     | rnd | drel| rnd |     |     |     |
 
 # New control instructions to handle B flag.
 
@@ -619,36 +627,36 @@ CALLF    | mem |     |     |     |     |     | # B = 0
 
 # These set the flags as if COND then JUMP if possible in one instruction.
 
-JUMPIF   | ru  | rel | lu  | mem |     |     | 
-JUMPIF   | ru  | rel | ru  | mem |     |     |
-JUMPIF   | ru  | rel | rnu | mem |     |     |
-JUMPIF   | rnu | rel | lu  | mem |     |     |
-JUMPIF   | rnu | rel | ru  | mem |     |     |
-JUMPIF   | rnu | rel | rnu | mem |     |     |
-JUMPIF   | rd  | rel | ld  | mem |     |     | 
-JUMPIF   | rd  | rel | rd  | mem |     |     |
-JUMPIF   | rd  | rel | rnd | mem |     |     |
-JUMPIF   | rnd | rel | ld  | mem |     |     |
-JUMPIF   | rnd | rel | rd  | mem |     |     |
-JUMPIF   | rnd | rel | rnd | mem |     |     |
-JUMPIFNAN| rd  | mem |     |     |     |     | 
+JUMPIF   | ru  | irel| lu  | mem |     |     |
+JUMPIF   | ru  | irel| ru  | mem |     |     |
+JUMPIF   | ru  | irel| rnu | mem |     |     |
+JUMPIF   | rnu | irel| lu  | mem |     |     |
+JUMPIF   | rnu | irel| ru  | mem |     |     |
+JUMPIF   | rnu | irel| rnu | mem |     |     |
+JUMPIF   | rd  | drel| ld  | mem |     |     |
+JUMPIF   | rd  | drel| rd  | mem |     |     |
+JUMPIF   | rd  | drel| rnd | mem |     |     |
+JUMPIF   | rnd | drel| ld  | mem |     |     |
+JUMPIF   | rnd | drel| rd  | mem |     |     |
+JUMPIF   | rnd | drel| rnd | mem |     |     |
+JUMPIFNAN| rd  | mem |     |     |     |     |
 JUMPIFNAN| rnd | mem |     |     |     |     |
 
 # These set the flags as if COND then CALL if possible in one instruction.
 
-CALLIF   | ru  | rel | lu  | mem |     |     | 
-CALLIF   | ru  | rel | ru  | mem |     |     |
-CALLIF   | ru  | rel | rnu | mem |     |     |
-CALLIF   | rnu | rel | lu  | mem |     |     |
-CALLIF   | rnu | rel | ru  | mem |     |     |
-CALLIF   | rnu | rel | rnu | mem |     |     |
-CALLIF   | rd  | rel | ld  | mem |     |     | 
-CALLIF   | rd  | rel | rd  | mem |     |     |
-CALLIF   | rd  | rel | rnd | mem |     |     |
-CALLIF   | rnd | rel | ld  | mem |     |     |
-CALLIF   | rnd | rel | rd  | mem |     |     |
-CALLIF   | rnd | rel | rnd | mem |     |     |
-CALLIFNAN| rd  | mem |     |     |     |     | 
+CALLIF   | ru  | irel| lu  | mem |     |     |
+CALLIF   | ru  | irel| ru  | mem |     |     |
+CALLIF   | ru  | irel| rnu | mem |     |     |
+CALLIF   | rnu | irel| lu  | mem |     |     |
+CALLIF   | rnu | irel| ru  | mem |     |     |
+CALLIF   | rnu | irel| rnu | mem |     |     |
+CALLIF   | rd  | drel| ld  | mem |     |     |
+CALLIF   | rd  | drel| rd  | mem |     |     |
+CALLIF   | rd  | drel| rnd | mem |     |     |
+CALLIF   | rnd | drel| ld  | mem |     |     |
+CALLIF   | rnd | drel| rd  | mem |     |     |
+CALLIF   | rnd | drel| rnd | mem |     |     |
+CALLIFNAN| rd  | mem |     |     |     |     |
 CALLIFNAN| rnd | mem |     |     |     |     |
 
 RETURN   |     |     |     |     |     |     | # unconditional function return
