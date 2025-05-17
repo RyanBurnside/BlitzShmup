@@ -12,6 +12,8 @@ Registers:
                 operand space.
     PC        - Program counter
     ST        - Status Register: Bool, Zero, Overflow, Negative, Carry (BZONC)
+    DS        - DataStack Address
+    RS        - ReturnStack Address
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
     RA        - Return Address Stack Index
@@ -69,6 +71,7 @@ are base classes.
 Category | Operand Type
 ---------------------------------------
          | Operand
+ea           OpEffectiveAddress
          |   OpLiteral
 lu       |     OpLitU
 ld       |     OpLitD
@@ -141,27 +144,61 @@ drel     |     OpDouble
          |       OpDGTEQ
          |       OpDGT
          |       OpDNOTEQ
+         |   OpMemory (entails an OpEffectiveAddr, deref addr in specified mem)
+dmem     |     OpDataMemory : DMEM
+smem     |     OpDataStackMemory : SMEM
+rmem     |     OpReturnStackMemory : RMEM
+imem     |     OpInstMemory : IMEM
 
-Addressing modes for OpMemory:
-  Used for the Instruction Memory or Data Memory as appropriate.
+Effective Address Specification:
+  An address is a ULong integer. An effective address is a computation that
+  results in an address unassociated with any memory. Two things can be done
+  with an effective address. The first thing is that it can be encapsulated
+  into a specific OpMemory operand, which fixates which memory region the
+  address is for and manages reading and writing the value at that address in
+  that memory. The second thing is it can be used "bare" with certain
+  instructions. In those instructions, the meaning of a bare effective address
+  is assigned by the instruction.
 
-  "Absolute" is an: lu
-  "Base" is one of: ru, rnu, rpc
-  "Index" is one of: ru, rnu, rpc
-  "Scale" is an: lu
+  Definitions:
+    "Absolute" is an: lu
+    "Base" is one of: ru, rnu, rpc
+    "Index" is one of: ru, rnu, rpc
+    "Scale" is an: lu
 
-  OpMemory:
-    OpMemA:    Absolute
-    OpMemB:    Base
-    OpMemBI:   Base + Index
-    OpMemBA:   Base + Absolute
-    OpMemBIA:  Base + Index + Absolute
-    OpMemBIS:  Base + (Index * Scale)
-    OpMemISA:  (Index * Scale) + Absolute
-    OpMemBISA: Base + (Index * Scale) + Absolute
+  EffectiveAddress: All unsigned, using two's complement, math.
+    # The effective address:
+    # <Absolute>
+    A(Absolute)
 
-However, all of the above are normalized into a 'mem' OpMemory operand.
+    # The effective address:
+    # <Contents of Base Register>
+    B(Base)
 
+    # The effective address:
+    # <Contents of Base Register> + <Contents of Index Register>
+    BI(Base, Index)
+
+    # The effective address:
+    # <Contents of Base Register> + <Absolute>
+    BA(Base, Absolute)
+
+    # The effective address:
+    # <Contents of Base Register> + <Contents of Index Register> + <Absolute>
+    BIA(Base, Index, Absolute)
+
+    # The effective address:
+    # <Contents of Base Register> + (<Contents of Index Register> * <Scale>)
+    BIS(Base, Index, Scale)
+
+    # The effective address:
+    # (<Contents of Index Register> * <Scale>) + <Absolute>
+    ISA(Index, Scale, Absolute)
+
+    # The effective address:
+    # <Contents of Base Register> + 
+    #  (<Contents of Index Register> * <Scale>) + <Absolute>
+    BISA(Base, Index, Scale, Absolute)
 
 Assembly Instructions:
 
@@ -173,9 +210,38 @@ specify them in this table. They will go into a giant enum later.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
 ----------------------------------------------
-NOP      |     |     |     |     |     |     |
+NOP      |     |     |     |     |     |     | # No Operation
 
-YIELD    | ru  |     |     |     |     |     | # Stop BPU & return reg values
+LOAD     | ru  | ea  |     |     |     |     | # Load DMEM by default
+LOAD     | ru  | dmem|     |     |     |     |
+LOAD     | ru  | smem|     |     |     |     |
+LOAD     | rnu | ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rnu | dmem|     |     |     |     |
+LOAD     | rnu | smem|     |     |     |     |
+LOAD     | rd  | ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rd  | dmem|     |     |     |     |
+LOAD     | rd  | smem|     |     |     |     |
+LOAD     | rnd | ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rnd | dmem|     |     |     |     |
+LOAD     | rnd | smem|     |     |     |     |
+
+STORE    | ea  | ru  |     |     |     |     | # Store DMEM by default
+STORE    | dmem| ru  |     |     |     |     |
+STORE    | smem| ru  |     |     |     |     |
+STORE    | ea  | rnu |     |     |     |     | # Sore DMEM by default
+STORE    | dmem| rnu |     |     |     |     |
+STORE    | smem| rnu |     |     |     |     |
+STORE    | ea  | rd  |     |     |     |     | # Store DMEM by default
+STORE    | dmem| rd  |     |     |     |     |
+STORE    | smem| rd  |     |     |     |     |
+STORE    | ea  | rnd |     |     |     |     | # Store DMEM by default
+STORE    | dmem| rnd |     |     |     |     |
+STORE    | smem| rnd |     |     |     |     |
+
+YIELD    | ru  | rd  | lu  | ld  |     |     | # Stop BPU & return values
+YIELD    | rnu | rd  | lu  | ld  |     |     |
+YIELD    | ru  | rnd | lu  | ld  |     |     |
+YIELD    | rnu | rnd | lu  | ld  |     |     |
 
 PUSH     | ru  |     |     |     |     |     | # Push onto datastack
 PUSH     | rnu |     |     |     |     |     |
@@ -505,7 +571,6 @@ ASHIFTR  | ru  | ru  | rnu |     |     |     |
 ASHIFTR  | ru  | rnu | ru  |     |     |     |
 ASHIFTR  | ru  | rnu | rnu |     |     |     |
 
-# Fixme for permutations
 AND      | rnu | rnu | lu  |     |     |     | # AND for scalar U registers
 AND      | rnu | ru  | lu  |     |     |     |
 AND      | rnu | ru  | ru  |     |     |     |
@@ -810,3 +875,16 @@ CALLIFNAN| rnd | mem |     |     |     |     |
 
 RETURN   |     |     |     |     |     |     | # unconditional function return
 
+NOTES
+=====
+
+# jump to instruction address 0x111 in instruction memory
+# default is OpEffectiveAddress, interpreted to be undereferenced.
+JUMP A(0x111)
+
+# Jump 10 instructions forward, (the pc after the JUMP + 0)
+JUMP BA(PC, 0x0)
+
+# jump to instruction whose actual inst addr is located in data memory 0x111
+# Operand is OpDataMemory(A(0x111))
+JUMP DMEM A(0x111)
