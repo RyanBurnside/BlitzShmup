@@ -13,6 +13,7 @@ Registers:
     PC        - Program counter
     ST        - Status Register: Bool, Zero, Overflow, Negative, Carry (BZONC)
     DS        - DataStack Address
+    FP        - DataStack Frame Pointer Address
     RS        - ReturnStack Address
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
@@ -224,6 +225,45 @@ LOAD     | rd  | smem|     |     |     |     |
 LOAD     | rnd | ea  |     |     |     |     | # Load DMEM by default
 LOAD     | rnd | dmem|     |     |     |     |
 LOAD     | rnd | smem|     |     |     |     |
+LOAD     | rv2d| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rv2d| dmem|     |     |     |     |
+LOAD     | rv2d| smem|     |     |     |     |
+LOAD     | rv2i| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rv2i| dmem|     |     |     |     |
+LOAD     | rv2i| smem|     |     |     |     |
+LOAD     | rv3d| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rv3d| dmem|     |     |     |     |
+LOAD     | rv3d| smem|     |     |     |     |
+LOAD     | rv3i| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rv3i| dmem|     |     |     |     |
+LOAD     | rv3i| smem|     |     |     |     |
+LOAD     | rv4d| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rv4d| dmem|     |     |     |     |
+LOAD     | rv4d| smem|     |     |     |     |
+LOAD     | rv4i| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rv4i| dmem|     |     |     |     |
+LOAD     | rv4i| smem|     |     |     |     |
+LOAD     | rm2d| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rm2d| dmem|     |     |     |     |
+LOAD     | rm2d| smem|     |     |     |     |
+LOAD     | rm2i| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rm2i| dmem|     |     |     |     |
+LOAD     | rm2i| smem|     |     |     |     |
+LOAD     | rm3d| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rm3d| dmem|     |     |     |     |
+LOAD     | rm3d| smem|     |     |     |     |
+LOAD     | rm3i| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rm3i| dmem|     |     |     |     |
+LOAD     | rm3i| smem|     |     |     |     |
+LOAD     | rm4d| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rm4d| dmem|     |     |     |     |
+LOAD     | rm4d| smem|     |     |     |     |
+LOAD     | rm4i| ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rm4i| dmem|     |     |     |     |
+LOAD     | rm4i| smem|     |     |     |     |
+LOAD     | rq  | ea  |     |     |     |     | # Load DMEM by default
+LOAD     | rq  | dmem|     |     |     |     |
+LOAD     | rq  | smem|     |     |     |     |
 
 STORE    | ea  | ru  |     |     |     |     | # Store DMEM by default
 STORE    | dmem| ru  |     |     |     |     |
@@ -237,17 +277,104 @@ STORE    | smem| rd  |     |     |     |     |
 STORE    | ea  | rnd |     |     |     |     | # Store DMEM by default
 STORE    | dmem| rnd |     |     |     |     |
 STORE    | smem| rnd |     |     |     |     |
+STORE    | ea  | rv2d|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rv2d|     |     |     |     |
+STORE    | smem| rv2d|     |     |     |     |
+STORE    | ea  | rv2i|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rv2i|     |     |     |     |
+STORE    | smem| rv2i|     |     |     |     |
+STORE    | ea  | rv3d|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rv3d|     |     |     |     |
+STORE    | smem| rv3d|     |     |     |     |
+STORE    | ea  | rv3i|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rv3i|     |     |     |     |
+STORE    | smem| rv3i|     |     |     |     |
+STORE    | ea  | rv4d|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rv4d|     |     |     |     |
+STORE    | smem| rv4d|     |     |     |     |
+STORE    | ea  | rv4i|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rv4i|     |     |     |     |
+STORE    | smem| rv4i|     |     |     |     |
+STORE    | ea  | rm2d|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rm2d|     |     |     |     |
+STORE    | smem| rm2d|     |     |     |     |
+STORE    | ea  | rm2i|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rm2i|     |     |     |     |
+STORE    | smem| rm2i|     |     |     |     |
+STORE    | ea  | rm3d|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rm3d|     |     |     |     |
+STORE    | smem| rm3d|     |     |     |     |
+STORE    | ea  | rm3i|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rm3i|     |     |     |     |
+STORE    | smem| rm3i|     |     |     |     |
+STORE    | ea  | rm4d|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rm4d|     |     |     |     |
+STORE    | smem| rm4d|     |     |     |     |
+STORE    | ea  | rm4i|     |     |     |     | # Store DMEM by default
+STORE    | dmem| rm4i|     |     |     |     |
+STORE    | smem| rm4i|     |     |     |     |
+STORE    | ea  | rq  |     |     |     |     | # Store DMEM by default
+STORE    | dmem| rq  |     |     |     |     |
+STORE    | smem| rq  |     |     |     |     |
 
-YIELD    | ru  | rd  | lu  | ld  |     |     | # Stop BPU & return values
-YIELD    | rnu | rd  | lu  | ld  |     |     |
-YIELD    | ru  | rnd | lu  | ld  |     |     |
-YIELD    | rnu | rnd | lu  | ld  |     |     |
+COPY     | ru  | ru  |     |     |     |     | # COPY op0 <- op1
+COPY     | ru  | rnu |     |     |     |     |
+COPY     | rnu | ru  |     |     |     |     |
+COPY     | rnu | rnu |     |     |     |     |
+COPY     | rd  | rd  |     |     |     |     |
+COPY     | rd  | rnd |     |     |     |     |
+COPY     | rnd | rd  |     |     |     |     |
+COPY     | rnd | rnd |     |     |     |     |
+COPY     | rv2d| rv2d|     |     |     |     |
+COPY     | rv2i| rv2i|     |     |     |     |
+COPY     | rv3d| rv3d|     |     |     |     |
+COPY     | rv3i| rv3i|     |     |     |     |
+COPY     | rv4d| rv4d|     |     |     |     |
+COPY     | rv4i| rv4i|     |     |     |     |
+COPY     | rm2d| rm2d|     |     |     |     |
+COPY     | rm2i| rm2i|     |     |     |     |
+COPY     | rm3d| rm3d|     |     |     |     |
+COPY     | rm3i| rm3i|     |     |     |     |
+COPY     | rm4d| rm4d|     |     |     |     |
+COPY     | rm4i| rm4i|     |     |     |     |
+COPY     | rq  | rq  |     |     |     |     |
+
+YIELD    | ru  | rd  | lu  | ld  | ea  |     | # Stop BPU & ret vals & restart
+YIELD    | rnu | rd  | lu  | ld  | ea  |     |
+YIELD    | ru  | rnd | lu  | ld  | ea  |     |
+YIELD    | rnu | rnd | lu  | ld  | ea  |     |
 
 PUSH     | ru  |     |     |     |     |     | # Push onto datastack
 PUSH     | rnu |     |     |     |     |     |
+PUSH     | rv2d|     |     |     |     |     |
+PUSH     | rv2i|     |     |     |     |     |
+PUSH     | rv3d|     |     |     |     |     |
+PUSH     | rv3i|     |     |     |     |     |
+PUSH     | rv4d|     |     |     |     |     |
+PUSH     | rv4i|     |     |     |     |     |
+PUSH     | rm2d|     |     |     |     |     |
+PUSH     | rm2i|     |     |     |     |     |
+PUSH     | rm3d|     |     |     |     |     |
+PUSH     | rm3i|     |     |     |     |     |
+PUSH     | rm4d|     |     |     |     |     |
+PUSH     | rm4i|     |     |     |     |     |
+PUSH     | rq  |     |     |     |     |     |
 
 POP      | rd  |     |     |     |     |     | # pop from datastack (raw cast?)
 POP      | rnd |     |     |     |     |     |
+POP      | rv2d|     |     |     |     |     |
+POP      | rv2i|     |     |     |     |     |
+POP      | rv3d|     |     |     |     |     |
+POP      | rv3i|     |     |     |     |     |
+POP      | rv4d|     |     |     |     |     |
+POP      | rv4i|     |     |     |     |     |
+POP      | rm2d|     |     |     |     |     |
+POP      | rm2i|     |     |     |     |     |
+POP      | rm3d|     |     |     |     |     |
+POP      | rm3i|     |     |     |     |     |
+POP      | rm4d|     |     |     |     |     |
+POP      | rm4i|     |     |     |     |     |
+POP      | rq  |     |     |     |     |     |
 
 LITERAL  | rnu | lu  |     |     |     |     | # Put literal into reg
 LITERAL  | rnd | ld  |     |     |     |     |
@@ -429,6 +556,53 @@ MUL      | rm4d| rm4d| lm4d|     |     |     | # MUL group for M4D element-wise
 MUL      | rm4d| rm4d| rm4d|     |     |     |
 MUL      | rm4i| rm4i| lm4i|     |     |     | # MUL group for M4I element-wise
 MUL      | rm4i| rm4i| rm4i|     |     |     |
+
+DOT      | rv2d| rv2d| lv2d|     |     |     | # Dot prod: op0 <- op1 dot op2
+DOT      | rv2d| rv2d| rv2d|     |     |     |
+DOT      | rv2i| rv2i| lv21|     |     |     |
+DOT      | rv2i| rv2i| rv21|     |     |     |
+DOT      | rv3d| rv3d| lv3d|     |     |     |
+DOT      | rv3d| rv3d| rv3d|     |     |     |
+DOT      | rv3i| rv3i| lv31|     |     |     |
+DOT      | rv3i| rv3i| rv31|     |     |     |
+DOT      | rv4d| rv4d| lv4d|     |     |     |
+DOT      | rv4d| rv4d| rv4d|     |     |     |
+DOT      | rv4i| rv4i| lv41|     |     |     |
+DOT      | rv4i| rv4i| rv41|     |     |     |
+
+CROSS    | rv3d| rv3d| lv3d| lu  |     |     | # 0:0<-1X2 OR 1:0<-2X1, lu:0,1
+CROSS    | rv3d| rv3d| rv3d| lu  |     |     |
+CROSS    | rv3i| rv3i| lv31| lu  |     |     |
+CROSS    | rv3i| rv3i| rv31| lu  |     |     |
+
+# matrix * matrix in either direction.
+MATMUL   | rm2d| rm2d| lm2d| lu  |     |     | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
+MATMUL   | rm2d| rm2d| rm2d| lu  |     |     |
+MATMUL   | rm2i| rm2i| lm2i| lu  |     |     |
+MATMUL   | rm2i| rm2i| rm2i| lu  |     |     |
+MATMUL   | rm3d| rm3d| lm3d| lu  |     |     |
+MATMUL   | rm3d| rm3d| rm3d| lu  |     |     |
+MATMUL   | rm3i| rm3i| lm3i| lu  |     |     |
+MATMUL   | rm3i| rm3i| rm3i| lu  |     |     |
+MATMUL   | rm4d| rm4d| lm4d| lu  |     |     |
+MATMUL   | rm4d| rm4d| rm4d| lu  |     |     |
+MATMUL   | rm4i| rm4i| lm4i| lu  |     |     |
+MATMUL   | rm4i| rm4i| rm4i| lu  |     |     |
+
+# vector * matrix in either direction.
+MATMUL   | rv2d| rv2d| lm2d| lu  |     |     | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
+MATMUL   | rv2d| rv2d| rm2d| lu  |     |     |
+MATMUL   | rv2i| rv2i| lm2i| lu  |     |     |
+MATMUL   | rv2i| rv2i| rm2i| lu  |     |     |
+MATMUL   | rv3d| rv3d| lm3d| lu  |     |     |
+MATMUL   | rv3d| rv3d| rm3d| lu  |     |     |
+MATMUL   | rv3i| rv3i| lm3i| lu  |     |     |
+MATMUL   | rv3i| rv3i| rm3i| lu  |     |     |
+MATMUL   | rv4d| rv4d| lm4d| lu  |     |     |
+MATMUL   | rv4d| rv4d| rm4d| lu  |     |     |
+MATMUL   | rv4i| rv4i| lm4i| lu  |     |     |
+MATMUL   | rv4i| rv4i| rm4i| lu  |     |     |
+
 
 DIV      | ru  | rnu | lu  |     |     |     | # DIV: U op0 <- op1 / op2
 DIV      | ru  | ru  | lu  |     |     |     |
@@ -773,44 +947,146 @@ CMP      | rnd | rd  |     |     |     |     |
 CMP      | rnd | rnd |     |     |     |     |
 
 # Traditional JUMP instructions that check ZONC flags
+# the 'ea' operand in these instructions are direct instruction memory address.
 
-JUMP     | mem |     |     |     |     |     | # unconditional jump
-JZERO    | mem |     |     |     |     |     | # Z = 0
-JNOTZERO | mem |     |     |     |     |     | # Z = 1
-JNEG     | mem |     |     |     |     |     | # N = 1
-JNOTNEG  | mem |     |     |     |     |     | # N = 0
-JCARRY   | mem |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
-JNOTCARRY| mem |     |     |     |     |     | # C = 0
-JOVERF   | mem |     |     |     |     |     | # O = 1
-JNOTOVERF| mem |     |     |     |     |     | # O = 0
-JGREAT   | mem |     |     |     |     |     | # N = O and Z = 0
-JGREATEQ | mem |     |     |     |     |     | # N = O or Z = 1
-JABOVE   | mem |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
-JABOVEEQ | mem |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
-JLESS    | mem |     |     |     |     |     | # N != O
-JLESSEQ  | mem |     |     |     |     |     | # N != O or Z = 1
-JBELOW   | mem |     |     |     |     |     | # C = 1 (unsigned)
-JBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+JUMP     | ea  |     |     |     |     |     | # unconditional
+JUMP     | dmem|     |     |     |     |     | # unconditional
+JUMP     | smem|     |     |     |     |     | # unconditional
+
+JZERO    | ea  |     |     |     |     |     | # Z = 0
+JZERO    | dmem|     |     |     |     |     | # Z = 0
+JZERO    | smem|     |     |     |     |     | # Z = 0
+
+JNOTZERO | ea  |     |     |     |     |     | # Z = 1
+JNOTZERO | dmem|     |     |     |     |     | # Z = 1
+JNOTZERO | smem|     |     |     |     |     | # Z = 1
+
+JNEG     | ea  |     |     |     |     |     | # N = 1
+JNEG     | dmem|     |     |     |     |     | # N = 1
+JNEG     | smem|     |     |     |     |     | # N = 1
+
+JNOTNEG  | ea  |     |     |     |     |     | # N = 0
+JNOTNEG  | dmem|     |     |     |     |     | # N = 0
+JNOTNEG  | smem|     |     |     |     |     | # N = 0
+
+JCARRY   | eam |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+JCARRY   | dmem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+JCARRY   | smem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+
+JNOTCARRY| eam |     |     |     |     |     | # C = 0
+JNOTCARRY| dmem|     |     |     |     |     | # C = 0
+JNOTCARRY| smem|     |     |     |     |     | # C = 0
+
+JOVERF   | ea  |     |     |     |     |     | # O = 1
+JOVERF   | dmem|     |     |     |     |     | # O = 1
+JOVERF   | smem|     |     |     |     |     | # O = 1
+
+JNOTOVERF| ea  |     |     |     |     |     | # O = 0
+JNOTOVERF| dmem|     |     |     |     |     | # O = 0
+JNOTOVERF| smem|     |     |     |     |     | # O = 0
+
+JGREAT   | eam |     |     |     |     |     | # N = O and Z = 0
+JGREAT   | dmem|     |     |     |     |     | # N = O and Z = 0
+JGREAT   | smem|     |     |     |     |     | # N = O and Z = 0
+
+JGREATEQ | ea  |     |     |     |     |     | # N = O or Z = 1
+JGREATEQ | dmem|     |     |     |     |     | # N = O or Z = 1
+JGREATEQ | smem|     |     |     |     |     | # N = O or Z = 1
+
+JABOVE   | ea  |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+JABOVE   | dmem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+JABOVE   | smem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+
+JABOVEEQ | ea  |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+JABOVEEQ | dmem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+JABOVEEQ | smem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+
+JLESS    | ea  |     |     |     |     |     | # N != O
+JLESS    | dmem|     |     |     |     |     | # N != O
+JLESS    | smem|     |     |     |     |     | # N != O
+
+JLESSEQ  | ea  |     |     |     |     |     | # N != O or Z = 1
+JLESSEQ  | dmem|     |     |     |     |     | # N != O or Z = 1
+JLESSEQ  | smem|     |     |     |     |     | # N != O or Z = 1
+
+JBELOW   | ea  |     |     |     |     |     | # C = 1 (unsigned)
+JBELOW   | dmem|     |     |     |     |     | # C = 1 (unsigned)
+JBELOW   | smem|     |     |     |     |     | # C = 1 (unsigned)
+
+JBELOWEQ | ea  |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+JBELOWEQ | dmem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+JBELOWEQ | smem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
 # CALL instructions and varients using flags
+# the 'ea' operand in these instructions are direct instruction memory address.
 
-CALL     | mem |     |     |     |     |     | # unconditional CALL
-CZERO    | mem |     |     |     |     |     | # Z = 0
-CNOTZERO | mem |     |     |     |     |     | # Z = 1
-CNEG     | mem |     |     |     |     |     | # N = 1
-CNOTNEG  | mem |     |     |     |     |     | # N = 0
-CCARRY   | mem |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
-CNOTCARRY| mem |     |     |     |     |     | # C = 0
-COVERF   | mem |     |     |     |     |     | # O = 1
-CNOTOVERF| mem |     |     |     |     |     | # O = 0
-CGREAT   | mem |     |     |     |     |     | # N = O and Z = 0
-CGREATEQ | mem |     |     |     |     |     | # N = O or Z = 1
-CABOVE   | mem |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
-CABOVEEQ | mem |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
-CLESS    | mem |     |     |     |     |     | # N != O
-CLESSEQ  | mem |     |     |     |     |     | # N != O or Z = 1
-CBELOW   | mem |     |     |     |     |     | # C = 1 (unsigned)
-CBELOWEQ | mem |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+CALL     | ea  |     |     |     |     |     | # unconditional CALL
+CALL     | dmem|     |     |     |     |     | # unconditional CALL
+CALL     | smem|     |     |     |     |     | # unconditional CALL
+
+CZERO    | ea  |     |     |     |     |     | # Z = 0
+CZERO    | dmem|     |     |     |     |     | # Z = 0
+CZERO    | smem|     |     |     |     |     | # Z = 0
+
+CNOTZERO | ea  |     |     |     |     |     | # Z = 1
+CNOTZERO | dmem|     |     |     |     |     | # Z = 1
+CNOTZERO | smem|     |     |     |     |     | # Z = 1
+
+CNEG     | ea  |     |     |     |     |     | # N = 1
+CNEG     | dmem|     |     |     |     |     | # N = 1
+CNEG     | smem|     |     |     |     |     | # N = 1
+
+CNOTNEG  | ea  |     |     |     |     |     | # N = 0
+CNOTNEG  | dmem|     |     |     |     |     | # N = 0
+CNOTNEG  | smem|     |     |     |     |     | # N = 0
+
+CCARRY   | ea  |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+CCARRY   | dmem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+CCARRY   | smem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+
+CNOTCARRY| ea  |     |     |     |     |     | # C = 0
+CNOTCARRY| dmem|     |     |     |     |     | # C = 0
+CNOTCARRY| smem|     |     |     |     |     | # C = 0
+
+COVERF   | ea  |     |     |     |     |     | # O = 1
+COVERF   | dmem|     |     |     |     |     | # O = 1
+COVERF   | smem|     |     |     |     |     | # O = 1
+
+CNOTOVERF| ea  |     |     |     |     |     | # O = 0
+CNOTOVERF| dmem|     |     |     |     |     | # O = 0
+CNOTOVERF| smem|     |     |     |     |     | # O = 0
+
+CGREAT   | ea  |     |     |     |     |     | # N = O and Z = 0
+CGREAT   | dmem|     |     |     |     |     | # N = O and Z = 0
+CGREAT   | smem|     |     |     |     |     | # N = O and Z = 0
+
+CGREATEQ | ea  |     |     |     |     |     | # N = O or Z = 1
+CGREATEQ | dmem|     |     |     |     |     | # N = O or Z = 1
+CGREATEQ | smem|     |     |     |     |     | # N = O or Z = 1
+
+CABOVE   | ea  |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+CABOVE   | dmem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+CABOVE   | smem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+
+CABOVEEQ | ea  |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+CABOVEEQ | dmem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+CABOVEEQ | smem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+
+CLESS    | ea  |     |     |     |     |     | # N != O
+CLESS    | dmem|     |     |     |     |     | # N != O
+CLESS    | smem|     |     |     |     |     | # N != O
+
+CLESSEQ  | ea  |     |     |     |     |     | # N != O or Z = 1
+CLESSEQ  | dmem|     |     |     |     |     | # N != O or Z = 1
+CLESSEQ  | smem|     |     |     |     |     | # N != O or Z = 1
+
+CBELOW   | ea  |     |     |     |     |     | # C = 1 (unsigned)
+CBELOW   | dmem|     |     |     |     |     | # C = 1 (unsigned)
+CBELOW   | smem|     |     |     |     |     | # C = 1 (unsigned)
+
+CBELOWEQ | ea  |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+CBELOWEQ | dmem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+CBELOWEQ | smem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
 # [Part II]
 
@@ -830,53 +1106,153 @@ COND     | rnd | drel| rd  |     |     |     |
 COND     | rnd | drel| rnd |     |     |     |
 
 # New control instructions to handle B flag.
+# the 'ea' operand in these instructions are direct instruction memory address.
 
-JUMPT    | mem |     |     |     |     |     | # B = 1
-JUMPF    | mem |     |     |     |     |     | # B = 0
-CALLT    | mem |     |     |     |     |     | # B = 1
-CALLF    | mem |     |     |     |     |     | # B = 0
+JUMPT    | ea  |     |     |     |     |     | # B = 1
+JUMPT    | dmem|     |     |     |     |     | # B = 1
+JUMPT    | smem|     |     |     |     |     | # B = 1
+
+JUMPF    | ea  |     |     |     |     |     | # B = 0
+JUMPF    | dmem|     |     |     |     |     | # B = 0
+JUMPF    | smem|     |     |     |     |     | # B = 0
+
+CALLT    | ea  |     |     |     |     |     | # B = 1
+CALLT    | dmem|     |     |     |     |     | # B = 1
+CALLT    | smem|     |     |     |     |     | # B = 1
+
+CALLF    | ea  |     |     |     |     |     | # B = 0
+CALLF    | dmem|     |     |     |     |     | # B = 0
+CALLF    | smem|     |     |     |     |     | # B = 0
 
 # [PART III]
 # convenience control flow API (think about D comparisons and tolerace, etc).
 
 # These set the flags as if COND then JUMP if possible in one instruction.
+# the 'ea' operand in these instructions are direct instruction memory address.
 
-JUMPIF   | ru  | irel| lu  | mem |     |     |
-JUMPIF   | ru  | irel| ru  | mem |     |     |
-JUMPIF   | ru  | irel| rnu | mem |     |     |
-JUMPIF   | rnu | irel| lu  | mem |     |     |
-JUMPIF   | rnu | irel| ru  | mem |     |     |
-JUMPIF   | rnu | irel| rnu | mem |     |     |
-JUMPIF   | rd  | drel| ld  | mem |     |     |
-JUMPIF   | rd  | drel| rd  | mem |     |     |
-JUMPIF   | rd  | drel| rnd | mem |     |     |
-JUMPIF   | rnd | drel| ld  | mem |     |     |
-JUMPIF   | rnd | drel| rd  | mem |     |     |
-JUMPIF   | rnd | drel| rnd | mem |     |     |
-JUMPIFNAN| rd  | mem |     |     |     |     |
-JUMPIFNAN| rnd | mem |     |     |     |     |
+JUMPIF   | ru  | irel| lu  | ea  |     |     |
+JUMPIF   | ru  | irel| lu  | dmem|     |     |
+JUMPIF   | ru  | irel| lu  | smem|     |     |
+
+JUMPIF   | ru  | irel| ru  | ea  |     |     |
+JUMPIF   | ru  | irel| ru  | dmem|     |     |
+JUMPIF   | ru  | irel| ru  | smem|     |     |
+
+JUMPIF   | ru  | irel| rnu | ea  |     |     |
+JUMPIF   | ru  | irel| rnu | dmem|     |     |
+JUMPIF   | ru  | irel| rnu | smem|     |     |
+
+JUMPIF   | rnu | irel| lu  | ea  |     |     |
+JUMPIF   | rnu | irel| lu  | dmem|     |     |
+JUMPIF   | rnu | irel| lu  | smem|     |     |
+
+JUMPIF   | rnu | irel| ru  | ea  |     |     |
+JUMPIF   | rnu | irel| ru  | dmem|     |     |
+JUMPIF   | rnu | irel| ru  | smem|     |     |
+
+JUMPIF   | rnu | irel| rnu | ea  |     |     |
+JUMPIF   | rnu | irel| rnu | dmem|     |     |
+JUMPIF   | rnu | irel| rnu | smem|     |     |
+
+JUMPIF   | rd  | drel| ld  | ea  |     |     |
+JUMPIF   | rd  | drel| ld  | dmem|     |     |
+JUMPIF   | rd  | drel| ld  | smem|     |     |
+
+JUMPIF   | rd  | drel| rd  | ea  |     |     |
+JUMPIF   | rd  | drel| rd  | dmem|     |     |
+JUMPIF   | rd  | drel| rd  | smem|     |     |
+
+JUMPIF   | rd  | drel| rnd | ea  |     |     |
+JUMPIF   | rd  | drel| rnd | dmem|     |     |
+JUMPIF   | rd  | drel| rnd | smem|     |     |
+
+JUMPIF   | rnd | drel| ld  | eam |     |     |
+JUMPIF   | rnd | drel| ld  | dmem|     |     |
+JUMPIF   | rnd | drel| ld  | smem|     |     |
+
+JUMPIF   | rnd | drel| rd  | ea  |     |     |
+JUMPIF   | rnd | drel| rd  | dmem|     |     |
+JUMPIF   | rnd | drel| rd  | smem|     |     |
+
+JUMPIF   | rnd | drel| rnd | ea  |     |     |
+JUMPIF   | rnd | drel| rnd | dmem|     |     |
+JUMPIF   | rnd | drel| rnd | smem|     |     |
+
+JUMPIFNAN| rd  | ea  |     |     |     |     |
+JUMPIFNAN| rd  | dmem|     |     |     |     |
+JUMPIFNAN| rd  | smem|     |     |     |     |
+
+JUMPIFNAN| rnd | ea  |     |     |     |     |
+JUMPIFNAN| rnd | dmem|     |     |     |     |
+JUMPIFNAN| rnd | smem|     |     |     |     |
 
 # These set the flags as if COND then CALL if possible in one instruction.
+# the 'ea' operand in these instructions are direct instruction memory address.
 
-CALLIF   | ru  | irel| lu  | mem |     |     |
-CALLIF   | ru  | irel| ru  | mem |     |     |
-CALLIF   | ru  | irel| rnu | mem |     |     |
-CALLIF   | rnu | irel| lu  | mem |     |     |
-CALLIF   | rnu | irel| ru  | mem |     |     |
-CALLIF   | rnu | irel| rnu | mem |     |     |
-CALLIF   | rd  | drel| ld  | mem |     |     |
-CALLIF   | rd  | drel| rd  | mem |     |     |
-CALLIF   | rd  | drel| rnd | mem |     |     |
-CALLIF   | rnd | drel| ld  | mem |     |     |
-CALLIF   | rnd | drel| rd  | mem |     |     |
-CALLIF   | rnd | drel| rnd | mem |     |     |
-CALLIFNAN| rd  | mem |     |     |     |     |
-CALLIFNAN| rnd | mem |     |     |     |     |
+CALLIF   | ru  | irel| lu  | ea  |     |     |
+CALLIF   | ru  | irel| lu  | dmem|     |     |
+CALLIF   | ru  | irel| lu  | smem|     |     |
+
+CALLIF   | ru  | irel| ru  | ea  |     |     |
+CALLIF   | ru  | irel| ru  | dmem|     |     |
+CALLIF   | ru  | irel| ru  | smem|     |     |
+
+CALLIF   | ru  | irel| rnu | ea  |     |     |
+CALLIF   | ru  | irel| rnu | dmem|     |     |
+CALLIF   | ru  | irel| rnu | smem|     |     |
+
+CALLIF   | rnu | irel| lu  | ea  |     |     |
+CALLIF   | rnu | irel| lu  | dmem|     |     |
+CALLIF   | rnu | irel| lu  | smem|     |     |
+
+CALLIF   | rnu | irel| ru  | ea  |     |     |
+CALLIF   | rnu | irel| ru  | dmem|     |     |
+CALLIF   | rnu | irel| ru  | smem|     |     |
+
+CALLIF   | rnu | irel| rnu | ea  |     |     |
+CALLIF   | rnu | irel| rnu | dmem|     |     |
+CALLIF   | rnu | irel| rnu | smem|     |     |
+
+CALLIF   | rd  | drel| ld  | ea  |     |     |
+CALLIF   | rd  | drel| ld  | dmem|     |     |
+CALLIF   | rd  | drel| ld  | smem|     |     |
+
+CALLIF   | rd  | drel| rd  | ea  |     |     |
+CALLIF   | rd  | drel| rd  | dmem|     |     |
+CALLIF   | rd  | drel| rd  | smem|     |     |
+
+CALLIF   | rd  | drel| rnd | ea  |     |     |
+CALLIF   | rd  | drel| rnd | dmem|     |     |
+CALLIF   | rd  | drel| rnd | smem|     |     |
+
+CALLIF   | rnd | drel| ld  | ea  |     |     |
+CALLIF   | rnd | drel| ld  | dmem|     |     |
+CALLIF   | rnd | drel| ld  | smem|     |     |
+
+CALLIF   | rnd | drel| rd  | ea  |     |     |
+CALLIF   | rnd | drel| rd  | dmem|     |     |
+CALLIF   | rnd | drel| rd  | smem|     |     |
+
+CALLIF   | rnd | drel| rnd | ea  |     |     |
+CALLIF   | rnd | drel| rnd | dmem|     |     |
+CALLIF   | rnd | drel| rnd | smem|     |     |
+
+CALLIFNAN| rd  | ea  |     |     |     |     |
+CALLIFNAN| rd  | dmem|     |     |     |     |
+CALLIFNAN| rd  | smem|     |     |     |     |
+
+CALLIFNAN| rnd | ea  |     |     |     |     |
+CALLIFNAN| rnd | dmem|     |     |     |     |
+CALLIFNAN| rnd | smem|     |     |     |     |
 
 RETURN   |     |     |     |     |     |     | # unconditional function return
 
+
+
 NOTES
 =====
+
+Some examples:
 
 # jump to instruction address 0x111 in instruction memory
 # default is OpEffectiveAddress, interpreted to be undereferenced.
@@ -888,3 +1264,10 @@ JUMP BA(PC, 0x0)
 # jump to instruction whose actual inst addr is located in data memory 0x111
 # Operand is OpDataMemory(A(0x111))
 JUMP DMEM A(0x111)
+
+# jump to instruction whose actual inst addr is located at this effective
+# address in data stack memory.
+# Operand is OpDataStackMemory(BA(FP, 0x4))
+JUMP SMEM BA(FP, 0x4)
+
+
