@@ -46,7 +46,7 @@ Type WayPointMover Extends Mover
 			Return position
 		End If
 		
-		' TODO update position here
+		' TODO update position here https://natureofcode.com/autonomous-agents/
 		
 		Return position
 	End Method
