@@ -64,7 +64,8 @@ Memory:
   retStack  - Array 256K ULong: Return Address Stack (used only by call/ret)
   dataStack - Array 256K ULong: Stack of MemValues (used by push/pop)
 
-Operands Hierarchy:
+Operands Hierarchy
+------------------
 
 The operands with a specified category are actually instantiatable. The rest
 are base classes.
@@ -151,7 +152,9 @@ smem     |     OpDataStackMemory : SMEM
 rmem     |     OpReturnStackMemory : RMEM
 imem     |     OpInstMemory : IMEM
 
-Effective Address Specification:
+Effective Address Specification
+-------------------------------
+
   An address is a ULong integer. An effective address is a computation that
   results in an address unassociated with any memory. Two things can be done
   with an effective address. The first thing is that it can be encapsulated
@@ -201,7 +204,13 @@ Effective Address Specification:
     #  (<Contents of Index Register> * <Scale>) + <Absolute>
     BISA(Base, Index, Scale, Absolute)
 
-Assembly Instructions:
+Function ABI
+------------
+
+TODO
+
+Assembly Instructions
+---------------------
 
 An assembly instruction looks like: ADD ru, lu, lu
 It gets encoded into MachOp encoding whose opcode is: ADD_ru_lu_lu
