@@ -86,11 +86,11 @@ Function main:Int()
 
     Local enemies:TObjectList = New TObjectList
     For Local i:Int = 0 To 7
-    Local wpm:WayPointMover = makeRandomMover()
-    Local enemyShip:Enemy = New Enemy()
-    enemyShip.BPUs.AddLast(makeSimpleBPU(bullets, 5 + Rand(15), 1 + Rand(3)))
-    enemyShip.mover = wpm
-    enemies.AddLast(enemyShip)
+	Local wpm:WayPointMover = makeRandomMover()
+	Local enemyShip:Enemy = New Enemy()
+	enemyShip.BPUs.AddLast(makeSimpleBPU(bullets, 5 + Rand(15), 1 + Rand(3)))
+	enemyShip.mover = wpm
+	enemies.AddLast(enemyShip)
     Next
     
     Function updateBullets(bullets:TObjectList, screen:Hitbox)
