@@ -30,8 +30,9 @@ Global offsetY:Int = (SCREEN_HEIGHT - (VIRTUAL_HEIGHT * Scale)) / 2
 Global framebuffer:TRenderImage = CreateRenderImage(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, 0)
 
 Function DrawRectOutline:Int(x:Int, y:Int, width:Int, height:Int)
-    Local rightEdge:Int = x + width - 1
-    Local bottomEdge:Int = y + height - 1
+    ' something is buggy in how DrawLine is implemented...
+    Local rightEdge:Int = x + width - 2
+    Local bottomEdge:Int = y + height - 2
 
     DrawLine x, y, rightEdge, y, 0  ' Top
     DrawLine x, y, x, bottomEdge, 0' Left
@@ -39,7 +40,7 @@ Function DrawRectOutline:Int(x:Int, y:Int, width:Int, height:Int)
     DrawLine rightEdge, y, rightEdge, bottomEdge, 0 ' Right
 End Function
 
-Function rand_color()
+Function randomColor()
     SetColor Rand(0, 255), Rand(0, 255), Rand(0, 255)
 End Function
 
@@ -121,6 +122,7 @@ Function main:Int()
 	    SetRotation ATan2(e.mover.velocity.y,e.mover.velocity.x)
 	    DrawImage ship, e.getX(), e.getY()
 	    SetRotation 0
+	    SetColor 255,255,255
 	Next
     End function
 
