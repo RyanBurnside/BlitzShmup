@@ -55,7 +55,6 @@ Function makeSimpleBPU:BPU(bullets:TObjectList, spread:float, numShots:float)
     b.bulletList = bullets
     Return b
 End function
-    
 
 Function makeRandomMover:WayPointMover(wMax:Int = 240, hMax:Int = 320, numPts:Int = 8)
     Local w:WayPointMover = New WayPointMover()
@@ -65,7 +64,8 @@ Function makeRandomMover:WayPointMover(wMax:Int = 240, hMax:Int = 320, numPts:In
     w.wayPoints = pts
     Local border:Int = 32
     For Local s:SVec2D = EachIn w.wayPoints
-	pts[i] = New SVec2D(border, border) + New SVec2D(Rand(wMax - border), Rand(hMax - border))
+	pts[i] = New SVec2D(border, border) + ..
+	New SVec2D(Rand(wMax - border), Rand(hMax - border))
 	i :+ 1
     Next
     w.position = w.waypoints[0]
@@ -73,7 +73,8 @@ Function makeRandomMover:WayPointMover(wMax:Int = 240, hMax:Int = 320, numPts:In
 End Function
 
 Function main:Int()
-    Local ship:TImage = LoadImage("resources/player.png", 0) ' Very important to set it to 0 so it doesn't blur pixels
+    ' Very important to set it to 0 so it doesn't blur pixels
+    Local ship:TImage = LoadImage("resources/player.png", 0) 
     MidHandleImage(ship)
     
     Local bulletImage:TImage = LoadImage("resources/shotTiny.png", 0)
@@ -84,11 +85,11 @@ Function main:Int()
 
     Local enemies:TObjectList = New TObjectList
     For Local i:Int = 0 To 7
-	Local wpm:WayPointMover = makeRandomMover()
-	Local enemyShip:Enemy = New Enemy()
-	enemyShip.BPUs.AddLast(makeSimpleBPU(bullets, 5 + Rand(15), 1 + Rand(3)))
-	enemyShip.mover = wpm
-	enemies.AddLast(enemyShip)
+    Local wpm:WayPointMover = makeRandomMover()
+    Local enemyShip:Enemy = New Enemy()
+    enemyShip.BPUs.AddLast(makeSimpleBPU(bullets, 5 + Rand(15), 1 + Rand(3)))
+    enemyShip.mover = wpm
+    enemies.AddLast(enemyShip)
     Next
     
     Function updateBullets(bullets:TObjectList, screen:Hitbox)
@@ -116,7 +117,7 @@ Function main:Int()
 
     Function drawEnemies(enemies:TObjectList, ship:TImage)
 	For Local e:Enemy = EachIn enemies
-	    drawWayPointMover(WayPointMover(e.mover))
+	    ' drawWayPointMover(WayPointMover(e.mover))
 	    SetRotation ATan2(e.mover.velocity.y,e.mover.velocity.x)
 	    DrawImage ship, e.getX(), e.getY()
 	    SetRotation 0
@@ -133,17 +134,12 @@ Function main:Int()
         drawBullets(bullets, bulletImage)
 	drawEnemies enemies, ship
 
-
         SetAlpha 1.0
         ' Reset rendering to screen
         SetRenderImage Null
-        Cls
-                
         SetBlend alphablend
         SetColor 255, 255, 255
-        
-        DrawImage bulletImage, 120, 160
-        ' 2. Draw the framebuffer scaled to native resolution
+        ' Draw the framebuffer scaled to native resolution
         DrawImageRect framebuffer, offsetX, offsetY, VIRTUAL_WIDTH * Scale, VIRTUAL_HEIGHT * Scale
         Flip
     Wend
