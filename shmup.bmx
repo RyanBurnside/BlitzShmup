@@ -85,7 +85,7 @@ Function main:Int()
     Local bullets:TObjectList = New TObjectList
 
     Local enemies:TObjectList = New TObjectList
-    For Local i:Int = 0 To 7
+    For Local i:Int = 0 until 10
 	Local wpm:WayPointMover = makeRandomMover()
 	Local enemyShip:Enemy = New Enemy()
 	enemyShip.BPUs.AddLast(makeSimpleBPU(bullets, 5 + Rand(15), 1 + Rand(3)))
