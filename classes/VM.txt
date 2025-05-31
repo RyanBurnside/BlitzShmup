@@ -17,7 +17,6 @@ Registers:
     RS        - ReturnStack Address
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
-    RA        - Return Address Stack Index
     SL        - Sleep Ticks
     NB        - Num Bullets
 
@@ -207,7 +206,44 @@ Effective Address Specification
 Function ABI
 ------------
 
-TODO
+NOTE: We introduce a new notation for groups of registers:
+
+The * represents a different array-like register set families like: 
+  I, F, V2D, V3D, V4D, M2D, M3D, M4D, and Q.
+
+  So *4 could mean register: I4, F4, V2D4, V3D4, V4D4, M2D4, M3D4, M4D4, or Q4
+
+When a function CALL happens:
+  These registers are volatile.
+  They are maybe destroyed by the callee and the caller must save/restore them.
+    *4 - *17, *31, SL, NB, SA, AD, BS, BZ, PO, BL
+
+  These registers are non-volatile.
+  These are maybe used by the caller and the callee must save/restore them.
+    DS, FP, *0 - *3, *18 - *30,
+
+  Argument passing order for a function:
+    |  arg0 | arg1 | arg2 | arg3 | argN+
+    |    *0 |   *1 |   *2 |   *3 | PUSH onto DS, last arg pushed first.
+
+  The Return Register for a function is: *31.
+
+  When the simulator sees a CALL* instruction and decides to perform it:
+    The next instruction address after the CALL* instruction is copied into RS.
+    Then RS is pushed onto the retStack.
+    The CALL* code happens.
+    When a RETURN is encountered, the retStack is popped into RS.
+    Then RETURN jumps to the instruction in the instruction memory at RS.
+  
+Example: Calling a function FOO.
+  If you're passing an M4D, V3D, and Ulong to function Foo, then you would (as
+  an example).
+
+  IDENTITY  M4D0
+  LITERAL   V3D1, (1, 2, 3)
+  LITERAL   I2, 42
+  CALL      A(F00)
+  NOP # other code after the call
 
 Assembly Instructions
 ---------------------
