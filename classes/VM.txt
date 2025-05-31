@@ -14,7 +14,7 @@ Registers:
                 operand space.
     PC        - Program counter
     ST        - Status Register: Bool, Zero, Overflow, Negative, Carry (BZONC)
-    DS        - DataStack Address
+    DS        - DataStack Address (and also the dataTypeStack address)
     FP        - DataStack Frame Pointer Address
     RS        - ReturnStack Address
 
@@ -62,8 +62,9 @@ Memory:
   memData   - Array 256K MemValue types
 
   # TODO: Add reg ptrs to top of these stacks in RegSysU, they start at 0.
-  retStack  - Array 256K ULong: Return Address Stack (used only by call/ret)
-  dataStack - Array 256K ULong: Stack of MemValues (used by push/pop)
+  retStack      - Array 256K ULong: Return Address Stack (used only by call/ret)
+  dataStack     - Array 256K ULong: Stack of MemValues (used by push/pop)
+  dataTypeStack - Array 256K UByte: Type of thing pushed to dataStack.
 
 Operands Hierarchy
 ------------------
@@ -247,6 +248,19 @@ Example: Calling a function FOO.
   CALL      A(F00)
   NOP # other code after the call
 
+Interrupt Vectors
+-----------------
+
+There are a couple operations that result in exceptional behavior.
+  1. Division by zero.
+  2. POP something of the wrong type.
+
+Currently, we define that these situations will stop the BPU in a non-useful
+manner, causing it to exit, and returning to the invoker of the BPU that this
+execptional case happened and where in the instruction stream. Later, we should
+define an address that we jump to representing an interrupt vector that deals
+with these things when they happen.
+
 Assembly Instructions
 ---------------------
 
@@ -391,7 +405,8 @@ YIELD    | rnu | rd  | lu  | ld  | ea  |     |
 YIELD    | ru  | rnd | lu  | ld  | ea  |     |
 YIELD    | rnu | rnd | lu  | ld  | ea  |     |
 
-PUSH     | ru  |     |     |     |     |     | # Push onto datastack
+# PUSH will push the value onto dataStack and the type of it onto dataTypeStack.
+PUSH     | ru  |     |     |     |     |     | # Push onto data&dataType stack
 PUSH     | rnu |     |     |     |     |     |
 PUSH     | rv2d|     |     |     |     |     |
 PUSH     | rv2i|     |     |     |     |     |
@@ -407,7 +422,8 @@ PUSH     | rm4d|     |     |     |     |     |
 PUSH     | rm4i|     |     |     |     |     |
 PUSH     | rq  |     |     |     |     |     |
 
-POP      | rd  |     |     |     |     |     | # pop from datastack (raw cast?)
+# POP will pop the value onto dataStack and match the dataType too
+POP      | rd  |     |     |     |     |     | # pop from data&dataType stack
 POP      | rnd |     |     |     |     |     |
 POP      | rv2d|     |     |     |     |     |
 POP      | rv2i|     |     |     |     |     |
@@ -1318,16 +1334,3 @@ JUMP DMEM A(0x111)
 JUMP SMEM BA(FP, 0x4)
 
 
-Curiosities of PUSH/POP
-=======================
-
-To be Implemented Later:
-
-Currently, you can PUSH I23 and POP D3 and it'll raw typecast the integer into
-a double. You can push 16 doubles, and pop one m4d matrix. To fix this sort of
-thing, we can add a "dataTypeStack" which POP and PUSH only use. When PUSHing,
-we'd push the type of the thing onto the "dataTypeStack" in addition to the
-actual data into the "dataStack". POP would verify that we're POPing the thing
-we expect from the "dataStack" by verifying the place it is going to put it
-matched the "dataTypeStack" entry. Currently, we're just gonna leave it do the
-raw cast and don't hurt yourself with it.
