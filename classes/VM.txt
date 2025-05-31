@@ -1009,7 +1009,7 @@ CMP      | rnd | rd  |     |     |     |     |
 CMP      | rnd | rnd |     |     |     |     |
 
 # Traditional JUMP instructions that check ZONC flags
-# the 'ea' operand in these instructions are direct instruction memory address.
+# the 'ea' operand in these instructions are direct IMEM defaults.
 
 JUMP     | ea  |     |     |     |     |     | # unconditional
 JUMP     | dmem|     |     |     |     |     | # unconditional
@@ -1080,7 +1080,7 @@ JBELOWEQ | dmem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 JBELOWEQ | smem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
 
 # CALL instructions and varients using flags
-# the 'ea' operand in these instructions are direct instruction memory address.
+# the 'ea' operand in these instructions are direct IMEM defaults.
 
 CALL     | ea  |     |     |     |     |     | # unconditional CALL
 CALL     | dmem|     |     |     |     |     | # unconditional CALL
@@ -1168,7 +1168,7 @@ COND     | rnd | drel| rd  |     |     |     |
 COND     | rnd | drel| rnd |     |     |     |
 
 # New control instructions to handle B flag.
-# the 'ea' operand in these instructions are direct instruction memory address.
+# the 'ea' operand in these instructions are direct IMEM defaults.
 
 JUMPT    | ea  |     |     |     |     |     | # B = 1
 JUMPT    | dmem|     |     |     |     |     | # B = 1
@@ -1190,7 +1190,7 @@ CALLF    | smem|     |     |     |     |     | # B = 0
 # convenience control flow API (think about D comparisons and tolerace, etc).
 
 # These set the flags as if COND then JUMP if possible in one instruction.
-# the 'ea' operand in these instructions are direct instruction memory address.
+# the 'ea' operand in these instructions are direct IMEM defaults.
 
 JUMPIF   | ru  | irel| lu  | ea  |     |     |
 JUMPIF   | ru  | irel| lu  | dmem|     |     |
@@ -1249,7 +1249,7 @@ JUMPIFNAN| rnd | dmem|     |     |     |     |
 JUMPIFNAN| rnd | smem|     |     |     |     |
 
 # These set the flags as if COND then CALL if possible in one instruction.
-# the 'ea' operand in these instructions are direct instruction memory address.
+# the 'ea' operand in these instructions are direct IMEM defaults.
 
 CALLIF   | ru  | irel| lu  | ea  |     |     |
 CALLIF   | ru  | irel| lu  | dmem|     |     |
