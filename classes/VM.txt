@@ -75,7 +75,6 @@ are base classes.
 Category | Operand Type
 ---------------------------------------
          | Operand
-ea           OpEffectiveAddress
          |   OpLiteral
 lu       |     OpLitU
 ld       |     OpLitD
@@ -118,15 +117,6 @@ rm2i     |       OpRegM2I
 rm3i     |       OpRegM3I
 rm4i     |       OpRegM4I
 rq       |     OpRegQ
-mem      |   OpMemory
-         |     OpMemA
-         |     OpMemB
-         |     OpMemBI
-         |     OpMemBA
-         |     OpMemBIA
-         |     OpMemBIS
-         |     OpMemISA
-         |     OpMemBISA
          |   OpRelational < <= = >= > !=
 irel     |     OpIntegral
          |       OpSLT
@@ -148,7 +138,16 @@ drel     |     OpDouble
          |       OpDGTEQ
          |       OpDGT
          |       OpDNOTEQ
-         |   OpMemory (entails an OpEffectiveAddr, deref addr in specified mem)
+ea           OpEffectiveAddress
+         |     OpEffAdrA
+         |     OpEffAdrB
+         |     OpEffAdrBI
+         |     OpEffAdrBA
+         |     OpEffAdrBIA
+         |     OpEffAdrBIS
+         |     OpEffAdrISA
+         |     OpEffAdrBISA
+         |   OpMemory (always contains an OpEffectiveAddress derivative)
 dmem     |     OpDataMemory : DMEM
 smem     |     OpDataStackMemory : SMEM
 rmem     |     OpReturnStackMemory : RMEM
