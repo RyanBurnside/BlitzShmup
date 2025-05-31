@@ -1318,3 +1318,16 @@ JUMP DMEM A(0x111)
 JUMP SMEM BA(FP, 0x4)
 
 
+Curiosities of PUSH/POP
+=======================
+
+To be Implemented Later:
+
+Currently, you can PUSH I23 and POP D3 and it'll raw typecast the integer into
+a double. You can push 16 doubles, and pop one m4d matrix. To fix this sort of
+thing, we can add a "dataTypeStack" which POP and PUSH only use. When PUSHing,
+we'd push the type of the thing onto the "dataTypeStack" in addition to the
+actual data into the "dataStack". POP would verify that we're POPing the thing
+we expect from the "dataStack" by verifying the place it is going to put it
+matched the "dataTypeStack" entry. Currently, we're just gonna leave it do the
+raw cast and don't hurt yourself with it.
