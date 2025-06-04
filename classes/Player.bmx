@@ -12,24 +12,24 @@ Type Player Extends Ship
     Field speed:Int = 0
 
     Method New()
-	' Dummy that allows 0 arguments
+        ' Dummy that allows 0 arguments
     End Method
 
     Method New(position:SVec2D)
-	Self.mover.position = position
+        Self.mover.position = position
     End Method
     
     Method update()
-	Local u:Int = upFn()
-	Local d:Int = downFn()
-	Local l:Int = leftFn()
-	Local r:Int = rightfn()
+        Local u:Int = upFn()
+        Local d:Int = downFn()
+        Local l:Int = leftFn()
+        Local r:Int = rightfn()
 
-	If u Or d Or l Or r
-	    mover.velocity = New SVec2D(r - l, d - u) * speed
-	    mover.move()
-	    mover.velocity = New SVec2D(0.0, 0.0)
-	End IF
+        If u Or d Or l Or r
+            mover.velocity = New SVec2D(r - l, d - u) * speed
+            mover.move()
+            mover.velocity = New SVec2D(0.0, 0.0)
+        End IF
     End Method
     
 End Type
