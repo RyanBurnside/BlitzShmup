@@ -13,7 +13,23 @@ Registers:
                 instructions to deal with them. so they live in a different
                 operand space.
     PC        - Program counter
-    ST        - Status Register: Bool, Zero, Overflow, Negative, Carry (BZONC)
+    CF        - Configuration Register: (bitstart:bitend=defval)
+                  Implicit configuration state.
+                    DEQTest     (0:1=1) 0=raw, 1=absdiff, 2=reldiff
+    ST        - Status Register: (bitstart:bitend=defval)
+                  BNZ: Integer OR Double operation Flags
+                    B: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
+                    N: Negative         (1:1=0)
+                    Z: Zero             (2:2=0)
+                  OC: Integer operation flags
+                    O: Overflow         (3:3=0)
+                    C: Carry            (4:4=0)
+                  WAL: Double operation flags
+                    W: Zero             (5:5=0)
+                    A: NAN              (6:6=0)
+                  IV: Matrix/Vector operation flags
+                    I: Inverse Failed   (7:7=0)
+                    V: Norm Failed      (8:8=0)
     DS        - DataStack Address (and also the dataTypeStack address)
     FP        - DataStack Frame Pointer Address
     RS        - ReturnStack Address
@@ -23,6 +39,7 @@ Registers:
     NB        - Num Bullets
 
   RegNamD     - Array 4 ULong, names start at 0 index. Named registers.
+    ET        - Double Equality Tolerance (defaults to 10e-12)
     SA        - Sub Angle
     AD        - Aim Direction
     BS        - Bullet Speed
@@ -269,7 +286,7 @@ and which has an enum specifying its machine opcode value.
 All of these MachOp codes are predictable like this, so we won't explicitly
 specify them in this table. They will go into a giant enum later.
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | Op5 |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |FLAGS|
 ----------------------------------------------
 NOP      |     |     |     |     |     |     | # No Operation
 
@@ -463,6 +480,11 @@ IDENTITY | rm3i|     |     |     |     |     |
 IDENTITY | rm4d|     |     |     |     |     |
 IDENTITY | rm4i|     |     |     |     |     |
 IDENTITY | rq  |     |     |     |     |     |
+
+ABS      | rnu |     |     |     |     |     | # ABS
+ABS      | ru  |     |     |     |     |     |
+ABS      | rnd |     |     |     |     |     |
+ABS      | rd  |     |     |     |     |     |
 
 ADD      | rnu | rnu | lu  |     |     |     | # ADD for scalar U registers
 ADD      | rnu | ru  | lu  |     |     |     |
@@ -1309,6 +1331,7 @@ CALLIFNAN| rnd | smem|     |     |     |     |
 
 RETURN   |     |     |     |     |     |     | # unconditional function return
 
+FIRE     |     |     |     |     |     |     | # fire a bullet
 
 
 NOTES
