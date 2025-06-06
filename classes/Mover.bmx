@@ -6,6 +6,14 @@ Type Mover
     Field position:SVec2D
     Field velocity:SVec2D
 
+    Method New(pos:SVec2D)
+        Self.position = pos
+    End Method
+
+    Method New(pos:SVec2D, vel:SVec2D)
+        Self.position = pos
+    End Method
+
     Method move:SVec2D() Abstract
 
     Method getX:Float()

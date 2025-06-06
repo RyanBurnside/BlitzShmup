@@ -3,7 +3,7 @@ SuperStrict
 Import "GameObject.bmx"
 Import "BPU.bmx"
 
-Type Enemy Extends GameObject
+Type Ship Extends GameObject
     Field BPUs:TList = New TList
 
     Method UpdateBPUs()
