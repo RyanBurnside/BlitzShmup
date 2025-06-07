@@ -9,58 +9,49 @@ memory to registers and back again. All Stack disciplines are full ascending
 unless otherwise indicated.
 
 Registers:
-  RegSys
-    RegSysIntU  - Array 4 ULong, names start at 0 index. These registers are
-                  internal registers not normally targets of regular
-                  instructions. They have special instructions that implicitly
-                  write them. so they live in a different operand space. They
-                  can all be read, though.
-      PC        - Program counter
-      RS        - ReturnStack Address
-      DT        - DataTypeStack Address
-      ST        - Status Register: (bitstart:bitend=defval)
-                    Integer OR Double operation Flags
-                      B: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
-                      Z: Zero             (1:1=0)
-                      N: Negative         (2:2=0)
-                    Integer operation flags
-                      O: Overflow         (3:3=0)
-                      C: Carry            (4:4=0)
-                    Double operation flags
-                      A: NAN              (5:5=0)
-                    Matrix/Vector operation flags
-                      I: Inverse Success  (6:6=0)
-                      V: Norm Success     (7:7=0)
-    RegSysExtU  - Array 3 ULong, names start at 0 index. These registers
-                  external registers that can be explicit targets of
-                  reads/writes, but they are for system level topics and hence
-                  they are in their own namespace.
-      C0        - Configuration Register: (bitstart:bitend=defval)
-                    Implicit configuration state.
-                      T: DEQTestTol       (0:1=1) 0=raw, 1=absdiff, 2=reldiff
-      DS        - DataStack Address
-      FP        - DataStack Frame Address
-    RegSysExtD  - Array 1 Double, names start at 0 index. These registers
-                  external registers that can be explicit targets of
-                  reads/writes, but they are for system level topics and hence
-                  they are in their own namespace.
-      ET        - Double Equality Tolerance (defaults to 10e-12)
+  RegSysIntU  - Array 4 ULong, names start at 0 index. These registers are
+                internal registers not normally targets of regular
+                instructions. They have special instructions that implicitly
+                write them or other special situations that restrict their
+                use. They live in a different operand space.
+    PC        - Program counter
+    RS        - ReturnStack Address
+    DT        - DataTypeStack Address
+    ST        - Status Register: (bitstart:bitend=defval)
+                  Integer OR Double operation Flags
+                    B: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
+                    Z: Zero             (1:1=0)
+                    N: Negative         (2:2=0)
+                  Integer operation flags
+                    O: Overflow         (3:3=0)
+                    C: Carry            (4:4=0)
+                  Double operation flags
+                    A: NAN              (5:5=0)
+                  Matrix/Vector operation flags
+                    I: Inverse Success  (6:6=0)
+                    V: Norm Success     (7:7=0)
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
+    C0        - Configuration Register: (bitstart:bitend=defval)
+                  Implicit configuration state.
+                    T: DEQTestTol       (0:1=1) 0=raw, 1=absdiff, 2=reldiff
+    DS        - DataStack Address
+    FP        - DataStack Frame Address
     SL        - Sleep Ticks
     NB        - Num Bullets
 
-  RegNamD     - Array 4 ULong, names start at 0 index. Named registers.
+  RegNamD     - Array 5 ULong, names start at 0 index. Named registers.
+    ET        - Double Equality Tolerance (defaults to 10e-12)
     SA        - Sub Angle
     AD        - Aim Direction
     BS        - Bullet Speed
     BZ        - Bullet Size
 
   Single V2D type # (maybe get rid of)
-  PO          - Position (2D)
+    PO        - Position (2D)
 
   TObject type
-  BL          - Bullet List
+    BL        - Bullet List
 
   # Scalar registers
   RegU        - Array 32 ULong
@@ -123,8 +114,6 @@ lq       |      OpLitQ
          |      OpRegSys
          |        OpRegSysIntU
 rpc      |          OpRegPC
-rseu     |        OpRegSysExtU
-rsed     |        OpRegSysExtD
 rnu      |      OpRegNamU
 rnd      |      OpRegNamD
 ru       |      OpRegU
@@ -318,7 +307,6 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
 EFFADDR  | ru  | ea  |     |     |     |          |
 EFFADDR  | rnu | ea  |     |     |     |          |
-EFFADDR  | rseu| ea  |     |     |     |          |
 
 ------------
 | LOAD     |
@@ -337,12 +325,6 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-LOAD     | rseu| ea  |     |     |     | ZNOCA    |
-LOAD     | rseu| dmem|     |     |     | ZNOCA    |
-LOAD     | rseu| smem|     |     |     | ZNOCA    |
-LOAD     | rsed| ea  |     |     |     | ZNOCA    |
-LOAD     | rsed| dmem|     |     |     | ZNOCA    |
-LOAD     | rsed| smem|     |     |     | ZNOCA    |
 LOAD     | ru  | ea  |     |     |     | ZNOCA    |
 LOAD     | ru  | dmem|     |     |     | ZNOCA    |
 LOAD     | ru  | smem|     |     |     | ZNOCA    |
@@ -405,12 +387,6 @@ Any ea operand defaults to DMEM.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-STORE    | ea  | rseu|     |     |     |          |
-STORE    | dmem| rseu|     |     |     |          |
-STORE    | smem| rseu|     |     |     |          |
-STORE    | ea  | rsed|     |     |     |          |
-STORE    | dmem| rsed|     |     |     |          |
-STORE    | smem| rsed|     |     |     |          |
 STORE    | ea  | ru  |     |     |     |          |
 STORE    | dmem| ru  |     |     |     |          |
 STORE    | smem| ru  |     |     |     |          |
@@ -479,16 +455,6 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-COPY     | rseu| rseu|     |     |     | ZNOCA    |
-COPY     | ru  | rseu|     |     |     | ZNOCA    |
-COPY     | rseu| ru  |     |     |     | ZNOCA    |
-COPY     | rnu | rseu|     |     |     | ZNOCA    |
-COPY     | rseu| rnu |     |     |     | ZNOCA    |
-COPY     | rsed| rsed|     |     |     | ZNOCA    |
-COPY     | rd  | rsed|     |     |     | ZNOCA    |
-COPY     | rsed| rd  |     |     |     | ZNOCA    |
-COPY     | rnd | rsed|     |     |     | ZNOCA    |
-COPY     | rsed| rnd |     |     |     | ZNOCA    |
 COPY     | ru  | ru  |     |     |     | ZNOCA    |
 COPY     | ru  | rnu |     |     |     | ZNOCA    |
 COPY     | rnu | ru  |     |     |     | ZNOCA    |
@@ -543,8 +509,6 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-PUSH     | rseu|     |     |     |     |          |
-PUSH     | rsed|     |     |     |     |          |
 PUSH     | ru  |     |     |     |     |          |
 PUSH     | rnu |     |     |     |     |          |
 PUSH     | rv2d|     |     |     |     |          |
@@ -581,8 +545,6 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-POP      | rseu|     |     |     |     |          |
-POP      | rsed|     |     |     |     |          |
 POP      | ru  |     |     |     |     |          |
 POP      | rnu |     |     |     |     |          |
 POP      | rd  |     |     |     |     |          |
@@ -611,8 +573,6 @@ Op0 <- Op1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-LITERAL  | rseu| lu  |     |     |     | ZNOCA    |
-LITERAL  | rsed| ld  |     |     |     | ZNOCA    |
 LITERAL  | rnu | lu  |     |     |     | ZNOCA    |
 LITERAL  | rnd | ld  |     |     |     | ZNOCA    |
 LITERAL  | ru  | lu  |     |     |     | ZNOCA    |
@@ -642,8 +602,6 @@ quaternion with no rotations.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-IDENTITY | rseu|     |     |     |     |          |
-IDENTITY | rsed|     |     |     |     |          |
 IDENTITY | ru  |     |     |     |     |          |
 IDENTITY | rnu |     |     |     |     |          |
 IDENTITY | rd  |     |     |     |     |          |
@@ -672,16 +630,6 @@ Operation
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ABS      | rseu| rseu|     |     |     | ZNOCA    |
-ABS      | ru  | rseu|     |     |     | ZNOCA    |
-ABS      | rseu| ru  |     |     |     | ZNOCA    |
-ABS      | rnu | rseu|     |     |     | ZNOCA    |
-ABS      | rseu| rnu |     |     |     | ZNOCA    |
-ABS      | rsed| rsed|     |     |     | ZNOCA    |
-ABS      | rd  | rsed|     |     |     | ZNOCA    |
-ABS      | rsed| rd  |     |     |     | ZNOCA    |
-ABS      | rnd | rsed|     |     |     | ZNOCA    |
-ABS      | rsed| rnd |     |     |     | ZNOCA    |
 ABS      | ru  | ru  |     |     |     | ZNOCA    |
 ABS      | ru  | rnu |     |     |     | ZNOCA    |
 ABS      | rnu | ru  |     |     |     | ZNOCA    |
@@ -696,8 +644,6 @@ ABS      | rnd | rnd |     |     |     | ZNOCA    |
 | ADD      |
 ------------
 
-KEEP GOING
-
 Add Op1 and Op2 together and store into Op0. Vector and matricies are added
 element-wise.
 
@@ -705,8 +651,12 @@ Operation:
   Op0 <- Op1 + Op2
   If Op0 is (all) zero then Z <- 1 else Z <- 0
   If Op0 is (all) negative then N <- 1 else N <- 0
-  O <- Did the operation overflow?
-  C <- Was there a carry?
+  if Op* is integral:
+    O <- Did (all) operations overflow?
+    C <- Did (all) operations experience a carry?
+  else:
+    O <- 0
+    C <- 0
   If Op0 is (any) NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -717,28 +667,24 @@ ADD      | rnu | ru  | ru  |     |     |          |
 ADD      | rnu | ru  | rnu |     |     |          |
 ADD      | rnu | rnu | ru  |     |     |          |
 ADD      | rnu | rnu | rnu |     |     |          |
-
 ADD      | ru  | rnu | lu  |     |     |          |
 ADD      | ru  | ru  | lu  |     |     |          |
 ADD      | ru  | ru  | ru  |     |     |          |
 ADD      | ru  | ru  | rnu |     |     |          |
 ADD      | ru  | rnu | ru  |     |     |          |
 ADD      | ru  | rnu | rnu |     |     |          |
-
 ADD      | rnd | rnd | ld  |     |     |          |
 ADD      | rnd | rd  | ld  |     |     |          |
 ADD      | rnd | rd  | rd  |     |     |          |
 ADD      | rnd | rd  | rnd |     |     |          |
 ADD      | rnd | rnd | rd  |     |     |          |
 ADD      | rnd | rnd | rnd |     |     |          |
-
 ADD      | rd  | rnd | ld  |     |     |          |
 ADD      | rd  | rd  | ld  |     |     |          |
 ADD      | rd  | rd  | rd  |     |     |          |
 ADD      | rd  | rd  | rnd |     |     |          |
 ADD      | rd  | rnd | rd  |     |     |          |
 ADD      | rd  | rnd | rnd |     |     |          |
-
 ADD      | rv2d| rv2d| lv2d|     |     |          |
 ADD      | rv2d| rv2d| rv2d|     |     |          |
 ADD      | rv2i| rv2i| lv2i|     |     |          |
