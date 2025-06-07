@@ -3,172 +3,184 @@ Version 1.0 (unfinalized)
 Harvard Architecture
 ====================
 
-This is a LOAD-STORE architecture. So most arithmetic operations and
-such only use registers. There are specific LOAD and STORE instructions
-to move data from memory to registers and back again.
+This is a LOAD-STORE architecture. So most arithmetic operations and such only
+use registers. There are specific LOAD and STORE instructions to move data from
+memory to registers and back again. Stack disciplines (for PUSH and POP) are
+full ascending unless otherwise indicated.
 
 Registers:
-  RegSysU     - Array 2 ULong, names start at 0 index. These registeres are
-                not normally targets of regular instructions and have special
-                instructions to deal with them. so they live in a different
-                operand space.
-    PC        - Program counter
-    CF        - Configuration Register: (bitstart:bitend=defval)
-                  Implicit configuration state.
-                    DEQTest     (0:1=1) 0=raw, 1=absdiff, 2=reldiff
-    ST        - Status Register: (bitstart:bitend=defval)
-                  BNZ: Integer OR Double operation Flags
-                    B: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
-                    N: Negative         (1:1=0)
-                    Z: Zero             (2:2=0)
-                  OC: Integer operation flags
-                    O: Overflow         (3:3=0)
-                    C: Carry            (4:4=0)
-                  WAL: Double operation flags
-                    W: Zero             (5:5=0)
-                    A: NAN              (6:6=0)
-                  IV: Matrix/Vector operation flags
-                    I: Inverse Failed   (7:7=0)
-                    V: Norm Failed      (8:8=0)
-    DS        - DataStack Address (and also the dataTypeStack address)
-    FP        - DataStack Frame Pointer Address
-    RS        - ReturnStack Address
+  RegSys
+    RegSysIntU  - Array 4 ULong, names start at 0 index. These registers are
+                  internal registers not normally targets of regular
+                  instructions. They have special instructions that implicitly
+                  write them. so they live in a different operand space. They
+                  can all be read, though.
+      PC        - Program counter
+      RS        - ReturnStack Address
+      DT        - DataTypeStack Address
+      ST        - Status Register: (bitstart:bitend=defval)
+                    Integer OR Double operation Flags
+                      B: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
+                      Z: Zero             (1:1=0)
+                      N: Negative         (2:2=0)
+                    Integer operation flags
+                      O: Overflow         (3:3=0)
+                      C: Carry            (4:4=0)
+                    Double operation flags
+                      A: NAN              (5:5=0)
+                    Matrix/Vector operation flags
+                      I: Inverse Success  (6:6=0)
+                      V: Norm Success     (7:7=0)
+    RegSysExtU  - Array 3 ULong, names start at 0 index. These registers
+                  external registers that can be explicit targets of
+                  reads/writes, but they are for system level topics and hence
+                  they are in their own namespace.
+      C0        - Configuration Register: (bitstart:bitend=defval)
+                    Implicit configuration state.
+                      T: DEQTestTol       (0:1=1) 0=raw, 1=absdiff, 2=reldiff
+      DS        - DataStack Address
+      FP        - DataStack Frame Address
+    RegSysExtD  - Array 1 Double, names start at 0 index. These registers
+                  external registers that can be explicit targets of
+                  reads/writes, but they are for system level topics and hence
+                  they are in their own namespace.
+      ET        - Double Equality Tolerance (defaults to 10e-12)
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
     SL        - Sleep Ticks
     NB        - Num Bullets
 
   RegNamD     - Array 4 ULong, names start at 0 index. Named registers.
-    ET        - Double Equality Tolerance (defaults to 10e-12)
     SA        - Sub Angle
     AD        - Aim Direction
     BS        - Bullet Speed
     BZ        - Bullet Size
 
   Single V2D type # (maybe get rid of)
-  PO        - Position (2D)
+  PO          - Position (2D)
 
   TObject type
-  BL        - Bullet List
+  BL          - Bullet List
 
   # Scalar registers
-  RegU      - Array 32 ULong
-  RegD      - Array 32 Double
+  RegU        - Array 32 ULong
+  RegD        - Array 32 Double
 
   # Vector Registers
-  RegV2D    - Array 32 SVec2D
-  RegV3D    - Array 32 SVec3D
-  RegV4D    - Array 32 SVec4D
-  RegV2I    - Array 32 SVec2I
-  RegV3I    - Array 32 SVec3I
-  RegV4I    - Array 32 SVec4I
+  RegV2D      - Array 32 SVec2D
+  RegV3D      - Array 32 SVec3D
+  RegV4D      - Array 32 SVec4D
+  RegV2I      - Array 32 SVec2I
+  RegV3I      - Array 32 SVec3I
+  RegV4I      - Array 32 SVec4I
  
   # Matrix Registers
-  RegM2D    - Array 32 SMat2D
-  RegM3D    - Array 32 SMat3D
-  RegM4D    - Array 32 SMat4D
-  RegM2I    - Array 32 SMat2I
-  RegM3I    - Array 32 SMat3I
-  RegM4I    - Array 32 SMat4I
+  RegM2D      - Array 32 SMat2D
+  RegM3D      - Array 32 SMat3D
+  RegM4D      - Array 32 SMat4D
+  RegM2I      - Array 32 SMat2I
+  RegM3I      - Array 32 SMat3I
+  RegM4I      - Array 32 SMat4I
 
   # Quaternion Registers
-  QRegQ     - Array 32 Quaternion Registers
+  QRegQ       - Array 32 Quaternion Registers
 
 Memory:
-  memInst   - Array 256K MachInst types
-  memData   - Array 256K MemValue types
-
-  # TODO: Add reg ptrs to top of these stacks in RegSysU, they start at 0.
+  memInst       - Array 256K MachInst types
+  memData       - Array 256K MemValue types
   retStack      - Array 256K ULong: Return Address Stack (used only by call/ret)
-  dataStack     - Array 256K ULong: Stack of MemValues (used by push/pop)
+  dataStack     - Array 256K MemValue: Stack of MemValues (used by push/pop)
   dataTypeStack - Array 256K UByte: Type of thing pushed to dataStack.
 
 Operands Hierarchy
 ------------------
 
-The operands with a specified category are actually instantiatable. The rest
-are base classes.
+The Instruction operands with a specified category are actually instantiatable.
+The rest are base classes.
 
-Category | Operand Type
+Category | Instruction Operand Type
 ---------------------------------------
-         | Operand
-         |   OpLiteral
-lu       |     OpLitU
-ld       |     OpLitD
-         |     OpLitV
-lv2d     |       OpLitV2D
-lv3d     |       OpLitV3D
-lv4d     |       OpLitV4D
-lv2i     |       OpLitV2I
-lv3i     |       OpLitV3I
-lv4i     |       OpLitV4I
-         |     OpLitM
-lm2d     |       OpLitM2D
-lm3d     |       OpLitM3D
-lm4d     |       OpLitM4D
-lm2i     |       OpLitM2I
-lm3i     |       OpLitM3I
-lm4i     |       OpLitM4I
-lq       |     OpLitQ
-         |   OpRegister
-         |     OpRegSysU
-rpc      |       OpRegPC
-rst      |       OpRegST
-rnu      |     OpRegNamU
-rnd      |     OpRegNamD
-ru       |     OpRegU
-rd       |     OpRegD
-         |     OpRegV
-rpo      |       OpRegPO
-rv2d     |       OpRegV2D
-rv3d     |       OpRegV3D
-rv4d     |       OpRegV4D
-rv2i     |       OpRegV2I
-rv3i     |       OpRegV3I
-rv4i     |       OpRegV4I
-         |     OpRegM
-rm2d     |       OpRegM2D
-rm3d     |       OpRegM3D
-rm4d     |       OpRegM4D
-rm2i     |       OpRegM2I
-rm3i     |       OpRegM3I
-rm4i     |       OpRegM4I
-rq       |     OpRegQ
-         |   OpRelational < <= = >= > !=
-irel     |     OpIntegral
-         |       OpSLT
-         |       OpSLTEQ
-         |       OpSEQ
-         |       OpSGTEQ
-         |       OpSGT
-         |       OpSNOTEQ
-         |       OpULT
-         |       OpULTEQ
-         |       OpUEQ
-         |       OpUGTEQ
-         |       OpUGT
-         |       OpUNOTEQ
-drel     |     OpDouble
-         |       OpDLT
-         |       OpDLTEQ
-         |       OpDEQ
-         |       OpDGTEQ
-         |       OpDGT
-         |       OpDNOTEQ
-ea           OpEffectiveAddress
-         |     OpEffAdrA
-         |     OpEffAdrB
-         |     OpEffAdrBI
-         |     OpEffAdrBA
-         |     OpEffAdrBIA
-         |     OpEffAdrBIS
-         |     OpEffAdrISA
-         |     OpEffAdrBISA
-         |   OpMemory (always contains an OpEffectiveAddress derivative)
-dmem     |     OpDataMemory : DMEM
-smem     |     OpDataStackMemory : SMEM
-rmem     |     OpReturnStackMemory : RMEM
-imem     |     OpInstMemory : IMEM
+         |  Operand
+         |    OpLiteral
+lu       |      OpLitU
+ld       |      OpLitD
+         |      OpLitV
+lv2d     |        OpLitV2D
+lv3d     |        OpLitV3D
+lv4d     |        OpLitV4D
+lv2i     |        OpLitV2I
+lv3i     |        OpLitV3I
+lv4i     |        OpLitV4I
+         |      OpLitM
+lm2d     |        OpLitM2D
+lm3d     |        OpLitM3D
+lm4d     |        OpLitM4D
+lm2i     |        OpLitM2I
+lm3i     |        OpLitM3I
+lm4i     |        OpLitM4I
+lq       |      OpLitQ
+         |    OpRegister
+         |      OpRegSys
+         |        OpRegSysIntU
+rpc      |          OpRegPC
+rseu     |        OpRegSysExtU
+rsed     |        OpRegSysExtD
+rnu      |      OpRegNamU
+rnd      |      OpRegNamD
+ru       |      OpRegU
+rd       |      OpRegD
+         |      OpRegV
+rpo      |        OpRegPO
+rv2d     |        OpRegV2D
+rv3d     |        OpRegV3D
+rv4d     |        OpRegV4D
+rv2i     |        OpRegV2I
+rv3i     |        OpRegV3I
+rv4i     |        OpRegV4I
+         |      OpRegM
+rm2d     |        OpRegM2D
+rm3d     |        OpRegM3D
+rm4d     |        OpRegM4D
+rm2i     |        OpRegM2I
+rm3i     |        OpRegM3I
+rm4i     |        OpRegM4I
+rq       |      OpRegQ
+         |    OpRelational < <= = >= > !=
+irel     |      OpIntegralRelational
+         |        OpSLT
+         |        OpSLTEQ
+         |        OpSEQ
+         |        OpSGTEQ
+         |        OpSGT
+         |        OpSNOTEQ
+         |        OpULT
+         |        OpULTEQ
+         |        OpUEQ
+         |        OpUGTEQ
+         |        OpUGT
+         |        OpUNOTEQ
+drel     |      OpDoubleRelational
+         |        OpDLT
+         |        OpDLTEQ
+         |        OpDEQ
+         |        OpDGTEQ
+         |        OpDGT
+         |        OpDNOTEQ
+ea       |    OpEffectiveAddress
+         |      OpEffAdrA
+         |      OpEffAdrB
+         |      OpEffAdrBI
+         |      OpEffAdrBA
+         |      OpEffAdrBIA
+         |      OpEffAdrBIS
+         |      OpEffAdrISA
+         |      OpEffAdrBISA
+         |    OpMemory (always contains an OpEffectiveAddress derivative)
+dmem     |      OpDataMemory : DMEM
+smem     |      OpDataStackMemory : SMEM
+tmem     |      OpDataTypeStackMemory : TMEM
+imem     |      OpInstMemory : IMEM
+rmem     |      OpReturnStackMemory : RMEM
 
 Effective Address Specification
 -------------------------------
@@ -286,927 +298,1302 @@ and which has an enum specifying its machine opcode value.
 All of these MachOp codes are predictable like this, so we won't explicitly
 specify them in this table. They will go into a giant enum later.
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |FLAGS|
-----------------------------------------------
-NOP      |     |     |     |     |     |     | # No Operation
+------------
+| NOP      |
+------------
 
-LOAD     | ru  | ea  |     |     |     |     | # Load DMEM by default
-LOAD     | ru  | dmem|     |     |     |     |
-LOAD     | ru  | smem|     |     |     |     |
-LOAD     | rnu | ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rnu | dmem|     |     |     |     |
-LOAD     | rnu | smem|     |     |     |     |
-LOAD     | rd  | ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rd  | dmem|     |     |     |     |
-LOAD     | rd  | smem|     |     |     |     |
-LOAD     | rnd | ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rnd | dmem|     |     |     |     |
-LOAD     | rnd | smem|     |     |     |     |
-LOAD     | rv2d| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rv2d| dmem|     |     |     |     |
-LOAD     | rv2d| smem|     |     |     |     |
-LOAD     | rv2i| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rv2i| dmem|     |     |     |     |
-LOAD     | rv2i| smem|     |     |     |     |
-LOAD     | rv3d| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rv3d| dmem|     |     |     |     |
-LOAD     | rv3d| smem|     |     |     |     |
-LOAD     | rv3i| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rv3i| dmem|     |     |     |     |
-LOAD     | rv3i| smem|     |     |     |     |
-LOAD     | rv4d| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rv4d| dmem|     |     |     |     |
-LOAD     | rv4d| smem|     |     |     |     |
-LOAD     | rv4i| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rv4i| dmem|     |     |     |     |
-LOAD     | rv4i| smem|     |     |     |     |
-LOAD     | rm2d| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rm2d| dmem|     |     |     |     |
-LOAD     | rm2d| smem|     |     |     |     |
-LOAD     | rm2i| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rm2i| dmem|     |     |     |     |
-LOAD     | rm2i| smem|     |     |     |     |
-LOAD     | rm3d| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rm3d| dmem|     |     |     |     |
-LOAD     | rm3d| smem|     |     |     |     |
-LOAD     | rm3i| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rm3i| dmem|     |     |     |     |
-LOAD     | rm3i| smem|     |     |     |     |
-LOAD     | rm4d| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rm4d| dmem|     |     |     |     |
-LOAD     | rm4d| smem|     |     |     |     |
-LOAD     | rm4i| ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rm4i| dmem|     |     |     |     |
-LOAD     | rm4i| smem|     |     |     |     |
-LOAD     | rq  | ea  |     |     |     |     | # Load DMEM by default
-LOAD     | rq  | dmem|     |     |     |     |
-LOAD     | rq  | smem|     |     |     |     |
+No operation, increment PC by 1.
 
-STORE    | ea  | ru  |     |     |     |     | # Store DMEM by default
-STORE    | dmem| ru  |     |     |     |     |
-STORE    | smem| ru  |     |     |     |     |
-STORE    | ea  | rnu |     |     |     |     | # Sore DMEM by default
-STORE    | dmem| rnu |     |     |     |     |
-STORE    | smem| rnu |     |     |     |     |
-STORE    | ea  | rd  |     |     |     |     | # Store DMEM by default
-STORE    | dmem| rd  |     |     |     |     |
-STORE    | smem| rd  |     |     |     |     |
-STORE    | ea  | rnd |     |     |     |     | # Store DMEM by default
-STORE    | dmem| rnd |     |     |     |     |
-STORE    | smem| rnd |     |     |     |     |
-STORE    | ea  | rv2d|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rv2d|     |     |     |     |
-STORE    | smem| rv2d|     |     |     |     |
-STORE    | ea  | rv2i|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rv2i|     |     |     |     |
-STORE    | smem| rv2i|     |     |     |     |
-STORE    | ea  | rv3d|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rv3d|     |     |     |     |
-STORE    | smem| rv3d|     |     |     |     |
-STORE    | ea  | rv3i|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rv3i|     |     |     |     |
-STORE    | smem| rv3i|     |     |     |     |
-STORE    | ea  | rv4d|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rv4d|     |     |     |     |
-STORE    | smem| rv4d|     |     |     |     |
-STORE    | ea  | rv4i|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rv4i|     |     |     |     |
-STORE    | smem| rv4i|     |     |     |     |
-STORE    | ea  | rm2d|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rm2d|     |     |     |     |
-STORE    | smem| rm2d|     |     |     |     |
-STORE    | ea  | rm2i|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rm2i|     |     |     |     |
-STORE    | smem| rm2i|     |     |     |     |
-STORE    | ea  | rm3d|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rm3d|     |     |     |     |
-STORE    | smem| rm3d|     |     |     |     |
-STORE    | ea  | rm3i|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rm3i|     |     |     |     |
-STORE    | smem| rm3i|     |     |     |     |
-STORE    | ea  | rm4d|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rm4d|     |     |     |     |
-STORE    | smem| rm4d|     |     |     |     |
-STORE    | ea  | rm4i|     |     |     |     | # Store DMEM by default
-STORE    | dmem| rm4i|     |     |     |     |
-STORE    | smem| rm4i|     |     |     |     |
-STORE    | ea  | rq  |     |     |     |     | # Store DMEM by default
-STORE    | dmem| rq  |     |     |     |     |
-STORE    | smem| rq  |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+NOP      |     |     |     |     |     |          |
 
-COPY     | ru  | ru  |     |     |     |     | # COPY op0 <- op1
-COPY     | ru  | rnu |     |     |     |     |
-COPY     | rnu | ru  |     |     |     |     |
-COPY     | rnu | rnu |     |     |     |     |
-COPY     | rd  | rd  |     |     |     |     |
-COPY     | rd  | rnd |     |     |     |     |
-COPY     | rnd | rd  |     |     |     |     |
-COPY     | rnd | rnd |     |     |     |     |
-COPY     | rv2d| rv2d|     |     |     |     |
-COPY     | rv2i| rv2i|     |     |     |     |
-COPY     | rv3d| rv3d|     |     |     |     |
-COPY     | rv3i| rv3i|     |     |     |     |
-COPY     | rv4d| rv4d|     |     |     |     |
-COPY     | rv4i| rv4i|     |     |     |     |
-COPY     | rm2d| rm2d|     |     |     |     |
-COPY     | rm2i| rm2i|     |     |     |     |
-COPY     | rm3d| rm3d|     |     |     |     |
-COPY     | rm3i| rm3i|     |     |     |     |
-COPY     | rm4d| rm4d|     |     |     |     |
-COPY     | rm4i| rm4i|     |     |     |     |
-COPY     | rq  | rq  |     |     |     |     |
+------------
+| EFFADDR  |
+------------
 
-YIELD    | ru  | rd  | lu  | ld  | ea  |     | # Stop BPU & ret vals & restart
-YIELD    | rnu | rd  | lu  | ld  | ea  |     |
-YIELD    | ru  | rnd | lu  | ld  | ea  |     |
-YIELD    | rnu | rnd | lu  | ld  | ea  |     |
+Compute the value of the effective address form in Op1 and store in Op0.
 
-# PUSH will push the value onto dataStack and the type of it onto dataTypeStack.
-PUSH     | ru  |     |     |     |     |     | # Push onto data&dataType stack
-PUSH     | rnu |     |     |     |     |     |
-PUSH     | rv2d|     |     |     |     |     |
-PUSH     | rv2i|     |     |     |     |     |
-PUSH     | rv3d|     |     |     |     |     |
-PUSH     | rv3i|     |     |     |     |     |
-PUSH     | rv4d|     |     |     |     |     |
-PUSH     | rv4i|     |     |     |     |     |
-PUSH     | rm2d|     |     |     |     |     |
-PUSH     | rm2i|     |     |     |     |     |
-PUSH     | rm3d|     |     |     |     |     |
-PUSH     | rm3i|     |     |     |     |     |
-PUSH     | rm4d|     |     |     |     |     |
-PUSH     | rm4i|     |     |     |     |     |
-PUSH     | rq  |     |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+EFFADDR  | ru  | ea  |     |     |     |          |
+EFFADDR  | rnu | ea  |     |     |     |          |
+EFFADDR  | rseu| ea  |     |     |     |          |
 
-# POP will pop the value onto dataStack and match the dataType too
-POP      | rd  |     |     |     |     |     | # pop from data&dataType stack
-POP      | rnd |     |     |     |     |     |
-POP      | rv2d|     |     |     |     |     |
-POP      | rv2i|     |     |     |     |     |
-POP      | rv3d|     |     |     |     |     |
-POP      | rv3i|     |     |     |     |     |
-POP      | rv4d|     |     |     |     |     |
-POP      | rv4i|     |     |     |     |     |
-POP      | rm2d|     |     |     |     |     |
-POP      | rm2i|     |     |     |     |     |
-POP      | rm3d|     |     |     |     |     |
-POP      | rm3i|     |     |     |     |     |
-POP      | rm4d|     |     |     |     |     |
-POP      | rm4i|     |     |     |     |     |
-POP      | rq  |     |     |     |     |     |
+------------
+| LOAD     |
+------------
 
-LITERAL  | rnu | lu  |     |     |     |     | # Put literal into reg
-LITERAL  | rnd | ld  |     |     |     |     |
-LITERAL  | ru  | lu  |     |     |     |     |
-LITERAL  | rd  | ld  |     |     |     |     |
-LITERAL  | rv2d| lv2d|     |     |     |     |
-LITERAL  | rv2i| lv2i|     |     |     |     |
-LITERAL  | rv3d| lv3d|     |     |     |     |
-LITERAL  | rv3i| lv3i|     |     |     |     |
-LITERAL  | rv4d| lv4d|     |     |     |     |
-LITERAL  | rv4i| lv4i|     |     |     |     |
-LITERAL  | rm2d| lm2d|     |     |     |     |
-LITERAL  | rm2i| lm2i|     |     |     |     |
-LITERAL  | rm3d| lm3d|     |     |     |     |
-LITERAL  | rm3i| lm3i|     |     |     |     |
-LITERAL  | rm4d| lm4d|     |     |     |     |
-LITERAL  | rm4i| lm4i|     |     |     |     |
-LITERAL  | rq  | lq  |     |     |     |     |
+Load into Op0 the Value at Memory Address specified in Op1.
+Any ea operand defaults to DMEM.
 
-IDENTITY | rm2d|     |     |     |     |     | # Put IDENTITY into it
-IDENTITY | rm2i|     |     |     |     |     |
-IDENTITY | rm3d|     |     |     |     |     |
-IDENTITY | rm3i|     |     |     |     |     |
-IDENTITY | rm4d|     |     |     |     |     |
-IDENTITY | rm4i|     |     |     |     |     |
-IDENTITY | rq  |     |     |     |     |     |
+Operation:
+  Op0 <- Op1
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
 
-ABS      | rnu |     |     |     |     |     | # ABS
-ABS      | ru  |     |     |     |     |     |
-ABS      | rnd |     |     |     |     |     |
-ABS      | rd  |     |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+LOAD     | rseu| ea  |     |     |     | ZNOCA    |
+LOAD     | rseu| dmem|     |     |     | ZNOCA    |
+LOAD     | rseu| smem|     |     |     | ZNOCA    |
+LOAD     | rsed| ea  |     |     |     | ZNOCA    |
+LOAD     | rsed| dmem|     |     |     | ZNOCA    |
+LOAD     | rsed| smem|     |     |     | ZNOCA    |
+LOAD     | ru  | ea  |     |     |     | ZNOCA    |
+LOAD     | ru  | dmem|     |     |     | ZNOCA    |
+LOAD     | ru  | smem|     |     |     | ZNOCA    |
+LOAD     | rnu | ea  |     |     |     | ZNOCA    |
+LOAD     | rnu | dmem|     |     |     | ZNOCA    |
+LOAD     | rnu | smem|     |     |     | ZNOCA    |
+LOAD     | rd  | ea  |     |     |     | ZNOCA    |
+LOAD     | rd  | dmem|     |     |     | ZNOCA    |
+LOAD     | rd  | smem|     |     |     | ZNOCA    |
+LOAD     | rnd | ea  |     |     |     | ZNOCA    |
+LOAD     | rnd | dmem|     |     |     | ZNOCA    |
+LOAD     | rnd | smem|     |     |     | ZNOCA    |
+LOAD     | rv2d| ea  |     |     |     | ZNOCA    |
+LOAD     | rv2d| dmem|     |     |     | ZNOCA    |
+LOAD     | rv2d| smem|     |     |     | ZNOCA    |
+LOAD     | rv2i| ea  |     |     |     | ZNOCA    |
+LOAD     | rv2i| dmem|     |     |     | ZNOCA    |
+LOAD     | rv2i| smem|     |     |     | ZNOCA    |
+LOAD     | rv3d| ea  |     |     |     | ZNOCA    |
+LOAD     | rv3d| dmem|     |     |     | ZNOCA    |
+LOAD     | rv3d| smem|     |     |     | ZNOCA    |
+LOAD     | rv3i| ea  |     |     |     | ZNOCA    |
+LOAD     | rv3i| dmem|     |     |     | ZNOCA    |
+LOAD     | rv3i| smem|     |     |     | ZNOCA    |
+LOAD     | rv4d| ea  |     |     |     | ZNOCA    |
+LOAD     | rv4d| dmem|     |     |     | ZNOCA    |
+LOAD     | rv4d| smem|     |     |     | ZNOCA    |
+LOAD     | rv4i| ea  |     |     |     | ZNOCA    |
+LOAD     | rv4i| dmem|     |     |     | ZNOCA    |
+LOAD     | rv4i| smem|     |     |     | ZNOCA    |
+LOAD     | rm2d| ea  |     |     |     | ZNOCA    |
+LOAD     | rm2d| dmem|     |     |     | ZNOCA    |
+LOAD     | rm2d| smem|     |     |     | ZNOCA    |
+LOAD     | rm2i| ea  |     |     |     | ZNOCA    |
+LOAD     | rm2i| dmem|     |     |     | ZNOCA    |
+LOAD     | rm2i| smem|     |     |     | ZNOCA    |
+LOAD     | rm3d| ea  |     |     |     | ZNOCA    |
+LOAD     | rm3d| dmem|     |     |     | ZNOCA    |
+LOAD     | rm3d| smem|     |     |     | ZNOCA    |
+LOAD     | rm3i| ea  |     |     |     | ZNOCA    |
+LOAD     | rm3i| dmem|     |     |     | ZNOCA    |
+LOAD     | rm3i| smem|     |     |     | ZNOCA    |
+LOAD     | rm4d| ea  |     |     |     | ZNOCA    |
+LOAD     | rm4d| dmem|     |     |     | ZNOCA    |
+LOAD     | rm4d| smem|     |     |     | ZNOCA    |
+LOAD     | rm4i| ea  |     |     |     | ZNOCA    |
+LOAD     | rm4i| dmem|     |     |     | ZNOCA    |
+LOAD     | rm4i| smem|     |     |     | ZNOCA    |
+LOAD     | rq  | ea  |     |     |     | ZNOCA    |
+LOAD     | rq  | dmem|     |     |     | ZNOCA    |
+LOAD     | rq  | smem|     |     |     | ZNOCA    |
 
-ADD      | rnu | rnu | lu  |     |     |     | # ADD for scalar U registers
-ADD      | rnu | ru  | lu  |     |     |     |
-ADD      | rnu | ru  | ru  |     |     |     |
-ADD      | rnu | ru  | rnu |     |     |     |
-ADD      | rnu | rnu | ru  |     |     |     |
-ADD      | rnu | rnu | rnu |     |     |     |
-ADD      | ru  | rnu | lu  |     |     |     |
-ADD      | ru  | ru  | lu  |     |     |     |
-ADD      | ru  | ru  | ru  |     |     |     |
-ADD      | ru  | ru  | rnu |     |     |     |
-ADD      | ru  | rnu | ru  |     |     |     |
-ADD      | ru  | rnu | rnu |     |     |     |
-ADD      | rnd | rnd | ld  |     |     |     | # ADD for scalar D regisers
-ADD      | rnd | rd  | ld  |     |     |     |
-ADD      | rnd | rd  | rd  |     |     |     |
-ADD      | rnd | rd  | rnd |     |     |     |
-ADD      | rnd | rnd | rd  |     |     |     |
-ADD      | rnd | rnd | rnd |     |     |     |
-ADD      | rd  | rnd | ld  |     |     |     |
-ADD      | rd  | rd  | ld  |     |     |     |
-ADD      | rd  | rd  | rd  |     |     |     |
-ADD      | rd  | rd  | rnd |     |     |     |
-ADD      | rd  | rnd | rd  |     |     |     |
-ADD      | rd  | rnd | rnd |     |     |     |
-ADD      | rv2d| rv2d| lv2d|     |     |     | # ADD group for V2D
-ADD      | rv2d| rv2d| rv2d|     |     |     |
-ADD      | rv2i| rv2i| lv2i|     |     |     | # ADD group for V2I
-ADD      | rv2i| rv2i| rv2i|     |     |     |
-ADD      | rv3d| rv3d| lv3d|     |     |     | # ADD group for V3D
-ADD      | rv3d| rv3d| rv3d|     |     |     |
-ADD      | rv3i| rv3i| lv3i|     |     |     | # ADD group for V3I
-ADD      | rv3i| rv3i| rv3i|     |     |     |
-ADD      | rv4d| rv4d| lv4d|     |     |     | # ADD group for V4D
-ADD      | rv4d| rv4d| rv4d|     |     |     |
-ADD      | rv4i| rv4i| lv4i|     |     |     | # ADD group for V4I
-ADD      | rv4i| rv4i| rv4i|     |     |     |
-ADD      | rm2d| rm2d| lm2d|     |     |     | # ADD group for M2D
-ADD      | rm2d| rm2d| rm2d|     |     |     |
-ADD      | rm2i| rm2i| lm2i|     |     |     | # ADD group for M2I
-ADD      | rm2i| rm2i| rm2i|     |     |     |
-ADD      | rm3d| rm3d| lm3d|     |     |     | # ADD group for M3D
-ADD      | rm3d| rm3d| rm3d|     |     |     |
-ADD      | rm3i| rm3i| lm3i|     |     |     | # ADD group for M3I
-ADD      | rm3i| rm3i| rm3i|     |     |     |
-ADD      | rm4d| rm4d| lm4d|     |     |     | # ADD group for M4D
-ADD      | rm4d| rm4d| rm4d|     |     |     |
-ADD      | rm4i| rm4i| lm4i|     |     |     | # ADD group for M4I
-ADD      | rm4i| rm4i| rm4i|     |     |     |
+------------
+| STORE    |
+------------
 
-ADC      | rnu | rnu | lu  |     |     |     | # ADC for scalar U registers
-ADC      | rnu | ru  | lu  |     |     |     |
-ADC      | rnu | ru  | ru  |     |     |     |
-ADC      | rnu | ru  | rnu |     |     |     |
-ADC      | rnu | rnu | ru  |     |     |     |
-ADC      | rnu | rnu | rnu |     |     |     |
-ADC      | ru  | rnu | lu  |     |     |     |
-ADC      | ru  | ru  | lu  |     |     |     |
-ADC      | ru  | ru  | ru  |     |     |     |
-ADC      | ru  | ru  | rnu |     |     |     |
-ADC      | ru  | rnu | ru  |     |     |     |
-ADC      | ru  | rnu | rnu |     |     |     |
+Store into Memory Address specified in Op0 the value in Op1.
+Op0 <- Op1
+Any ea operand defaults to DMEM.
 
-SUB      | rnu | rnu | lu  |     |     |     | # SUB for scalar U registers
-SUB      | rnu | ru  | lu  |     |     |     |
-SUB      | rnu | ru  | ru  |     |     |     |
-SUB      | rnu | ru  | rnu |     |     |     |
-SUB      | rnu | rnu | ru  |     |     |     |
-SUB      | rnu | rnu | rnu |     |     |     |
-SUB      | ru  | rnu | lu  |     |     |     |
-SUB      | ru  | ru  | lu  |     |     |     |
-SUB      | ru  | ru  | ru  |     |     |     |
-SUB      | ru  | ru  | rnu |     |     |     |
-SUB      | ru  | rnu | ru  |     |     |     |
-SUB      | ru  | rnu | rnu |     |     |     |
-SUB      | rnd | rnd | ld  |     |     |     | # SUB for scalar D regisers
-SUB      | rnd | rd  | ld  |     |     |     |
-SUB      | rnd | rd  | rd  |     |     |     |
-SUB      | rnd | rd  | rnd |     |     |     |
-SUB      | rnd | rnd | rd  |     |     |     |
-SUB      | rnd | rnd | rnd |     |     |     |
-SUB      | rd  | rnd | ld  |     |     |     |
-SUB      | rd  | rd  | ld  |     |     |     |
-SUB      | rd  | rd  | rd  |     |     |     |
-SUB      | rd  | rd  | rnd |     |     |     |
-SUB      | rd  | rnd | rd  |     |     |     |
-SUB      | rd  | rnd | rnd |     |     |     |
-SUB      | rv2d| rv2d| lv2d|     |     |     | # SUB group for V2D
-SUB      | rv2d| rv2d| rv2d|     |     |     |
-SUB      | rv2i| rv2i| lv2i|     |     |     | # SUB group for V2I
-SUB      | rv2i| rv2i| rv2i|     |     |     |
-SUB      | rv3d| rv3d| lv3d|     |     |     | # SUB group for V3D
-SUB      | rv3d| rv3d| rv3d|     |     |     |
-SUB      | rv3i| rv3i| lv3i|     |     |     | # SUB group for V3I
-SUB      | rv3i| rv3i| rv3i|     |     |     |
-SUB      | rv4d| rv4d| lv4d|     |     |     | # SUB group for V4D
-SUB      | rv4d| rv4d| rv4d|     |     |     |
-SUB      | rv4i| rv4i| lv4i|     |     |     | # SUB group for V4I
-SUB      | rv4i| rv4i| rv4i|     |     |     |
-SUB      | rm2d| rm2d| lm2d|     |     |     | # SUB group for M2D
-SUB      | rm2d| rm2d| rm2d|     |     |     |
-SUB      | rm2i| rm2i| lm2i|     |     |     | # SUB group for M2I
-SUB      | rm2i| rm2i| rm2i|     |     |     |
-SUB      | rm3d| rm3d| lm3d|     |     |     | # SUB group for M3D
-SUB      | rm3d| rm3d| rm3d|     |     |     |
-SUB      | rm3i| rm3i| lm3i|     |     |     | # SUB group for M3I
-SUB      | rm3i| rm3i| rm3i|     |     |     |
-SUB      | rm4d| rm4d| lm4d|     |     |     | # SUB group for M4D
-SUB      | rm4d| rm4d| rm4d|     |     |     |
-SUB      | rm4i| rm4i| lm4i|     |     |     | # SUB group for M4I
-SUB      | rm4i| rm4i| rm4i|     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+STORE    | ea  | rseu|     |     |     |          |
+STORE    | dmem| rseu|     |     |     |          |
+STORE    | smem| rseu|     |     |     |          |
+STORE    | ea  | rsed|     |     |     |          |
+STORE    | dmem| rsed|     |     |     |          |
+STORE    | smem| rsed|     |     |     |          |
+STORE    | ea  | ru  |     |     |     |          |
+STORE    | dmem| ru  |     |     |     |          |
+STORE    | smem| ru  |     |     |     |          |
+STORE    | ea  | rnu |     |     |     |          |
+STORE    | dmem| rnu |     |     |     |          |
+STORE    | smem| rnu |     |     |     |          |
+STORE    | ea  | rd  |     |     |     |          |
+STORE    | dmem| rd  |     |     |     |          |
+STORE    | smem| rd  |     |     |     |          |
+STORE    | ea  | rnd |     |     |     |          |
+STORE    | dmem| rnd |     |     |     |          |
+STORE    | smem| rnd |     |     |     |          |
+STORE    | ea  | rv2d|     |     |     |          |
+STORE    | dmem| rv2d|     |     |     |          |
+STORE    | smem| rv2d|     |     |     |          |
+STORE    | ea  | rv2i|     |     |     |          |
+STORE    | dmem| rv2i|     |     |     |          |
+STORE    | smem| rv2i|     |     |     |          |
+STORE    | ea  | rv3d|     |     |     |          |
+STORE    | dmem| rv3d|     |     |     |          |
+STORE    | smem| rv3d|     |     |     |          |
+STORE    | ea  | rv3i|     |     |     |          |
+STORE    | dmem| rv3i|     |     |     |          |
+STORE    | smem| rv3i|     |     |     |          |
+STORE    | ea  | rv4d|     |     |     |          |
+STORE    | dmem| rv4d|     |     |     |          |
+STORE    | smem| rv4d|     |     |     |          |
+STORE    | ea  | rv4i|     |     |     |          |
+STORE    | dmem| rv4i|     |     |     |          |
+STORE    | smem| rv4i|     |     |     |          |
+STORE    | ea  | rm2d|     |     |     |          |
+STORE    | dmem| rm2d|     |     |     |          |
+STORE    | smem| rm2d|     |     |     |          |
+STORE    | ea  | rm2i|     |     |     |          |
+STORE    | dmem| rm2i|     |     |     |          |
+STORE    | smem| rm2i|     |     |     |          |
+STORE    | ea  | rm3d|     |     |     |          |
+STORE    | dmem| rm3d|     |     |     |          |
+STORE    | smem| rm3d|     |     |     |          |
+STORE    | ea  | rm3i|     |     |     |          |
+STORE    | dmem| rm3i|     |     |     |          |
+STORE    | smem| rm3i|     |     |     |          |
+STORE    | ea  | rm4d|     |     |     |          |
+STORE    | dmem| rm4d|     |     |     |          |
+STORE    | smem| rm4d|     |     |     |          |
+STORE    | ea  | rm4i|     |     |     |          |
+STORE    | dmem| rm4i|     |     |     |          |
+STORE    | smem| rm4i|     |     |     |          |
+STORE    | ea  | rq  |     |     |     |          |
+STORE    | dmem| rq  |     |     |     |          |
+STORE    | smem| rq  |     |     |     |          |
 
-UMUL     | ru  | rnu | lu  |     |     |     | # UMUL: 128bit ru hi, ru+1 lo
-UMUL     | ru  | ru  | lu  |     |     |     |
-UMUL     | ru  | ru  | ru  |     |     |     |
-UMUL     | ru  | ru  | rnu |     |     |     |
-UMUL     | ru  | rnu | ru  |     |     |     |
-UMUL     | ru  | rnu | rnu |     |     |     |
+------------
+| COPY     |
+------------
 
-MUL      | ru  | rnu | lu  |     |     |     | # MUL: 128bit, ru hi, ru+1 lo
-MUL      | ru  | ru  | lu  |     |     |     |
-MUL      | ru  | ru  | ru  |     |     |     |
-MUL      | ru  | ru  | rnu |     |     |     |
-MUL      | ru  | rnu | ru  |     |     |     |
-MUL      | ru  | rnu | rnu |     |     |     |
-MUL      | rd  | rnd | ld  |     |     |     | # MUL: rd is only result
-MUL      | rd  | rd  | ld  |     |     |     |
-MUL      | rd  | rd  | rd  |     |     |     |
-MUL      | rd  | rd  | rnd |     |     |     |
-MUL      | rd  | rnd | rd  |     |     |     |
-MUL      | rd  | rnd | rnd |     |     |     |
-MUL      | rv2d| rv2d| lv2d|     |     |     | # MUL group for V2D element-wise
-MUL      | rv2d| rv2d| rv2d|     |     |     |
-MUL      | rv2i| rv2i| lv2i|     |     |     | # MUL group for V2I element-wise
-MUL      | rv2i| rv2i| rv2i|     |     |     |
-MUL      | rv3d| rv3d| lv3d|     |     |     | # MUL group for V3D element-wise
-MUL      | rv3d| rv3d| rv3d|     |     |     |
-MUL      | rv3i| rv3i| lv3i|     |     |     | # MUL group for V3I element-wise
-MUL      | rv3i| rv3i| rv3i|     |     |     |
-MUL      | rv4d| rv4d| lv4d|     |     |     | # MUL group for V4D element-wise
-MUL      | rv4d| rv4d| rv4d|     |     |     |
-MUL      | rv4i| rv4i| lv4i|     |     |     | # MUL group for V4I element-wise
-MUL      | rv4i| rv4i| rv4i|     |     |     |
-MUL      | rm2d| rm2d| lm2d|     |     |     | # MUL group for M2D element-wise
-MUL      | rm2d| rm2d| rm2d|     |     |     |
-MUL      | rm2i| rm2i| lm2i|     |     |     | # MUL group for M2I element-wise
-MUL      | rm2i| rm2i| rm2i|     |     |     |
-MUL      | rm3d| rm3d| lm3d|     |     |     | # MUL group for M3D element-wise
-MUL      | rm3d| rm3d| rm3d|     |     |     |
-MUL      | rm3i| rm3i| lm3i|     |     |     | # MUL group for M3I element-wise
-MUL      | rm3i| rm3i| rm3i|     |     |     |
-MUL      | rm4d| rm4d| lm4d|     |     |     | # MUL group for M4D element-wise
-MUL      | rm4d| rm4d| rm4d|     |     |     |
-MUL      | rm4i| rm4i| lm4i|     |     |     | # MUL group for M4I element-wise
-MUL      | rm4i| rm4i| rm4i|     |     |     |
+Copy into Op0 the value from Op1.
 
-DOT      | rv2d| rv2d| lv2d|     |     |     | # Dot prod: op0 <- op1 dot op2
-DOT      | rv2d| rv2d| rv2d|     |     |     |
-DOT      | rv2i| rv2i| lv21|     |     |     |
-DOT      | rv2i| rv2i| rv21|     |     |     |
-DOT      | rv3d| rv3d| lv3d|     |     |     |
-DOT      | rv3d| rv3d| rv3d|     |     |     |
-DOT      | rv3i| rv3i| lv31|     |     |     |
-DOT      | rv3i| rv3i| rv31|     |     |     |
-DOT      | rv4d| rv4d| lv4d|     |     |     |
-DOT      | rv4d| rv4d| rv4d|     |     |     |
-DOT      | rv4i| rv4i| lv41|     |     |     |
-DOT      | rv4i| rv4i| rv41|     |     |     |
+Operation:
+  Op0 <- Op1
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
 
-CROSS    | rv3d| rv3d| lv3d| lu  |     |     | # 0:0<-1X2 OR 1:0<-2X1, lu:0,1
-CROSS    | rv3d| rv3d| rv3d| lu  |     |     |
-CROSS    | rv3i| rv3i| lv31| lu  |     |     |
-CROSS    | rv3i| rv3i| rv31| lu  |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COPY     | rseu| rseu|     |     |     | ZNOCA    |
+COPY     | ru  | rseu|     |     |     | ZNOCA    |
+COPY     | rseu| ru  |     |     |     | ZNOCA    |
+COPY     | rnu | rseu|     |     |     | ZNOCA    |
+COPY     | rseu| rnu |     |     |     | ZNOCA    |
+COPY     | rsed| rsed|     |     |     | ZNOCA    |
+COPY     | rd  | rsed|     |     |     | ZNOCA    |
+COPY     | rsed| rd  |     |     |     | ZNOCA    |
+COPY     | rnd | rsed|     |     |     | ZNOCA    |
+COPY     | rsed| rnd |     |     |     | ZNOCA    |
+COPY     | ru  | ru  |     |     |     | ZNOCA    |
+COPY     | ru  | rnu |     |     |     | ZNOCA    |
+COPY     | rnu | ru  |     |     |     | ZNOCA    |
+COPY     | rnu | rnu |     |     |     | ZNOCA    |
+COPY     | rd  | rd  |     |     |     | ZNOCA    |
+COPY     | rd  | rnd |     |     |     | ZNOCA    |
+COPY     | rnd | rd  |     |     |     | ZNOCA    |
+COPY     | rnd | rnd |     |     |     | ZNOCA    |
+COPY     | rv2d| rv2d|     |     |     | ZNOCA    |
+COPY     | rv2i| rv2i|     |     |     | ZNOCA    |
+COPY     | rv3d| rv3d|     |     |     | ZNOCA    |
+COPY     | rv3i| rv3i|     |     |     | ZNOCA    |
+COPY     | rv4d| rv4d|     |     |     | ZNOCA    |
+COPY     | rv4i| rv4i|     |     |     | ZNOCA    |
+COPY     | rm2d| rm2d|     |     |     | ZNOCA    |
+COPY     | rm2i| rm2i|     |     |     | ZNOCA    |
+COPY     | rm3d| rm3d|     |     |     | ZNOCA    |
+COPY     | rm3i| rm3i|     |     |     | ZNOCA    |
+COPY     | rm4d| rm4d|     |     |     | ZNOCA    |
+COPY     | rm4i| rm4i|     |     |     | ZNOCA    |
+COPY     | rq  | rq  |     |     |     | ZNOCA    |
 
+------------
+| YIELD    |
+------------
+
+Stop the BPU, do not disturb any registers or memory values, return the
+specified operand values to the invoker of the BPU. If the BPU is restarted
+from the last YIELD (as opposed to a reinitialization and a start from some
+other address), then restart at the IMEM address specified by Op4.
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+YIELD    | ru  | rd  | lu  | ld  | ea  |          |
+YIELD    | rnu | rd  | lu  | ld  | ea  |          |
+YIELD    | ru  | rnd | lu  | ld  | ea  |          |
+YIELD    | rnu | rnd | lu  | ld  | ea  |          |
+
+------------
+| PUSH     |
+------------
+
+PUSH will push the indicated value in Op0 onto the dataStack. It will also push
+the type of Op0 onto the dataTypeStack.
+
+Operation:
+  Repeat sizeof(Op0) times:
+    Increment DS
+    Write value to SMEM B(DS)
+  Increment DT by 1
+  Write Type(Op0) to TMEM B(DT)
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+PUSH     | rseu|     |     |     |     |          |
+PUSH     | rsed|     |     |     |     |          |
+PUSH     | ru  |     |     |     |     |          |
+PUSH     | rnu |     |     |     |     |          |
+PUSH     | rv2d|     |     |     |     |          |
+PUSH     | rv2i|     |     |     |     |          |
+PUSH     | rv3d|     |     |     |     |          |
+PUSH     | rv3i|     |     |     |     |          |
+PUSH     | rv4d|     |     |     |     |          |
+PUSH     | rv4i|     |     |     |     |          |
+PUSH     | rm2d|     |     |     |     |          |
+PUSH     | rm2i|     |     |     |     |          |
+PUSH     | rm3d|     |     |     |     |          |
+PUSH     | rm3i|     |     |     |     |          |
+PUSH     | rm4d|     |     |     |     |          |
+PUSH     | rm4i|     |     |     |     |          |
+PUSH     | rq  |     |     |     |     |          |
+
+------------
+| POP      |
+------------
+
+POP attempts to pop a Type(Op0) value from the dataStack. If the type indicated
+at the top of the dataTypeStack doesn't match, then an error occurs and the
+dataTypeStack and dataStack are left unchanged. Otherwise, the item is
+popped from the dataStack into Op0 and the dataTypeStack has one entry
+popped from it.
+
+Operation:
+  Read TypeSize from TMEM B(DT)
+  Check that it matches Type(Op0), error if not.
+  Decrement DT by 1
+  Repeat TypeSize times:
+    Read value into Op0 from SMEM B(DS)
+    Decrement DS
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+POP      | rseu|     |     |     |     |          |
+POP      | rsed|     |     |     |     |          |
+POP      | ru  |     |     |     |     |          |
+POP      | rnu |     |     |     |     |          |
+POP      | rd  |     |     |     |     |          |
+POP      | rnd |     |     |     |     |          |
+POP      | rv2d|     |     |     |     |          |
+POP      | rv2i|     |     |     |     |          |
+POP      | rv3d|     |     |     |     |          |
+POP      | rv3i|     |     |     |     |          |
+POP      | rv4d|     |     |     |     |          |
+POP      | rv4i|     |     |     |     |          |
+POP      | rm2d|     |     |     |     |          |
+POP      | rm2i|     |     |     |     |          |
+POP      | rm3d|     |     |     |     |          |
+POP      | rm3i|     |     |     |     |          |
+POP      | rm4d|     |     |     |     |          |
+POP      | rm4i|     |     |     |     |          |
+POP      | rq  |     |     |     |     |          |
+
+------------
+| LITERAL  |
+------------
+
+Put the literal in Op1 into Op0.
+
+Op0 <- Op1
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+LITERAL  | rseu| lu  |     |     |     | ZNOCA    |
+LITERAL  | rsed| ld  |     |     |     | ZNOCA    |
+LITERAL  | rnu | lu  |     |     |     | ZNOCA    |
+LITERAL  | rnd | ld  |     |     |     | ZNOCA    |
+LITERAL  | ru  | lu  |     |     |     | ZNOCA    |
+LITERAL  | rd  | ld  |     |     |     | ZNOCA    |
+LITERAL  | rv2d| lv2d|     |     |     | ZNOCA    |
+LITERAL  | rv2i| lv2i|     |     |     | ZNOCA    |
+LITERAL  | rv3d| lv3d|     |     |     | ZNOCA    |
+LITERAL  | rv3i| lv3i|     |     |     | ZNOCA    |
+LITERAL  | rv4d| lv4d|     |     |     | ZNOCA    |
+LITERAL  | rv4i| lv4i|     |     |     | ZNOCA    |
+LITERAL  | rm2d| lm2d|     |     |     | ZNOCA    |
+LITERAL  | rm2i| lm2i|     |     |     | ZNOCA    |
+LITERAL  | rm3d| lm3d|     |     |     | ZNOCA    |
+LITERAL  | rm3i| lm3i|     |     |     | ZNOCA    |
+LITERAL  | rm4d| lm4d|     |     |     | ZNOCA    |
+LITERAL  | rm4i| lm4i|     |     |     | ZNOCA    |
+LITERAL  | rq  | lq  |     |     |     | ZNOCA    |
+
+------------
+| IDENTITY |
+------------
+
+Place the identity value into the Op0 register.
+The identity type is whatever ONE is in the mathematical
+object contained in Op0. For rq, the identity is a
+quaternion with no rotations.
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+IDENTITY | rseu|     |     |     |     |          |
+IDENTITY | rsed|     |     |     |     |          |
+IDENTITY | ru  |     |     |     |     |          |
+IDENTITY | rnu |     |     |     |     |          |
+IDENTITY | rd  |     |     |     |     |          |
+IDENTITY | rnd |     |     |     |     |          |
+IDENTITY | rm2d|     |     |     |     |          |
+IDENTITY | rm2i|     |     |     |     |          |
+IDENTITY | rm3d|     |     |     |     |          |
+IDENTITY | rm3i|     |     |     |     |          |
+IDENTITY | rm4d|     |     |     |     |          |
+IDENTITY | rm4i|     |     |     |     |          |
+IDENTITY | rq  |     |     |     |     |          |
+
+------------
+| ABS      |
+------------
+
+Compute the absolute value of Op1 and store into Op0
+
+Operation
+  Op0 <- abs(Op1)
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  N <- 0
+  O <- 0
+  C <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ABS      | rseu| rseu|     |     |     | ZNOCA    |
+ABS      | ru  | rseu|     |     |     | ZNOCA    |
+ABS      | rseu| ru  |     |     |     | ZNOCA    |
+ABS      | rnu | rseu|     |     |     | ZNOCA    |
+ABS      | rseu| rnu |     |     |     | ZNOCA    |
+ABS      | rsed| rsed|     |     |     | ZNOCA    |
+ABS      | rd  | rsed|     |     |     | ZNOCA    |
+ABS      | rsed| rd  |     |     |     | ZNOCA    |
+ABS      | rnd | rsed|     |     |     | ZNOCA    |
+ABS      | rsed| rnd |     |     |     | ZNOCA    |
+ABS      | ru  | ru  |     |     |     | ZNOCA    |
+ABS      | ru  | rnu |     |     |     | ZNOCA    |
+ABS      | rnu | ru  |     |     |     | ZNOCA    |
+ABS      | rnu | rnu |     |     |     | ZNOCA    |
+ABS      | rd  | rd  |     |     |     | ZNOCA    |
+ABS      | rd  | rnd |     |     |     | ZNOCA    |
+ABS      | rnd | rd  |     |     |     | ZNOCA    |
+ABS      | rnd | rnd |     |     |     | ZNOCA    |
+
+
+------------
+| ADD      |
+------------
+
+KEEP GOING
+
+Add Op1 and Op2 together and store into Op0. Vector and matricies are added
+element-wise.
+
+Operation:
+  Op0 <- Op1 + Op2
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  O <- Did the operation overflow?
+  C <- Was there a carry?
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ADD      | rnu | rnu | lu  |     |     |          |
+ADD      | rnu | ru  | lu  |     |     |          |
+ADD      | rnu | ru  | ru  |     |     |          |
+ADD      | rnu | ru  | rnu |     |     |          |
+ADD      | rnu | rnu | ru  |     |     |          |
+ADD      | rnu | rnu | rnu |     |     |          |
+
+ADD      | ru  | rnu | lu  |     |     |          |
+ADD      | ru  | ru  | lu  |     |     |          |
+ADD      | ru  | ru  | ru  |     |     |          |
+ADD      | ru  | ru  | rnu |     |     |          |
+ADD      | ru  | rnu | ru  |     |     |          |
+ADD      | ru  | rnu | rnu |     |     |          |
+
+ADD      | rnd | rnd | ld  |     |     |          |
+ADD      | rnd | rd  | ld  |     |     |          |
+ADD      | rnd | rd  | rd  |     |     |          |
+ADD      | rnd | rd  | rnd |     |     |          |
+ADD      | rnd | rnd | rd  |     |     |          |
+ADD      | rnd | rnd | rnd |     |     |          |
+
+ADD      | rd  | rnd | ld  |     |     |          |
+ADD      | rd  | rd  | ld  |     |     |          |
+ADD      | rd  | rd  | rd  |     |     |          |
+ADD      | rd  | rd  | rnd |     |     |          |
+ADD      | rd  | rnd | rd  |     |     |          |
+ADD      | rd  | rnd | rnd |     |     |          |
+
+ADD      | rv2d| rv2d| lv2d|     |     |          |
+ADD      | rv2d| rv2d| rv2d|     |     |          |
+ADD      | rv2i| rv2i| lv2i|     |     |          |
+ADD      | rv2i| rv2i| rv2i|     |     |          |
+ADD      | rv3d| rv3d| lv3d|     |     |          |
+ADD      | rv3d| rv3d| rv3d|     |     |          |
+ADD      | rv3i| rv3i| lv3i|     |     |          |
+ADD      | rv3i| rv3i| rv3i|     |     |          |
+ADD      | rv4d| rv4d| lv4d|     |     |          |
+ADD      | rv4d| rv4d| rv4d|     |     |          |
+ADD      | rv4i| rv4i| lv4i|     |     |          |
+ADD      | rv4i| rv4i| rv4i|     |     |          |
+ADD      | rm2d| rm2d| lm2d|     |     |          |
+ADD      | rm2d| rm2d| rm2d|     |     |          |
+ADD      | rm2i| rm2i| lm2i|     |     |          |
+ADD      | rm2i| rm2i| rm2i|     |     |          |
+ADD      | rm3d| rm3d| lm3d|     |     |          |
+ADD      | rm3d| rm3d| rm3d|     |     |          |
+ADD      | rm3i| rm3i| lm3i|     |     |          |
+ADD      | rm3i| rm3i| rm3i|     |     |          |
+ADD      | rm4d| rm4d| lm4d|     |     |          |
+ADD      | rm4d| rm4d| rm4d|     |     |          |
+ADD      | rm4i| rm4i| lm4i|     |     |          |
+ADD      | rm4i| rm4i| rm4i|     |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ADC      | rnu | rnu | lu  |     |     |          | # ADC for scalar U registers
+ADC      | rnu | ru  | lu  |     |     |          |
+ADC      | rnu | ru  | ru  |     |     |          |
+ADC      | rnu | ru  | rnu |     |     |          |
+ADC      | rnu | rnu | ru  |     |     |          |
+ADC      | rnu | rnu | rnu |     |     |          |
+ADC      | ru  | rnu | lu  |     |     |          |
+ADC      | ru  | ru  | lu  |     |     |          |
+ADC      | ru  | ru  | ru  |     |     |          |
+ADC      | ru  | ru  | rnu |     |     |          |
+ADC      | ru  | rnu | ru  |     |     |          |
+ADC      | ru  | rnu | rnu |     |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SUB      | rnu | rnu | lu  |     |     |          | # SUB for scalar U registers
+SUB      | rnu | ru  | lu  |     |     |          |
+SUB      | rnu | ru  | ru  |     |     |          |
+SUB      | rnu | ru  | rnu |     |     |          |
+SUB      | rnu | rnu | ru  |     |     |          |
+SUB      | rnu | rnu | rnu |     |     |          |
+SUB      | ru  | rnu | lu  |     |     |          |
+SUB      | ru  | ru  | lu  |     |     |          |
+SUB      | ru  | ru  | ru  |     |     |          |
+SUB      | ru  | ru  | rnu |     |     |          |
+SUB      | ru  | rnu | ru  |     |     |          |
+SUB      | ru  | rnu | rnu |     |     |          |
+SUB      | rnd | rnd | ld  |     |     |          | # SUB for scalar D regisers
+SUB      | rnd | rd  | ld  |     |     |          |
+SUB      | rnd | rd  | rd  |     |     |          |
+SUB      | rnd | rd  | rnd |     |     |          |
+SUB      | rnd | rnd | rd  |     |     |          |
+SUB      | rnd | rnd | rnd |     |     |          |
+SUB      | rd  | rnd | ld  |     |     |          |
+SUB      | rd  | rd  | ld  |     |     |          |
+SUB      | rd  | rd  | rd  |     |     |          |
+SUB      | rd  | rd  | rnd |     |     |          |
+SUB      | rd  | rnd | rd  |     |     |          |
+SUB      | rd  | rnd | rnd |     |     |          |
+SUB      | rv2d| rv2d| lv2d|     |     |          | # SUB group for V2D
+SUB      | rv2d| rv2d| rv2d|     |     |          |
+SUB      | rv2i| rv2i| lv2i|     |     |          | # SUB group for V2I
+SUB      | rv2i| rv2i| rv2i|     |     |          |
+SUB      | rv3d| rv3d| lv3d|     |     |          | # SUB group for V3D
+SUB      | rv3d| rv3d| rv3d|     |     |          |
+SUB      | rv3i| rv3i| lv3i|     |     |          | # SUB group for V3I
+SUB      | rv3i| rv3i| rv3i|     |     |          |
+SUB      | rv4d| rv4d| lv4d|     |     |          | # SUB group for V4D
+SUB      | rv4d| rv4d| rv4d|     |     |          |
+SUB      | rv4i| rv4i| lv4i|     |     |          | # SUB group for V4I
+SUB      | rv4i| rv4i| rv4i|     |     |          |
+SUB      | rm2d| rm2d| lm2d|     |     |          | # SUB group for M2D
+SUB      | rm2d| rm2d| rm2d|     |     |          |
+SUB      | rm2i| rm2i| lm2i|     |     |          | # SUB group for M2I
+SUB      | rm2i| rm2i| rm2i|     |     |          |
+SUB      | rm3d| rm3d| lm3d|     |     |          | # SUB group for M3D
+SUB      | rm3d| rm3d| rm3d|     |     |          |
+SUB      | rm3i| rm3i| lm3i|     |     |          | # SUB group for M3I
+SUB      | rm3i| rm3i| rm3i|     |     |          |
+SUB      | rm4d| rm4d| lm4d|     |     |          | # SUB group for M4D
+SUB      | rm4d| rm4d| rm4d|     |     |          |
+SUB      | rm4i| rm4i| lm4i|     |     |          | # SUB group for M4I
+SUB      | rm4i| rm4i| rm4i|     |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+UMUL     | ru  | rnu | lu  |     |     |          | # UMUL: 128bit ru hi, ru+1 lo
+UMUL     | ru  | ru  | lu  |     |     |          |
+UMUL     | ru  | ru  | ru  |     |     |          |
+UMUL     | ru  | ru  | rnu |     |     |          |
+UMUL     | ru  | rnu | ru  |     |     |          |
+UMUL     | ru  | rnu | rnu |     |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+MUL      | ru  | rnu | lu  |     |     |          | # MUL: 128bit, ru hi, ru+1 lo
+MUL      | ru  | ru  | lu  |     |     |          |
+MUL      | ru  | ru  | ru  |     |     |          |
+MUL      | ru  | ru  | rnu |     |     |          |
+MUL      | ru  | rnu | ru  |     |     |          |
+MUL      | ru  | rnu | rnu |     |     |          |
+MUL      | rd  | rnd | ld  |     |     |          | # MUL: rd is only result
+MUL      | rd  | rd  | ld  |     |     |          |
+MUL      | rd  | rd  | rd  |     |     |          |
+MUL      | rd  | rd  | rnd |     |     |          |
+MUL      | rd  | rnd | rd  |     |     |          |
+MUL      | rd  | rnd | rnd |     |     |          |
+MUL      | rv2d| rv2d| lv2d|     |     |          | # MUL group for V2D element-wise
+MUL      | rv2d| rv2d| rv2d|     |     |          |
+MUL      | rv2i| rv2i| lv2i|     |     |          | # MUL group for V2I element-wise
+MUL      | rv2i| rv2i| rv2i|     |     |          |
+MUL      | rv3d| rv3d| lv3d|     |     |          | # MUL group for V3D element-wise
+MUL      | rv3d| rv3d| rv3d|     |     |          |
+MUL      | rv3i| rv3i| lv3i|     |     |          | # MUL group for V3I element-wise
+MUL      | rv3i| rv3i| rv3i|     |     |          |
+MUL      | rv4d| rv4d| lv4d|     |     |          | # MUL group for V4D element-wise
+MUL      | rv4d| rv4d| rv4d|     |     |          |
+MUL      | rv4i| rv4i| lv4i|     |     |          | # MUL group for V4I element-wise
+MUL      | rv4i| rv4i| rv4i|     |     |          |
+MUL      | rm2d| rm2d| lm2d|     |     |          | # MUL group for M2D element-wise
+MUL      | rm2d| rm2d| rm2d|     |     |          |
+MUL      | rm2i| rm2i| lm2i|     |     |          | # MUL group for M2I element-wise
+MUL      | rm2i| rm2i| rm2i|     |     |          |
+MUL      | rm3d| rm3d| lm3d|     |     |          | # MUL group for M3D element-wise
+MUL      | rm3d| rm3d| rm3d|     |     |          |
+MUL      | rm3i| rm3i| lm3i|     |     |          | # MUL group for M3I element-wise
+MUL      | rm3i| rm3i| rm3i|     |     |          |
+MUL      | rm4d| rm4d| lm4d|     |     |          | # MUL group for M4D element-wise
+MUL      | rm4d| rm4d| rm4d|     |     |          |
+MUL      | rm4i| rm4i| lm4i|     |     |          | # MUL group for M4I element-wise
+MUL      | rm4i| rm4i| rm4i|     |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+DOT      | rv2d| rv2d| lv2d|     |     |          | # Dot prod: op0 <- op1 dot op2
+DOT      | rv2d| rv2d| rv2d|     |     |          |
+DOT      | rv2i| rv2i| lv21|     |     |          |
+DOT      | rv2i| rv2i| rv21|     |     |          |
+DOT      | rv3d| rv3d| lv3d|     |     |          |
+DOT      | rv3d| rv3d| rv3d|     |     |          |
+DOT      | rv3i| rv3i| lv31|     |     |          |
+DOT      | rv3i| rv3i| rv31|     |     |          |
+DOT      | rv4d| rv4d| lv4d|     |     |          |
+DOT      | rv4d| rv4d| rv4d|     |     |          |
+DOT      | rv4i| rv4i| lv41|     |     |          |
+DOT      | rv4i| rv4i| rv41|     |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CROSS    | rv3d| rv3d| lv3d| lu  |     |          | # 0:0<-1X2 OR 1:0<-2X1, lu:0,1
+CROSS    | rv3d| rv3d| rv3d| lu  |     |          |
+CROSS    | rv3i| rv3i| lv31| lu  |     |          |
+CROSS    | rv3i| rv3i| rv31| lu  |     |          |
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
 # matrix * matrix in either direction.
-MATMUL   | rm2d| rm2d| lm2d| lu  |     |     | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
-MATMUL   | rm2d| rm2d| rm2d| lu  |     |     |
-MATMUL   | rm2i| rm2i| lm2i| lu  |     |     |
-MATMUL   | rm2i| rm2i| rm2i| lu  |     |     |
-MATMUL   | rm3d| rm3d| lm3d| lu  |     |     |
-MATMUL   | rm3d| rm3d| rm3d| lu  |     |     |
-MATMUL   | rm3i| rm3i| lm3i| lu  |     |     |
-MATMUL   | rm3i| rm3i| rm3i| lu  |     |     |
-MATMUL   | rm4d| rm4d| lm4d| lu  |     |     |
-MATMUL   | rm4d| rm4d| rm4d| lu  |     |     |
-MATMUL   | rm4i| rm4i| lm4i| lu  |     |     |
-MATMUL   | rm4i| rm4i| rm4i| lu  |     |     |
+MATMUL   | rm2d| rm2d| lm2d| lu  |     |          | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
+MATMUL   | rm2d| rm2d| rm2d| lu  |     |          |
+MATMUL   | rm2i| rm2i| lm2i| lu  |     |          |
+MATMUL   | rm2i| rm2i| rm2i| lu  |     |          |
+MATMUL   | rm3d| rm3d| lm3d| lu  |     |          |
+MATMUL   | rm3d| rm3d| rm3d| lu  |     |          |
+MATMUL   | rm3i| rm3i| lm3i| lu  |     |          |
+MATMUL   | rm3i| rm3i| rm3i| lu  |     |          |
+MATMUL   | rm4d| rm4d| lm4d| lu  |     |          |
+MATMUL   | rm4d| rm4d| rm4d| lu  |     |          |
+MATMUL   | rm4i| rm4i| lm4i| lu  |     |          |
+MATMUL   | rm4i| rm4i| rm4i| lu  |     |          |
 
 # vector * matrix in either direction.
-MATMUL   | rv2d| rv2d| lm2d| lu  |     |     | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
-MATMUL   | rv2d| rv2d| rm2d| lu  |     |     |
-MATMUL   | rv2i| rv2i| lm2i| lu  |     |     |
-MATMUL   | rv2i| rv2i| rm2i| lu  |     |     |
-MATMUL   | rv3d| rv3d| lm3d| lu  |     |     |
-MATMUL   | rv3d| rv3d| rm3d| lu  |     |     |
-MATMUL   | rv3i| rv3i| lm3i| lu  |     |     |
-MATMUL   | rv3i| rv3i| rm3i| lu  |     |     |
-MATMUL   | rv4d| rv4d| lm4d| lu  |     |     |
-MATMUL   | rv4d| rv4d| rm4d| lu  |     |     |
-MATMUL   | rv4i| rv4i| lm4i| lu  |     |     |
-MATMUL   | rv4i| rv4i| rm4i| lu  |     |     |
+MATMUL   | rv2d| rv2d| lm2d| lu  |     |          | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
+MATMUL   | rv2d| rv2d| rm2d| lu  |     |          |
+MATMUL   | rv2i| rv2i| lm2i| lu  |     |          |
+MATMUL   | rv2i| rv2i| rm2i| lu  |     |          |
+MATMUL   | rv3d| rv3d| lm3d| lu  |     |          |
+MATMUL   | rv3d| rv3d| rm3d| lu  |     |          |
+MATMUL   | rv3i| rv3i| lm3i| lu  |     |          |
+MATMUL   | rv3i| rv3i| rm3i| lu  |     |          |
+MATMUL   | rv4d| rv4d| lm4d| lu  |     |          |
+MATMUL   | rv4d| rv4d| rm4d| lu  |     |          |
+MATMUL   | rv4i| rv4i| lm4i| lu  |     |          |
+MATMUL   | rv4i| rv4i| rm4i| lu  |     |          |
 
 
-DIV      | ru  | rnu | lu  |     |     |     | # DIV: U op0 <- op1 / op2
-DIV      | ru  | ru  | lu  |     |     |     |
-DIV      | ru  | ru  | ru  |     |     |     |
-DIV      | ru  | ru  | rnu |     |     |     |
-DIV      | ru  | rnu | ru  |     |     |     |
-DIV      | ru  | rnu | rnu |     |     |     |
-DIV      | rd  | rnd | ld  |     |     |     | # DIV: D op0 <- op1 / op2
-DIV      | rd  | rd  | ld  |     |     |     |
-DIV      | rd  | rd  | rd  |     |     |     |
-DIV      | rd  | rd  | rnd |     |     |     |
-DIV      | rd  | rnd | rd  |     |     |     |
-DIV      | rd  | rnd | rnd |     |     |     |
-DIV      | rv2d| rv2d| lv2d|     |     |     | # DIV group for V2D element-wise
-DIV      | rv2d| rv2d| rv2d|     |     |     |
-DIV      | rv2i| rv2i| lv2i|     |     |     | # DIV group for V2I element-wise
-DIV      | rv2i| rv2i| rv2i|     |     |     |
-DIV      | rv3d| rv3d| lv3d|     |     |     | # DIV group for V3D element-wise
-DIV      | rv3d| rv3d| rv3d|     |     |     |
-DIV      | rv3i| rv3i| lv3i|     |     |     | # DIV group for V3I element-wise
-DIV      | rv3i| rv3i| rv3i|     |     |     |
-DIV      | rv4d| rv4d| lv4d|     |     |     | # DIV group for V4D element-wise
-DIV      | rv4d| rv4d| rv4d|     |     |     |
-DIV      | rv4i| rv4i| lv4i|     |     |     | # DIV group for V4I element-wise
-DIV      | rv4i| rv4i| rv4i|     |     |     |
-DIV      | rm2d| rm2d| lm2d|     |     |     | # DIV group for M2D element-wise
-DIV      | rm2d| rm2d| rm2d|     |     |     |
-DIV      | rm2i| rm2i| lm2i|     |     |     | # DIV group for M2I element-wise
-DIV      | rm2i| rm2i| rm2i|     |     |     |
-DIV      | rm3d| rm3d| lm3d|     |     |     | # DIV group for M3D element-wise
-DIV      | rm3d| rm3d| rm3d|     |     |     |
-DIV      | rm3i| rm3i| lm3i|     |     |     | # DIV group for M3I element-wise
-DIV      | rm3i| rm3i| rm3i|     |     |     |
-DIV      | rm4d| rm4d| lm4d|     |     |     | # DIV group for M4D element-wise
-DIV      | rm4d| rm4d| rm4d|     |     |     |
-DIV      | rm4i| rm4i| lm4i|     |     |     | # DIV group for M4I element-wise
-DIV      | rm4i| rm4i| rm4i|     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+DIV      | ru  | rnu | lu  |     |     |          | # DIV: U op0 <- op1 / op2
+DIV      | ru  | ru  | lu  |     |     |          |
+DIV      | ru  | ru  | ru  |     |     |          |
+DIV      | ru  | ru  | rnu |     |     |          |
+DIV      | ru  | rnu | ru  |     |     |          |
+DIV      | ru  | rnu | rnu |     |     |          |
+DIV      | rd  | rnd | ld  |     |     |          | # DIV: D op0 <- op1 / op2
+DIV      | rd  | rd  | ld  |     |     |          |
+DIV      | rd  | rd  | rd  |     |     |          |
+DIV      | rd  | rd  | rnd |     |     |          |
+DIV      | rd  | rnd | rd  |     |     |          |
+DIV      | rd  | rnd | rnd |     |     |          |
+DIV      | rv2d| rv2d| lv2d|     |     |          | # DIV group for V2D element-wise
+DIV      | rv2d| rv2d| rv2d|     |     |          |
+DIV      | rv2i| rv2i| lv2i|     |     |          | # DIV group for V2I element-wise
+DIV      | rv2i| rv2i| rv2i|     |     |          |
+DIV      | rv3d| rv3d| lv3d|     |     |          | # DIV group for V3D element-wise
+DIV      | rv3d| rv3d| rv3d|     |     |          |
+DIV      | rv3i| rv3i| lv3i|     |     |          | # DIV group for V3I element-wise
+DIV      | rv3i| rv3i| rv3i|     |     |          |
+DIV      | rv4d| rv4d| lv4d|     |     |          | # DIV group for V4D element-wise
+DIV      | rv4d| rv4d| rv4d|     |     |          |
+DIV      | rv4i| rv4i| lv4i|     |     |          | # DIV group for V4I element-wise
+DIV      | rv4i| rv4i| rv4i|     |     |          |
+DIV      | rm2d| rm2d| lm2d|     |     |          | # DIV group for M2D element-wise
+DIV      | rm2d| rm2d| rm2d|     |     |          |
+DIV      | rm2i| rm2i| lm2i|     |     |          | # DIV group for M2I element-wise
+DIV      | rm2i| rm2i| rm2i|     |     |          |
+DIV      | rm3d| rm3d| lm3d|     |     |          | # DIV group for M3D element-wise
+DIV      | rm3d| rm3d| rm3d|     |     |          |
+DIV      | rm3i| rm3i| lm3i|     |     |          | # DIV group for M3I element-wise
+DIV      | rm3i| rm3i| rm3i|     |     |          |
+DIV      | rm4d| rm4d| lm4d|     |     |          | # DIV group for M4D element-wise
+DIV      | rm4d| rm4d| rm4d|     |     |          |
+DIV      | rm4i| rm4i| lm4i|     |     |          | # DIV group for M4I element-wise
+DIV      | rm4i| rm4i| rm4i|     |     |          |
 
-ROLLL    | rnu | rnu | lu  |     |     |     | # ROLLL for scalar U registers
-ROLLL    | rnu | ru  | lu  |     |     |     |
-ROLLL    | rnu | ru  | ru  |     |     |     |
-ROLLL    | rnu | ru  | rnu |     |     |     |
-ROLLL    | rnu | rnu | ru  |     |     |     |
-ROLLL    | rnu | rnu | rnu |     |     |     |
-ROLLL    | ru  | rnu | lu  |     |     |     |
-ROLLL    | ru  | ru  | lu  |     |     |     |
-ROLLL    | ru  | ru  | ru  |     |     |     |
-ROLLL    | ru  | ru  | rnu |     |     |     |
-ROLLL    | ru  | rnu | ru  |     |     |     |
-ROLLL    | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ROLLL    | rnu | rnu | lu  |     |     |          | # ROLLL for scalar U registers
+ROLLL    | rnu | ru  | lu  |     |     |          |
+ROLLL    | rnu | ru  | ru  |     |     |          |
+ROLLL    | rnu | ru  | rnu |     |     |          |
+ROLLL    | rnu | rnu | ru  |     |     |          |
+ROLLL    | rnu | rnu | rnu |     |     |          |
+ROLLL    | ru  | rnu | lu  |     |     |          |
+ROLLL    | ru  | ru  | lu  |     |     |          |
+ROLLL    | ru  | ru  | ru  |     |     |          |
+ROLLL    | ru  | ru  | rnu |     |     |          |
+ROLLL    | ru  | rnu | ru  |     |     |          |
+ROLLL    | ru  | rnu | rnu |     |     |          |
 
-ROLLR    | rnu | rnu | lu  |     |     |     | # ROLLR for scalar U registers
-ROLLR    | rnu | ru  | lu  |     |     |     |
-ROLLR    | rnu | ru  | ru  |     |     |     |
-ROLLR    | rnu | ru  | rnu |     |     |     |
-ROLLR    | rnu | rnu | ru  |     |     |     |
-ROLLR    | rnu | rnu | rnu |     |     |     |
-ROLLR    | ru  | rnu | lu  |     |     |     |
-ROLLR    | ru  | ru  | lu  |     |     |     |
-ROLLR    | ru  | ru  | ru  |     |     |     |
-ROLLR    | ru  | ru  | rnu |     |     |     |
-ROLLR    | ru  | rnu | ru  |     |     |     |
-ROLLR    | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ROLLR    | rnu | rnu | lu  |     |     |          | # ROLLR for scalar U registers
+ROLLR    | rnu | ru  | lu  |     |     |          |
+ROLLR    | rnu | ru  | ru  |     |     |          |
+ROLLR    | rnu | ru  | rnu |     |     |          |
+ROLLR    | rnu | rnu | ru  |     |     |          |
+ROLLR    | rnu | rnu | rnu |     |     |          |
+ROLLR    | ru  | rnu | lu  |     |     |          |
+ROLLR    | ru  | ru  | lu  |     |     |          |
+ROLLR    | ru  | ru  | ru  |     |     |          |
+ROLLR    | ru  | ru  | rnu |     |     |          |
+ROLLR    | ru  | rnu | ru  |     |     |          |
+ROLLR    | ru  | rnu | rnu |     |     |          |
 
-ROLLCL   | rnu | rnu | lu  |     |     |     | # ROLLCL for scalar U registers
-ROLLCL   | rnu | ru  | lu  |     |     |     |
-ROLLCL   | rnu | ru  | ru  |     |     |     |
-ROLLCL   | rnu | ru  | rnu |     |     |     |
-ROLLCL   | rnu | rnu | ru  |     |     |     |
-ROLLCL   | rnu | rnu | rnu |     |     |     |
-ROLLCL   | ru  | rnu | lu  |     |     |     |
-ROLLCL   | ru  | ru  | lu  |     |     |     |
-ROLLCL   | ru  | ru  | ru  |     |     |     |
-ROLLCL   | ru  | ru  | rnu |     |     |     |
-ROLLCL   | ru  | rnu | ru  |     |     |     |
-ROLLCL   | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ROLLCL   | rnu | rnu | lu  |     |     |          | # ROLLCL for scalar U registers
+ROLLCL   | rnu | ru  | lu  |     |     |          |
+ROLLCL   | rnu | ru  | ru  |     |     |          |
+ROLLCL   | rnu | ru  | rnu |     |     |          |
+ROLLCL   | rnu | rnu | ru  |     |     |          |
+ROLLCL   | rnu | rnu | rnu |     |     |          |
+ROLLCL   | ru  | rnu | lu  |     |     |          |
+ROLLCL   | ru  | ru  | lu  |     |     |          |
+ROLLCL   | ru  | ru  | ru  |     |     |          |
+ROLLCL   | ru  | ru  | rnu |     |     |          |
+ROLLCL   | ru  | rnu | ru  |     |     |          |
+ROLLCL   | ru  | rnu | rnu |     |     |          |
 
-ROLLCR   | rnu | rnu | lu  |     |     |     | # ROLLCR for scalar U registers
-ROLLCR   | rnu | ru  | lu  |     |     |     |
-ROLLCR   | rnu | ru  | ru  |     |     |     |
-ROLLCR   | rnu | ru  | rnu |     |     |     |
-ROLLCR   | rnu | rnu | ru  |     |     |     |
-ROLLCR   | rnu | rnu | rnu |     |     |     |
-ROLLCR   | ru  | rnu | lu  |     |     |     |
-ROLLCR   | ru  | ru  | lu  |     |     |     |
-ROLLCR   | ru  | ru  | ru  |     |     |     |
-ROLLCR   | ru  | ru  | rnu |     |     |     |
-ROLLCR   | ru  | rnu | ru  |     |     |     |
-ROLLCR   | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ROLLCR   | rnu | rnu | lu  |     |     |          | # ROLLCR for scalar U registers
+ROLLCR   | rnu | ru  | lu  |     |     |          |
+ROLLCR   | rnu | ru  | ru  |     |     |          |
+ROLLCR   | rnu | ru  | rnu |     |     |          |
+ROLLCR   | rnu | rnu | ru  |     |     |          |
+ROLLCR   | rnu | rnu | rnu |     |     |          |
+ROLLCR   | ru  | rnu | lu  |     |     |          |
+ROLLCR   | ru  | ru  | lu  |     |     |          |
+ROLLCR   | ru  | ru  | ru  |     |     |          |
+ROLLCR   | ru  | ru  | rnu |     |     |          |
+ROLLCR   | ru  | rnu | ru  |     |     |          |
+ROLLCR   | ru  | rnu | rnu |     |     |          |
 
-SHIFTL   | rnu | rnu | lu  |     |     |     | # SHIFTL for scalar U registers
-SHIFTL   | rnu | ru  | lu  |     |     |     |
-SHIFTL   | rnu | ru  | ru  |     |     |     |
-SHIFTL   | rnu | ru  | rnu |     |     |     |
-SHIFTL   | rnu | rnu | ru  |     |     |     |
-SHIFTL   | rnu | rnu | rnu |     |     |     |
-SHIFTL   | ru  | rnu | lu  |     |     |     |
-SHIFTL   | ru  | ru  | lu  |     |     |     |
-SHIFTL   | ru  | ru  | ru  |     |     |     |
-SHIFTL   | ru  | ru  | rnu |     |     |     |
-SHIFTL   | ru  | rnu | ru  |     |     |     |
-SHIFTL   | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SHIFTL   | rnu | rnu | lu  |     |     |          | # SHIFTL for scalar U registers
+SHIFTL   | rnu | ru  | lu  |     |     |          |
+SHIFTL   | rnu | ru  | ru  |     |     |          |
+SHIFTL   | rnu | ru  | rnu |     |     |          |
+SHIFTL   | rnu | rnu | ru  |     |     |          |
+SHIFTL   | rnu | rnu | rnu |     |     |          |
+SHIFTL   | ru  | rnu | lu  |     |     |          |
+SHIFTL   | ru  | ru  | lu  |     |     |          |
+SHIFTL   | ru  | ru  | ru  |     |     |          |
+SHIFTL   | ru  | ru  | rnu |     |     |          |
+SHIFTL   | ru  | rnu | ru  |     |     |          |
+SHIFTL   | ru  | rnu | rnu |     |     |          |
 
-SHIFTR   | rnu | rnu | lu  |     |     |     | # SHIFTR for scalar U registers
-SHIFTR   | rnu | ru  | lu  |     |     |     |
-SHIFTR   | rnu | ru  | ru  |     |     |     |
-SHIFTR   | rnu | ru  | rnu |     |     |     |
-SHIFTR   | rnu | rnu | ru  |     |     |     |
-SHIFTR   | rnu | rnu | rnu |     |     |     |
-SHIFTR   | ru  | rnu | lu  |     |     |     |
-SHIFTR   | ru  | ru  | lu  |     |     |     |
-SHIFTR   | ru  | ru  | ru  |     |     |     |
-SHIFTR   | ru  | ru  | rnu |     |     |     |
-SHIFTR   | ru  | rnu | ru  |     |     |     |
-SHIFTR   | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SHIFTR   | rnu | rnu | lu  |     |     |          | # SHIFTR for scalar U registers
+SHIFTR   | rnu | ru  | lu  |     |     |          |
+SHIFTR   | rnu | ru  | ru  |     |     |          |
+SHIFTR   | rnu | ru  | rnu |     |     |          |
+SHIFTR   | rnu | rnu | ru  |     |     |          |
+SHIFTR   | rnu | rnu | rnu |     |     |          |
+SHIFTR   | ru  | rnu | lu  |     |     |          |
+SHIFTR   | ru  | ru  | lu  |     |     |          |
+SHIFTR   | ru  | ru  | ru  |     |     |          |
+SHIFTR   | ru  | ru  | rnu |     |     |          |
+SHIFTR   | ru  | rnu | ru  |     |     |          |
+SHIFTR   | ru  | rnu | rnu |     |     |          |
 
-ASHIFTL  | rnu | rnu | lu  |     |     |     | # ASHIFTL for scalar U registers
-ASHIFTL  | rnu | ru  | lu  |     |     |     |
-ASHIFTL  | rnu | ru  | ru  |     |     |     |
-ASHIFTL  | rnu | ru  | rnu |     |     |     |
-ASHIFTL  | rnu | rnu | ru  |     |     |     |
-ASHIFTL  | rnu | rnu | rnu |     |     |     |
-ASHIFTL  | ru  | rnu | lu  |     |     |     |
-ASHIFTL  | ru  | ru  | lu  |     |     |     |
-ASHIFTL  | ru  | ru  | ru  |     |     |     |
-ASHIFTL  | ru  | ru  | rnu |     |     |     |
-ASHIFTL  | ru  | rnu | ru  |     |     |     |
-ASHIFTL  | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ASHIFTL  | rnu | rnu | lu  |     |     |          | # ASHIFTL for scalar U registers
+ASHIFTL  | rnu | ru  | lu  |     |     |          |
+ASHIFTL  | rnu | ru  | ru  |     |     |          |
+ASHIFTL  | rnu | ru  | rnu |     |     |          |
+ASHIFTL  | rnu | rnu | ru  |     |     |          |
+ASHIFTL  | rnu | rnu | rnu |     |     |          |
+ASHIFTL  | ru  | rnu | lu  |     |     |          |
+ASHIFTL  | ru  | ru  | lu  |     |     |          |
+ASHIFTL  | ru  | ru  | ru  |     |     |          |
+ASHIFTL  | ru  | ru  | rnu |     |     |          |
+ASHIFTL  | ru  | rnu | ru  |     |     |          |
+ASHIFTL  | ru  | rnu | rnu |     |     |          |
 
-ASHIFTR  | rnu | rnu | lu  |     |     |     | # ASHIFTR for scalar U registers
-ASHIFTR  | rnu | ru  | lu  |     |     |     |
-ASHIFTR  | rnu | ru  | ru  |     |     |     |
-ASHIFTR  | rnu | ru  | rnu |     |     |     |
-ASHIFTR  | rnu | rnu | ru  |     |     |     |
-ASHIFTR  | rnu | rnu | rnu |     |     |     |
-ASHIFTR  | ru  | rnu | lu  |     |     |     |
-ASHIFTR  | ru  | ru  | lu  |     |     |     |
-ASHIFTR  | ru  | ru  | ru  |     |     |     |
-ASHIFTR  | ru  | ru  | rnu |     |     |     |
-ASHIFTR  | ru  | rnu | ru  |     |     |     |
-ASHIFTR  | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ASHIFTR  | rnu | rnu | lu  |     |     |          | # ASHIFTR for scalar U registers
+ASHIFTR  | rnu | ru  | lu  |     |     |          |
+ASHIFTR  | rnu | ru  | ru  |     |     |          |
+ASHIFTR  | rnu | ru  | rnu |     |     |          |
+ASHIFTR  | rnu | rnu | ru  |     |     |          |
+ASHIFTR  | rnu | rnu | rnu |     |     |          |
+ASHIFTR  | ru  | rnu | lu  |     |     |          |
+ASHIFTR  | ru  | ru  | lu  |     |     |          |
+ASHIFTR  | ru  | ru  | ru  |     |     |          |
+ASHIFTR  | ru  | ru  | rnu |     |     |          |
+ASHIFTR  | ru  | rnu | ru  |     |     |          |
+ASHIFTR  | ru  | rnu | rnu |     |     |          |
 
-AND      | rnu | rnu | lu  |     |     |     | # AND for scalar U registers
-AND      | rnu | ru  | lu  |     |     |     |
-AND      | rnu | ru  | ru  |     |     |     |
-AND      | rnu | ru  | rnu |     |     |     |
-AND      | rnu | rnu | ru  |     |     |     |
-AND      | rnu | rnu | rnu |     |     |     |
-AND      | ru  | rnu | lu  |     |     |     |
-AND      | ru  | ru  | lu  |     |     |     |
-AND      | ru  | ru  | ru  |     |     |     |
-AND      | ru  | ru  | rnu |     |     |     |
-AND      | ru  | rnu | ru  |     |     |     |
-AND      | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+AND      | rnu | rnu | lu  |     |     |          | # AND for scalar U registers
+AND      | rnu | ru  | lu  |     |     |          |
+AND      | rnu | ru  | ru  |     |     |          |
+AND      | rnu | ru  | rnu |     |     |          |
+AND      | rnu | rnu | ru  |     |     |          |
+AND      | rnu | rnu | rnu |     |     |          |
+AND      | ru  | rnu | lu  |     |     |          |
+AND      | ru  | ru  | lu  |     |     |          |
+AND      | ru  | ru  | ru  |     |     |          |
+AND      | ru  | ru  | rnu |     |     |          |
+AND      | ru  | rnu | ru  |     |     |          |
+AND      | ru  | rnu | rnu |     |     |          |
 
-OR       | rnu | rnu | lu  |     |     |     | # OR for scalar U registers
-OR       | rnu | ru  | lu  |     |     |     |
-OR       | rnu | ru  | ru  |     |     |     |
-OR       | rnu | ru  | rnu |     |     |     |
-OR       | rnu | rnu | ru  |     |     |     |
-OR       | rnu | rnu | rnu |     |     |     |
-OR       | ru  | rnu | lu  |     |     |     |
-OR       | ru  | ru  | lu  |     |     |     |
-OR       | ru  | ru  | ru  |     |     |     |
-OR       | ru  | ru  | rnu |     |     |     |
-OR       | ru  | rnu | ru  |     |     |     |
-OR       | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+OR       | rnu | rnu | lu  |     |     |          | # OR for scalar U registers
+OR       | rnu | ru  | lu  |     |     |          |
+OR       | rnu | ru  | ru  |     |     |          |
+OR       | rnu | ru  | rnu |     |     |          |
+OR       | rnu | rnu | ru  |     |     |          |
+OR       | rnu | rnu | rnu |     |     |          |
+OR       | ru  | rnu | lu  |     |     |          |
+OR       | ru  | ru  | lu  |     |     |          |
+OR       | ru  | ru  | ru  |     |     |          |
+OR       | ru  | ru  | rnu |     |     |          |
+OR       | ru  | rnu | ru  |     |     |          |
+OR       | ru  | rnu | rnu |     |     |          |
 
-XOR      | rnu | rnu | lu  |     |     |     | # XOR for scalar U registers
-XOR      | rnu | ru  | lu  |     |     |     |
-XOR      | rnu | ru  | ru  |     |     |     |
-XOR      | rnu | ru  | rnu |     |     |     |
-XOR      | rnu | rnu | ru  |     |     |     |
-XOR      | rnu | rnu | rnu |     |     |     |
-XOR      | ru  | rnu | lu  |     |     |     |
-XOR      | ru  | ru  | lu  |     |     |     |
-XOR      | ru  | ru  | ru  |     |     |     |
-XOR      | ru  | ru  | rnu |     |     |     |
-XOR      | ru  | rnu | ru  |     |     |     |
-XOR      | ru  | rnu | rnu |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+XOR      | rnu | rnu | lu  |     |     |          | # XOR for scalar U registers
+XOR      | rnu | ru  | lu  |     |     |          |
+XOR      | rnu | ru  | ru  |     |     |          |
+XOR      | rnu | ru  | rnu |     |     |          |
+XOR      | rnu | rnu | ru  |     |     |          |
+XOR      | rnu | rnu | rnu |     |     |          |
+XOR      | ru  | rnu | lu  |     |     |          |
+XOR      | ru  | ru  | lu  |     |     |          |
+XOR      | ru  | ru  | ru  |     |     |          |
+XOR      | ru  | ru  | rnu |     |     |          |
+XOR      | ru  | rnu | ru  |     |     |          |
+XOR      | ru  | rnu | rnu |     |     |          |
 
-NOT      | ru  | ru  |     |     |     |     | # NOT group for Ulong
-NOT      | ru  | rnu |     |     |     |     |
-NOT      | rnu | ru  |     |     |     |     |
-NOT      | rnu | rnu |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+NOT      | ru  | ru  |     |     |     |          | # NOT group for Ulong
+NOT      | ru  | rnu |     |     |     |          |
+NOT      | rnu | ru  |     |     |     |          |
+NOT      | rnu | rnu |     |     |     |          |
 
-UCAST    | ru  | ld  |     |     |     |     | # Perform cast of D to U
-UCAST    | ru  | rd  |     |     |     |     |
-UCAST    | ru  | rnd |     |     |     |     |
-UCAST    | rnu | ld  |     |     |     |     |
-UCAST    | rnu | rd  |     |     |     |     |
-UCAST    | rnu | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+UCAST    | ru  | ld  |     |     |     |          | # Perform cast of D to U
+UCAST    | ru  | rd  |     |     |     |          |
+UCAST    | ru  | rnd |     |     |     |          |
+UCAST    | rnu | ld  |     |     |     |          |
+UCAST    | rnu | rd  |     |     |     |          |
+UCAST    | rnu | rnd |     |     |     |          |
 
-DCAST    | rd  | lu  |     |     |     |     | # Perform cast of U to D
-DCAST    | rd  | ru  |     |     |     |     |
-DCAST    | rd  | rnu |     |     |     |     |
-DCAST    | rnd | lu  |     |     |     |     |
-DCAST    | rnd | ru  |     |     |     |     |
-DCAST    | rnd | rnu |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+DCAST    | rd  | lu  |     |     |     |          | # Perform cast of U to D
+DCAST    | rd  | ru  |     |     |     |          |
+DCAST    | rd  | rnu |     |     |     |          |
+DCAST    | rnd | lu  |     |     |     |          |
+DCAST    | rnd | ru  |     |     |     |          |
+DCAST    | rnd | rnu |     |     |     |          |
 
-SQRT     | rd  | ld  |     |     |     |     | # Perform SQRT
-SQRT     | rd  | rd  |     |     |     |     |
-SQRT     | rd  | rnd |     |     |     |     |
-SQRT     | rnd | ld  |     |     |     |     |
-SQRT     | rnd | rd  |     |     |     |     |
-SQRT     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SQRT     | rd  | ld  |     |     |     |          | # Perform SQRT
+SQRT     | rd  | rd  |     |     |     |          |
+SQRT     | rd  | rnd |     |     |     |          |
+SQRT     | rnd | ld  |     |     |     |          |
+SQRT     | rnd | rd  |     |     |     |          |
+SQRT     | rnd | rnd |     |     |     |          |
 
-SIN      | rd  | ld  |     |     |     |     | # Perform SIN
-SIN      | rd  | rd  |     |     |     |     |
-SIN      | rd  | rnd |     |     |     |     |
-SIN      | rnd | ld  |     |     |     |     |
-SIN      | rnd | rd  |     |     |     |     |
-SIN      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SIN      | rd  | ld  |     |     |     |          | # Perform SIN
+SIN      | rd  | rd  |     |     |     |          |
+SIN      | rd  | rnd |     |     |     |          |
+SIN      | rnd | ld  |     |     |     |          |
+SIN      | rnd | rd  |     |     |     |          |
+SIN      | rnd | rnd |     |     |     |          |
 
-ASIN     | rd  | ld  |     |     |     |     | # Perform ARCSIN
-ASIN     | rd  | rd  |     |     |     |     |
-ASIN     | rd  | rnd |     |     |     |     |
-ASIN     | rnd | ld  |     |     |     |     |
-ASIN     | rnd | rd  |     |     |     |     |
-ASIN     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ASIN     | rd  | ld  |     |     |     |          | # Perform ARCSIN
+ASIN     | rd  | rd  |     |     |     |          |
+ASIN     | rd  | rnd |     |     |     |          |
+ASIN     | rnd | ld  |     |     |     |          |
+ASIN     | rnd | rd  |     |     |     |          |
+ASIN     | rnd | rnd |     |     |     |          |
 
-CSC      | rd  | ld  |     |     |     |     | # Perform CSC
-CSC      | rd  | rd  |     |     |     |     |
-CSC      | rd  | rnd |     |     |     |     |
-CSC      | rnd | ld  |     |     |     |     |
-CSC      | rnd | rd  |     |     |     |     |
-CSC      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CSC      | rd  | ld  |     |     |     |          | # Perform CSC
+CSC      | rd  | rd  |     |     |     |          |
+CSC      | rd  | rnd |     |     |     |          |
+CSC      | rnd | ld  |     |     |     |          |
+CSC      | rnd | rd  |     |     |     |          |
+CSC      | rnd | rnd |     |     |     |          |
 
-ACSC     | rd  | ld  |     |     |     |     | # Perform ARCCSC
-ACSC     | rd  | rd  |     |     |     |     |
-ACSC     | rd  | rnd |     |     |     |     |
-ACSC     | rnd | ld  |     |     |     |     |
-ACSC     | rnd | rd  |     |     |     |     |
-ACSC     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ACSC     | rd  | ld  |     |     |     |          | # Perform ARCCSC
+ACSC     | rd  | rd  |     |     |     |          |
+ACSC     | rd  | rnd |     |     |     |          |
+ACSC     | rnd | ld  |     |     |     |          |
+ACSC     | rnd | rd  |     |     |     |          |
+ACSC     | rnd | rnd |     |     |     |          |
 
-COS      | rd  | ld  |     |     |     |     | # Perform COS
-COS      | rd  | rd  |     |     |     |     |
-COS      | rd  | rnd |     |     |     |     |
-COS      | rnd | ld  |     |     |     |     |
-COS      | rnd | rd  |     |     |     |     |
-COS      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COS      | rd  | ld  |     |     |     |          | # Perform COS
+COS      | rd  | rd  |     |     |     |          |
+COS      | rd  | rnd |     |     |     |          |
+COS      | rnd | ld  |     |     |     |          |
+COS      | rnd | rd  |     |     |     |          |
+COS      | rnd | rnd |     |     |     |          |
 
-ACOS     | rd  | ld  |     |     |     |     | # Perform ARCCOS
-ACOS     | rd  | rd  |     |     |     |     |
-ACOS     | rd  | rnd |     |     |     |     |
-ACOS     | rnd | ld  |     |     |     |     |
-ACOS     | rnd | rd  |     |     |     |     |
-ACOS     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ACOS     | rd  | ld  |     |     |     |          | # Perform ARCCOS
+ACOS     | rd  | rd  |     |     |     |          |
+ACOS     | rd  | rnd |     |     |     |          |
+ACOS     | rnd | ld  |     |     |     |          |
+ACOS     | rnd | rd  |     |     |     |          |
+ACOS     | rnd | rnd |     |     |     |          |
 
-SEC      | rd  | ld  |     |     |     |     | # Perform SEC
-SEC      | rd  | rd  |     |     |     |     |
-SEC      | rd  | rnd |     |     |     |     |
-SEC      | rnd | ld  |     |     |     |     |
-SEC      | rnd | rd  |     |     |     |     |
-SEC      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SEC      | rd  | ld  |     |     |     |          | # Perform SEC
+SEC      | rd  | rd  |     |     |     |          |
+SEC      | rd  | rnd |     |     |     |          |
+SEC      | rnd | ld  |     |     |     |          |
+SEC      | rnd | rd  |     |     |     |          |
+SEC      | rnd | rnd |     |     |     |          |
 
-ASEC     | rd  | ld  |     |     |     |     | # Perform ARCSEC
-ASEC     | rd  | rd  |     |     |     |     |
-ASEC     | rd  | rnd |     |     |     |     |
-ASEC     | rnd | ld  |     |     |     |     |
-ASEC     | rnd | rd  |     |     |     |     |
-ASEC     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ASEC     | rd  | ld  |     |     |     |          | # Perform ARCSEC
+ASEC     | rd  | rd  |     |     |     |          |
+ASEC     | rd  | rnd |     |     |     |          |
+ASEC     | rnd | ld  |     |     |     |          |
+ASEC     | rnd | rd  |     |     |     |          |
+ASEC     | rnd | rnd |     |     |     |          |
 
-TAN      | rd  | ld  |     |     |     |     | # Perform TAN
-TAN      | rd  | rd  |     |     |     |     |
-TAN      | rd  | rnd |     |     |     |     |
-TAN      | rnd | ld  |     |     |     |     |
-TAN      | rnd | rd  |     |     |     |     |
-TAN      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+TAN      | rd  | ld  |     |     |     |          | # Perform TAN
+TAN      | rd  | rd  |     |     |     |          |
+TAN      | rd  | rnd |     |     |     |          |
+TAN      | rnd | ld  |     |     |     |          |
+TAN      | rnd | rd  |     |     |     |          |
+TAN      | rnd | rnd |     |     |     |          |
 
-ATAN     | rd  | ld  |     |     |     |     | # Perform ARCTAN
-ATAN     | rd  | rd  |     |     |     |     |
-ATAN     | rd  | rnd |     |     |     |     |
-ATAN     | rnd | ld  |     |     |     |     |
-ATAN     | rnd | rd  |     |     |     |     |
-ATAN     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ATAN     | rd  | ld  |     |     |     |          | # Perform ARCTAN
+ATAN     | rd  | rd  |     |     |     |          |
+ATAN     | rd  | rnd |     |     |     |          |
+ATAN     | rnd | ld  |     |     |     |          |
+ATAN     | rnd | rd  |     |     |     |          |
+ATAN     | rnd | rnd |     |     |     |          |
 
-COT      | rd  | ld  |     |     |     |     | # Perform COT
-COT      | rd  | rd  |     |     |     |     |
-COT      | rd  | rnd |     |     |     |     |
-COT      | rnd | ld  |     |     |     |     |
-COT      | rnd | rd  |     |     |     |     |
-COT      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COT      | rd  | ld  |     |     |     |          | # Perform COT
+COT      | rd  | rd  |     |     |     |          |
+COT      | rd  | rnd |     |     |     |          |
+COT      | rnd | ld  |     |     |     |          |
+COT      | rnd | rd  |     |     |     |          |
+COT      | rnd | rnd |     |     |     |          |
 
-ACOT     | rd  | ld  |     |     |     |     | # Perform ARCCOT
-ACOT     | rd  | rd  |     |     |     |     |
-ACOT     | rd  | rnd |     |     |     |     |
-ACOT     | rnd | ld  |     |     |     |     |
-ACOT     | rnd | rd  |     |     |     |     |
-ACOT     | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+ACOT     | rd  | ld  |     |     |     |          | # Perform ARCCOT
+ACOT     | rd  | rd  |     |     |     |          |
+ACOT     | rd  | rnd |     |     |     |          |
+ACOT     | rnd | ld  |     |     |     |          |
+ACOT     | rnd | rd  |     |     |     |          |
+ACOT     | rnd | rnd |     |     |     |          |
 
-LOG10    | rd  | ld  |     |     |     |     | # Perform LOG base 10
-LOG10    | rd  | rd  |     |     |     |     |
-LOG10    | rd  | rnd |     |     |     |     |
-LOG10    | rnd | ld  |     |     |     |     |
-LOG10    | rnd | rd  |     |     |     |     |
-LOG10    | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+LOG10    | rd  | ld  |     |     |     |          | # Perform LOG base 10
+LOG10    | rd  | rd  |     |     |     |          |
+LOG10    | rd  | rnd |     |     |     |          |
+LOG10    | rnd | ld  |     |     |     |          |
+LOG10    | rnd | rd  |     |     |     |          |
+LOG10    | rnd | rnd |     |     |     |          |
 
-LN       | rd  | ld  |     |     |     |     | # Perform LOG base e
-LN       | rd  | rd  |     |     |     |     |
-LN       | rd  | rnd |     |     |     |     |
-LN       | rnd | ld  |     |     |     |     |
-LN       | rnd | rd  |     |     |     |     |
-LN       | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+LN       | rd  | ld  |     |     |     |          | # Perform LOG base e
+LN       | rd  | rd  |     |     |     |          |
+LN       | rd  | rnd |     |     |     |          |
+LN       | rnd | ld  |     |     |     |          |
+LN       | rnd | rd  |     |     |     |          |
+LN       | rnd | rnd |     |     |     |          |
 
-EXP      | rd  | ld  |     |     |     |     | # Perform EXP: op0 <- e ^ op1
-EXP      | rd  | rd  |     |     |     |     |
-EXP      | rd  | rnd |     |     |     |     |
-EXP      | rnd | ld  |     |     |     |     |
-EXP      | rnd | rd  |     |     |     |     |
-EXP      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+EXP      | rd  | ld  |     |     |     |          | # Perform EXP: op0 <- e ^ op1
+EXP      | rd  | rd  |     |     |     |          |
+EXP      | rd  | rnd |     |     |     |          |
+EXP      | rnd | ld  |     |     |     |          |
+EXP      | rnd | rd  |     |     |     |          |
+EXP      | rnd | rnd |     |     |     |          |
 
-POW      | rnd | rnd | ld  |     |     |     | # Perform POW: op0 < op1 ^ op2
-POW      | rnd | rd  | ld  |     |     |     |
-POW      | rnd | rd  | rd  |     |     |     |
-POW      | rnd | rd  | rnd |     |     |     |
-POW      | rnd | rnd | rd  |     |     |     |
-POW      | rnd | rnd | rnd |     |     |     |
-POW      | rd  | rnd | ld  |     |     |     |
-POW      | rd  | rd  | ld  |     |     |     |
-POW      | rd  | rd  | rd  |     |     |     |
-POW      | rd  | rd  | rnd |     |     |     |
-POW      | rd  | rnd | rd  |     |     |     |
-POW      | rd  | rnd | rnd |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+POW      | rnd | rnd | ld  |     |     |          | # Perform POW: op0 < op1 ^ op2
+POW      | rnd | rd  | ld  |     |     |          |
+POW      | rnd | rd  | rd  |     |     |          |
+POW      | rnd | rd  | rnd |     |     |          |
+POW      | rnd | rnd | rd  |     |     |          |
+POW      | rnd | rnd | rnd |     |     |          |
+POW      | rd  | rnd | ld  |     |     |          |
+POW      | rd  | rd  | ld  |     |     |          |
+POW      | rd  | rd  | rd  |     |     |          |
+POW      | rd  | rd  | rnd |     |     |          |
+POW      | rd  | rnd | rd  |     |     |          |
+POW      | rd  | rnd | rnd |     |     |          |
 
 
 # [Part I]
 
 # Traditional CMP instructions: (op0 - op1) then set flags
 
-CMP      | ru  | lu  |     |     |     |     | # CMP U regs (set ZONC flags)
-CMP      | ru  | ru  |     |     |     |     |
-CMP      | ru  | rnu |     |     |     |     |
-CMP      | rnu | lu  |     |     |     |     |
-CMP      | rnu | ru  |     |     |     |     |
-CMP      | rnu | rnu |     |     |     |     |
-CMP      | rd  | ld  |     |     |     |     | # CMP D regs TODO Tol schema?
-CMP      | rd  | rd  |     |     |     |     |
-CMP      | rd  | rnd |     |     |     |     |
-CMP      | rnd | ld  |     |     |     |     |
-CMP      | rnd | rd  |     |     |     |     |
-CMP      | rnd | rnd |     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CMP      | ru  | lu  |     |     |     |          | # CMP U regs (set ZONC flags)
+CMP      | ru  | ru  |     |     |     |          |
+CMP      | ru  | rnu |     |     |     |          |
+CMP      | rnu | lu  |     |     |     |          |
+CMP      | rnu | ru  |     |     |     |          |
+CMP      | rnu | rnu |     |     |     |          |
+CMP      | rd  | ld  |     |     |     |          | # CMP D regs TODO Tol schema?
+CMP      | rd  | rd  |     |     |     |          |
+CMP      | rd  | rnd |     |     |     |          |
+CMP      | rnd | ld  |     |     |     |          |
+CMP      | rnd | rd  |     |     |     |          |
+CMP      | rnd | rnd |     |     |     |          |
 
 # Traditional JUMP instructions that check ZONC flags
 # the 'ea' operand in these instructions are direct IMEM defaults.
 
-JUMP     | ea  |     |     |     |     |     | # unconditional
-JUMP     | dmem|     |     |     |     |     | # unconditional
-JUMP     | smem|     |     |     |     |     | # unconditional
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JUMP     | ea  |     |     |     |     |          | # unconditional
+JUMP     | dmem|     |     |     |     |          | # unconditional
+JUMP     | smem|     |     |     |     |          | # unconditional
 
-JZERO    | ea  |     |     |     |     |     | # Z = 0
-JZERO    | dmem|     |     |     |     |     | # Z = 0
-JZERO    | smem|     |     |     |     |     | # Z = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JZERO    | ea  |     |     |     |     |          | # Z = 0
+JZERO    | dmem|     |     |     |     |          | # Z = 0
+JZERO    | smem|     |     |     |     |          | # Z = 0
 
-JNOTZERO | ea  |     |     |     |     |     | # Z = 1
-JNOTZERO | dmem|     |     |     |     |     | # Z = 1
-JNOTZERO | smem|     |     |     |     |     | # Z = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNOTZERO | ea  |     |     |     |     |          | # Z = 1
+JNOTZERO | dmem|     |     |     |     |          | # Z = 1
+JNOTZERO | smem|     |     |     |     |          | # Z = 1
 
-JNEG     | ea  |     |     |     |     |     | # N = 1
-JNEG     | dmem|     |     |     |     |     | # N = 1
-JNEG     | smem|     |     |     |     |     | # N = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNEG     | ea  |     |     |     |     |          | # N = 1
+JNEG     | dmem|     |     |     |     |          | # N = 1
+JNEG     | smem|     |     |     |     |          | # N = 1
 
-JNOTNEG  | ea  |     |     |     |     |     | # N = 0
-JNOTNEG  | dmem|     |     |     |     |     | # N = 0
-JNOTNEG  | smem|     |     |     |     |     | # N = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNOTNEG  | ea  |     |     |     |     |          | # N = 0
+JNOTNEG  | dmem|     |     |     |     |          | # N = 0
+JNOTNEG  | smem|     |     |     |     |          | # N = 0
 
-JCARRY   | eam |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
-JCARRY   | dmem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
-JCARRY   | smem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JCARRY   | eam |     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
+JCARRY   | dmem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
+JCARRY   | smem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
 
-JNOTCARRY| eam |     |     |     |     |     | # C = 0
-JNOTCARRY| dmem|     |     |     |     |     | # C = 0
-JNOTCARRY| smem|     |     |     |     |     | # C = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNOTCARRY| eam |     |     |     |     |          | # C = 0
+JNOTCARRY| dmem|     |     |     |     |          | # C = 0
+JNOTCARRY| smem|     |     |     |     |          | # C = 0
 
-JOVERF   | ea  |     |     |     |     |     | # O = 1
-JOVERF   | dmem|     |     |     |     |     | # O = 1
-JOVERF   | smem|     |     |     |     |     | # O = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JOVERF   | ea  |     |     |     |     |          | # O = 1
+JOVERF   | dmem|     |     |     |     |          | # O = 1
+JOVERF   | smem|     |     |     |     |          | # O = 1
 
-JNOTOVERF| ea  |     |     |     |     |     | # O = 0
-JNOTOVERF| dmem|     |     |     |     |     | # O = 0
-JNOTOVERF| smem|     |     |     |     |     | # O = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNOTOVERF| ea  |     |     |     |     |          | # O = 0
+JNOTOVERF| dmem|     |     |     |     |          | # O = 0
+JNOTOVERF| smem|     |     |     |     |          | # O = 0
 
-JGREAT   | eam |     |     |     |     |     | # N = O and Z = 0
-JGREAT   | dmem|     |     |     |     |     | # N = O and Z = 0
-JGREAT   | smem|     |     |     |     |     | # N = O and Z = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JGREAT   | eam |     |     |     |     |          | # N = O and Z = 0
+JGREAT   | dmem|     |     |     |     |          | # N = O and Z = 0
+JGREAT   | smem|     |     |     |     |          | # N = O and Z = 0
 
-JGREATEQ | ea  |     |     |     |     |     | # N = O or Z = 1
-JGREATEQ | dmem|     |     |     |     |     | # N = O or Z = 1
-JGREATEQ | smem|     |     |     |     |     | # N = O or Z = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JGREATEQ | ea  |     |     |     |     |          | # N = O or Z = 1
+JGREATEQ | dmem|     |     |     |     |          | # N = O or Z = 1
+JGREATEQ | smem|     |     |     |     |          | # N = O or Z = 1
 
-JABOVE   | ea  |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
-JABOVE   | dmem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
-JABOVE   | smem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JABOVE   | ea  |     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
+JABOVE   | dmem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
+JABOVE   | smem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
 
-JABOVEEQ | ea  |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
-JABOVEEQ | dmem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
-JABOVEEQ | smem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JABOVEEQ | ea  |     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
+JABOVEEQ | dmem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
+JABOVEEQ | smem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
 
-JLESS    | ea  |     |     |     |     |     | # N != O
-JLESS    | dmem|     |     |     |     |     | # N != O
-JLESS    | smem|     |     |     |     |     | # N != O
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JLESS    | ea  |     |     |     |     |          | # N != O
+JLESS    | dmem|     |     |     |     |          | # N != O
+JLESS    | smem|     |     |     |     |          | # N != O
 
-JLESSEQ  | ea  |     |     |     |     |     | # N != O or Z = 1
-JLESSEQ  | dmem|     |     |     |     |     | # N != O or Z = 1
-JLESSEQ  | smem|     |     |     |     |     | # N != O or Z = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JLESSEQ  | ea  |     |     |     |     |          | # N != O or Z = 1
+JLESSEQ  | dmem|     |     |     |     |          | # N != O or Z = 1
+JLESSEQ  | smem|     |     |     |     |          | # N != O or Z = 1
 
-JBELOW   | ea  |     |     |     |     |     | # C = 1 (unsigned)
-JBELOW   | dmem|     |     |     |     |     | # C = 1 (unsigned)
-JBELOW   | smem|     |     |     |     |     | # C = 1 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JBELOW   | ea  |     |     |     |     |          | # C = 1 (unsigned)
+JBELOW   | dmem|     |     |     |     |          | # C = 1 (unsigned)
+JBELOW   | smem|     |     |     |     |          | # C = 1 (unsigned)
 
-JBELOWEQ | ea  |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
-JBELOWEQ | dmem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
-JBELOWEQ | smem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JBELOWEQ | ea  |     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
+JBELOWEQ | dmem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
+JBELOWEQ | smem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 
 # CALL instructions and varients using flags
 # the 'ea' operand in these instructions are direct IMEM defaults.
 
-CALL     | ea  |     |     |     |     |     | # unconditional CALL
-CALL     | dmem|     |     |     |     |     | # unconditional CALL
-CALL     | smem|     |     |     |     |     | # unconditional CALL
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CALL     | ea  |     |     |     |     |          | # unconditional CALL
+CALL     | dmem|     |     |     |     |          | # unconditional CALL
+CALL     | smem|     |     |     |     |          | # unconditional CALL
 
-CZERO    | ea  |     |     |     |     |     | # Z = 0
-CZERO    | dmem|     |     |     |     |     | # Z = 0
-CZERO    | smem|     |     |     |     |     | # Z = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CZERO    | ea  |     |     |     |     |          | # Z = 0
+CZERO    | dmem|     |     |     |     |          | # Z = 0
+CZERO    | smem|     |     |     |     |          | # Z = 0
 
-CNOTZERO | ea  |     |     |     |     |     | # Z = 1
-CNOTZERO | dmem|     |     |     |     |     | # Z = 1
-CNOTZERO | smem|     |     |     |     |     | # Z = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTZERO | ea  |     |     |     |     |          | # Z = 1
+CNOTZERO | dmem|     |     |     |     |          | # Z = 1
+CNOTZERO | smem|     |     |     |     |          | # Z = 1
 
-CNEG     | ea  |     |     |     |     |     | # N = 1
-CNEG     | dmem|     |     |     |     |     | # N = 1
-CNEG     | smem|     |     |     |     |     | # N = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNEG     | ea  |     |     |     |     |          | # N = 1
+CNEG     | dmem|     |     |     |     |          | # N = 1
+CNEG     | smem|     |     |     |     |          | # N = 1
 
-CNOTNEG  | ea  |     |     |     |     |     | # N = 0
-CNOTNEG  | dmem|     |     |     |     |     | # N = 0
-CNOTNEG  | smem|     |     |     |     |     | # N = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTNEG  | ea  |     |     |     |     |          | # N = 0
+CNOTNEG  | dmem|     |     |     |     |          | # N = 0
+CNOTNEG  | smem|     |     |     |     |          | # N = 0
 
-CCARRY   | ea  |     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
-CCARRY   | dmem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
-CCARRY   | smem|     |     |     |     |     | # C = 1 (unsigned) (dup JBELOW)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CCARRY   | ea  |     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
+CCARRY   | dmem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
+CCARRY   | smem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
 
-CNOTCARRY| ea  |     |     |     |     |     | # C = 0
-CNOTCARRY| dmem|     |     |     |     |     | # C = 0
-CNOTCARRY| smem|     |     |     |     |     | # C = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTCARRY| ea  |     |     |     |     |          | # C = 0
+CNOTCARRY| dmem|     |     |     |     |          | # C = 0
+CNOTCARRY| smem|     |     |     |     |          | # C = 0
 
-COVERF   | ea  |     |     |     |     |     | # O = 1
-COVERF   | dmem|     |     |     |     |     | # O = 1
-COVERF   | smem|     |     |     |     |     | # O = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COVERF   | ea  |     |     |     |     |          | # O = 1
+COVERF   | dmem|     |     |     |     |          | # O = 1
+COVERF   | smem|     |     |     |     |          | # O = 1
 
-CNOTOVERF| ea  |     |     |     |     |     | # O = 0
-CNOTOVERF| dmem|     |     |     |     |     | # O = 0
-CNOTOVERF| smem|     |     |     |     |     | # O = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTOVERF| ea  |     |     |     |     |          | # O = 0
+CNOTOVERF| dmem|     |     |     |     |          | # O = 0
+CNOTOVERF| smem|     |     |     |     |          | # O = 0
 
-CGREAT   | ea  |     |     |     |     |     | # N = O and Z = 0
-CGREAT   | dmem|     |     |     |     |     | # N = O and Z = 0
-CGREAT   | smem|     |     |     |     |     | # N = O and Z = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CGREAT   | ea  |     |     |     |     |          | # N = O and Z = 0
+CGREAT   | dmem|     |     |     |     |          | # N = O and Z = 0
+CGREAT   | smem|     |     |     |     |          | # N = O and Z = 0
 
-CGREATEQ | ea  |     |     |     |     |     | # N = O or Z = 1
-CGREATEQ | dmem|     |     |     |     |     | # N = O or Z = 1
-CGREATEQ | smem|     |     |     |     |     | # N = O or Z = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CGREATEQ | ea  |     |     |     |     |          | # N = O or Z = 1
+CGREATEQ | dmem|     |     |     |     |          | # N = O or Z = 1
+CGREATEQ | smem|     |     |     |     |          | # N = O or Z = 1
 
-CABOVE   | ea  |     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
-CABOVE   | dmem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
-CABOVE   | smem|     |     |     |     |     | # C = 0 and Z = 0 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CABOVE   | ea  |     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
+CABOVE   | dmem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
+CABOVE   | smem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
 
-CABOVEEQ | ea  |     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
-CABOVEEQ | dmem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
-CABOVEEQ | smem|     |     |     |     |     | # C = 0 or Z = 1 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CABOVEEQ | ea  |     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
+CABOVEEQ | dmem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
+CABOVEEQ | smem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
 
-CLESS    | ea  |     |     |     |     |     | # N != O
-CLESS    | dmem|     |     |     |     |     | # N != O
-CLESS    | smem|     |     |     |     |     | # N != O
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CLESS    | ea  |     |     |     |     |          | # N != O
+CLESS    | dmem|     |     |     |     |          | # N != O
+CLESS    | smem|     |     |     |     |          | # N != O
 
-CLESSEQ  | ea  |     |     |     |     |     | # N != O or Z = 1
-CLESSEQ  | dmem|     |     |     |     |     | # N != O or Z = 1
-CLESSEQ  | smem|     |     |     |     |     | # N != O or Z = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CLESSEQ  | ea  |     |     |     |     |          | # N != O or Z = 1
+CLESSEQ  | dmem|     |     |     |     |          | # N != O or Z = 1
+CLESSEQ  | smem|     |     |     |     |          | # N != O or Z = 1
 
-CBELOW   | ea  |     |     |     |     |     | # C = 1 (unsigned)
-CBELOW   | dmem|     |     |     |     |     | # C = 1 (unsigned)
-CBELOW   | smem|     |     |     |     |     | # C = 1 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CBELOW   | ea  |     |     |     |     |          | # C = 1 (unsigned)
+CBELOW   | dmem|     |     |     |     |          | # C = 1 (unsigned)
+CBELOW   | smem|     |     |     |     |          | # C = 1 (unsigned)
 
-CBELOWEQ | ea  |     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
-CBELOWEQ | dmem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
-CBELOWEQ | smem|     |     |     |     |     | # C = 1 or Z = 1 (unsigned)
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CBELOWEQ | ea  |     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
+CBELOWEQ | dmem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
+CBELOWEQ | smem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 
 # [Part II]
 
 # Evauate COND-ition, sets all flags including the Bool T/F flag
 
-COND     | ru  | irel| lu  |     |     |     | # set BZONC flags
-COND     | ru  | irel| ru  |     |     |     |
-COND     | ru  | irel| rnu |     |     |     |
-COND     | rnu | irel| lu  |     |     |     |
-COND     | rnu | irel| ru  |     |     |     |
-COND     | rnu | irel| rnu |     |     |     |
-COND     | rd  | drel| ld  |     |     |     |
-COND     | rd  | drel| rd  |     |     |     |
-COND     | rd  | drel| rnd |     |     |     |
-COND     | rnd | drel| ld  |     |     |     |
-COND     | rnd | drel| rd  |     |     |     |
-COND     | rnd | drel| rnd |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COND     | ru  | irel| lu  |     |     |          | # set BZONC flags
+COND     | ru  | irel| ru  |     |     |          |
+COND     | ru  | irel| rnu |     |     |          |
+COND     | rnu | irel| lu  |     |     |          |
+COND     | rnu | irel| ru  |     |     |          |
+COND     | rnu | irel| rnu |     |     |          |
+COND     | rd  | drel| ld  |     |     |          |
+COND     | rd  | drel| rd  |     |     |          |
+COND     | rd  | drel| rnd |     |     |          |
+COND     | rnd | drel| ld  |     |     |          |
+COND     | rnd | drel| rd  |     |     |          |
+COND     | rnd | drel| rnd |     |     |          |
 
 # New control instructions to handle B flag.
 # the 'ea' operand in these instructions are direct IMEM defaults.
 
-JUMPT    | ea  |     |     |     |     |     | # B = 1
-JUMPT    | dmem|     |     |     |     |     | # B = 1
-JUMPT    | smem|     |     |     |     |     | # B = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JUMPT    | ea  |     |     |     |     |          | # B = 1
+JUMPT    | dmem|     |     |     |     |          | # B = 1
+JUMPT    | smem|     |     |     |     |          | # B = 1
 
-JUMPF    | ea  |     |     |     |     |     | # B = 0
-JUMPF    | dmem|     |     |     |     |     | # B = 0
-JUMPF    | smem|     |     |     |     |     | # B = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JUMPF    | ea  |     |     |     |     |          | # B = 0
+JUMPF    | dmem|     |     |     |     |          | # B = 0
+JUMPF    | smem|     |     |     |     |          | # B = 0
 
-CALLT    | ea  |     |     |     |     |     | # B = 1
-CALLT    | dmem|     |     |     |     |     | # B = 1
-CALLT    | smem|     |     |     |     |     | # B = 1
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CALLT    | ea  |     |     |     |     |          | # B = 1
+CALLT    | dmem|     |     |     |     |          | # B = 1
+CALLT    | smem|     |     |     |     |          | # B = 1
 
-CALLF    | ea  |     |     |     |     |     | # B = 0
-CALLF    | dmem|     |     |     |     |     | # B = 0
-CALLF    | smem|     |     |     |     |     | # B = 0
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CALLF    | ea  |     |     |     |     |          | # B = 0
+CALLF    | dmem|     |     |     |     |          | # B = 0
+CALLF    | smem|     |     |     |     |          | # B = 0
 
 # [PART III]
 # convenience control flow API (think about D comparisons and tolerace, etc).
@@ -1214,124 +1601,136 @@ CALLF    | smem|     |     |     |     |     | # B = 0
 # These set the flags as if COND then JUMP if possible in one instruction.
 # the 'ea' operand in these instructions are direct IMEM defaults.
 
-JUMPIF   | ru  | irel| lu  | ea  |     |     |
-JUMPIF   | ru  | irel| lu  | dmem|     |     |
-JUMPIF   | ru  | irel| lu  | smem|     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JUMPIF   | ru  | irel| lu  | ea  |     |          |
+JUMPIF   | ru  | irel| lu  | dmem|     |          |
+JUMPIF   | ru  | irel| lu  | smem|     |          |
 
-JUMPIF   | ru  | irel| ru  | ea  |     |     |
-JUMPIF   | ru  | irel| ru  | dmem|     |     |
-JUMPIF   | ru  | irel| ru  | smem|     |     |
+JUMPIF   | ru  | irel| ru  | ea  |     |          |
+JUMPIF   | ru  | irel| ru  | dmem|     |          |
+JUMPIF   | ru  | irel| ru  | smem|     |          |
 
-JUMPIF   | ru  | irel| rnu | ea  |     |     |
-JUMPIF   | ru  | irel| rnu | dmem|     |     |
-JUMPIF   | ru  | irel| rnu | smem|     |     |
+JUMPIF   | ru  | irel| rnu | ea  |     |          |
+JUMPIF   | ru  | irel| rnu | dmem|     |          |
+JUMPIF   | ru  | irel| rnu | smem|     |          |
 
-JUMPIF   | rnu | irel| lu  | ea  |     |     |
-JUMPIF   | rnu | irel| lu  | dmem|     |     |
-JUMPIF   | rnu | irel| lu  | smem|     |     |
+JUMPIF   | rnu | irel| lu  | ea  |     |          |
+JUMPIF   | rnu | irel| lu  | dmem|     |          |
+JUMPIF   | rnu | irel| lu  | smem|     |          |
 
-JUMPIF   | rnu | irel| ru  | ea  |     |     |
-JUMPIF   | rnu | irel| ru  | dmem|     |     |
-JUMPIF   | rnu | irel| ru  | smem|     |     |
+JUMPIF   | rnu | irel| ru  | ea  |     |          |
+JUMPIF   | rnu | irel| ru  | dmem|     |          |
+JUMPIF   | rnu | irel| ru  | smem|     |          |
 
-JUMPIF   | rnu | irel| rnu | ea  |     |     |
-JUMPIF   | rnu | irel| rnu | dmem|     |     |
-JUMPIF   | rnu | irel| rnu | smem|     |     |
+JUMPIF   | rnu | irel| rnu | ea  |     |          |
+JUMPIF   | rnu | irel| rnu | dmem|     |          |
+JUMPIF   | rnu | irel| rnu | smem|     |          |
 
-JUMPIF   | rd  | drel| ld  | ea  |     |     |
-JUMPIF   | rd  | drel| ld  | dmem|     |     |
-JUMPIF   | rd  | drel| ld  | smem|     |     |
+JUMPIF   | rd  | drel| ld  | ea  |     |          |
+JUMPIF   | rd  | drel| ld  | dmem|     |          |
+JUMPIF   | rd  | drel| ld  | smem|     |          |
 
-JUMPIF   | rd  | drel| rd  | ea  |     |     |
-JUMPIF   | rd  | drel| rd  | dmem|     |     |
-JUMPIF   | rd  | drel| rd  | smem|     |     |
+JUMPIF   | rd  | drel| rd  | ea  |     |          |
+JUMPIF   | rd  | drel| rd  | dmem|     |          |
+JUMPIF   | rd  | drel| rd  | smem|     |          |
 
-JUMPIF   | rd  | drel| rnd | ea  |     |     |
-JUMPIF   | rd  | drel| rnd | dmem|     |     |
-JUMPIF   | rd  | drel| rnd | smem|     |     |
+JUMPIF   | rd  | drel| rnd | ea  |     |          |
+JUMPIF   | rd  | drel| rnd | dmem|     |          |
+JUMPIF   | rd  | drel| rnd | smem|     |          |
 
-JUMPIF   | rnd | drel| ld  | eam |     |     |
-JUMPIF   | rnd | drel| ld  | dmem|     |     |
-JUMPIF   | rnd | drel| ld  | smem|     |     |
+JUMPIF   | rnd | drel| ld  | eam |     |          |
+JUMPIF   | rnd | drel| ld  | dmem|     |          |
+JUMPIF   | rnd | drel| ld  | smem|     |          |
 
-JUMPIF   | rnd | drel| rd  | ea  |     |     |
-JUMPIF   | rnd | drel| rd  | dmem|     |     |
-JUMPIF   | rnd | drel| rd  | smem|     |     |
+JUMPIF   | rnd | drel| rd  | ea  |     |          |
+JUMPIF   | rnd | drel| rd  | dmem|     |          |
+JUMPIF   | rnd | drel| rd  | smem|     |          |
 
-JUMPIF   | rnd | drel| rnd | ea  |     |     |
-JUMPIF   | rnd | drel| rnd | dmem|     |     |
-JUMPIF   | rnd | drel| rnd | smem|     |     |
+JUMPIF   | rnd | drel| rnd | ea  |     |          |
+JUMPIF   | rnd | drel| rnd | dmem|     |          |
+JUMPIF   | rnd | drel| rnd | smem|     |          |
 
-JUMPIFNAN| rd  | ea  |     |     |     |     |
-JUMPIFNAN| rd  | dmem|     |     |     |     |
-JUMPIFNAN| rd  | smem|     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JUMPIFNAN| rd  | ea  |     |     |     |          |
+JUMPIFNAN| rd  | dmem|     |     |     |          |
+JUMPIFNAN| rd  | smem|     |     |     |          |
 
-JUMPIFNAN| rnd | ea  |     |     |     |     |
-JUMPIFNAN| rnd | dmem|     |     |     |     |
-JUMPIFNAN| rnd | smem|     |     |     |     |
+JUMPIFNAN| rnd | ea  |     |     |     |          |
+JUMPIFNAN| rnd | dmem|     |     |     |          |
+JUMPIFNAN| rnd | smem|     |     |     |          |
 
 # These set the flags as if COND then CALL if possible in one instruction.
 # the 'ea' operand in these instructions are direct IMEM defaults.
 
-CALLIF   | ru  | irel| lu  | ea  |     |     |
-CALLIF   | ru  | irel| lu  | dmem|     |     |
-CALLIF   | ru  | irel| lu  | smem|     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CALLIF   | ru  | irel| lu  | ea  |     |          |
+CALLIF   | ru  | irel| lu  | dmem|     |          |
+CALLIF   | ru  | irel| lu  | smem|     |          |
 
-CALLIF   | ru  | irel| ru  | ea  |     |     |
-CALLIF   | ru  | irel| ru  | dmem|     |     |
-CALLIF   | ru  | irel| ru  | smem|     |     |
+CALLIF   | ru  | irel| ru  | ea  |     |          |
+CALLIF   | ru  | irel| ru  | dmem|     |          |
+CALLIF   | ru  | irel| ru  | smem|     |          |
 
-CALLIF   | ru  | irel| rnu | ea  |     |     |
-CALLIF   | ru  | irel| rnu | dmem|     |     |
-CALLIF   | ru  | irel| rnu | smem|     |     |
+CALLIF   | ru  | irel| rnu | ea  |     |          |
+CALLIF   | ru  | irel| rnu | dmem|     |          |
+CALLIF   | ru  | irel| rnu | smem|     |          |
 
-CALLIF   | rnu | irel| lu  | ea  |     |     |
-CALLIF   | rnu | irel| lu  | dmem|     |     |
-CALLIF   | rnu | irel| lu  | smem|     |     |
+CALLIF   | rnu | irel| lu  | ea  |     |          |
+CALLIF   | rnu | irel| lu  | dmem|     |          |
+CALLIF   | rnu | irel| lu  | smem|     |          |
 
-CALLIF   | rnu | irel| ru  | ea  |     |     |
-CALLIF   | rnu | irel| ru  | dmem|     |     |
-CALLIF   | rnu | irel| ru  | smem|     |     |
+CALLIF   | rnu | irel| ru  | ea  |     |          |
+CALLIF   | rnu | irel| ru  | dmem|     |          |
+CALLIF   | rnu | irel| ru  | smem|     |          |
 
-CALLIF   | rnu | irel| rnu | ea  |     |     |
-CALLIF   | rnu | irel| rnu | dmem|     |     |
-CALLIF   | rnu | irel| rnu | smem|     |     |
+CALLIF   | rnu | irel| rnu | ea  |     |          |
+CALLIF   | rnu | irel| rnu | dmem|     |          |
+CALLIF   | rnu | irel| rnu | smem|     |          |
 
-CALLIF   | rd  | drel| ld  | ea  |     |     |
-CALLIF   | rd  | drel| ld  | dmem|     |     |
-CALLIF   | rd  | drel| ld  | smem|     |     |
+CALLIF   | rd  | drel| ld  | ea  |     |          |
+CALLIF   | rd  | drel| ld  | dmem|     |          |
+CALLIF   | rd  | drel| ld  | smem|     |          |
 
-CALLIF   | rd  | drel| rd  | ea  |     |     |
-CALLIF   | rd  | drel| rd  | dmem|     |     |
-CALLIF   | rd  | drel| rd  | smem|     |     |
+CALLIF   | rd  | drel| rd  | ea  |     |          |
+CALLIF   | rd  | drel| rd  | dmem|     |          |
+CALLIF   | rd  | drel| rd  | smem|     |          |
 
-CALLIF   | rd  | drel| rnd | ea  |     |     |
-CALLIF   | rd  | drel| rnd | dmem|     |     |
-CALLIF   | rd  | drel| rnd | smem|     |     |
+CALLIF   | rd  | drel| rnd | ea  |     |          |
+CALLIF   | rd  | drel| rnd | dmem|     |          |
+CALLIF   | rd  | drel| rnd | smem|     |          |
 
-CALLIF   | rnd | drel| ld  | ea  |     |     |
-CALLIF   | rnd | drel| ld  | dmem|     |     |
-CALLIF   | rnd | drel| ld  | smem|     |     |
+CALLIF   | rnd | drel| ld  | ea  |     |          |
+CALLIF   | rnd | drel| ld  | dmem|     |          |
+CALLIF   | rnd | drel| ld  | smem|     |          |
 
-CALLIF   | rnd | drel| rd  | ea  |     |     |
-CALLIF   | rnd | drel| rd  | dmem|     |     |
-CALLIF   | rnd | drel| rd  | smem|     |     |
+CALLIF   | rnd | drel| rd  | ea  |     |          |
+CALLIF   | rnd | drel| rd  | dmem|     |          |
+CALLIF   | rnd | drel| rd  | smem|     |          |
 
-CALLIF   | rnd | drel| rnd | ea  |     |     |
-CALLIF   | rnd | drel| rnd | dmem|     |     |
-CALLIF   | rnd | drel| rnd | smem|     |     |
+CALLIF   | rnd | drel| rnd | ea  |     |          |
+CALLIF   | rnd | drel| rnd | dmem|     |          |
+CALLIF   | rnd | drel| rnd | smem|     |          |
 
-CALLIFNAN| rd  | ea  |     |     |     |     |
-CALLIFNAN| rd  | dmem|     |     |     |     |
-CALLIFNAN| rd  | smem|     |     |     |     |
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CALLIFNAN| rd  | ea  |     |     |     |          |
+CALLIFNAN| rd  | dmem|     |     |     |          |
+CALLIFNAN| rd  | smem|     |     |     |          |
 
-CALLIFNAN| rnd | ea  |     |     |     |     |
-CALLIFNAN| rnd | dmem|     |     |     |     |
-CALLIFNAN| rnd | smem|     |     |     |     |
+CALLIFNAN| rnd | ea  |     |     |     |          |
+CALLIFNAN| rnd | dmem|     |     |     |          |
+CALLIFNAN| rnd | smem|     |     |     |          |
 
-RETURN   |     |     |     |     |     |     | # unconditional function return
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+RETURN   |     |     |     |     |     |          | # unconditional function return
 
-FIRE     |     |     |     |     |     |     | # fire a bullet
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+FIRE     |     |     |     |     |     |          | # fire a bullet
 
 
 NOTES
