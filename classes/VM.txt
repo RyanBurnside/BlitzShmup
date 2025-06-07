@@ -111,9 +111,8 @@ lm3i     |        OpLitM3I
 lm4i     |        OpLitM4I
 lq       |      OpLitQ
          |    OpRegister
-         |      OpRegSys
-         |        OpRegSysIntU
-rpc      |          OpRegPC
+         |      OpRegSysIntU
+rpc      |        OpRegPC
 rnu      |      OpRegNamU
 rnd      |      OpRegNamD
 ru       |      OpRegU
