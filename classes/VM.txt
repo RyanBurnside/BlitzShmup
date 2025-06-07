@@ -709,9 +709,28 @@ ADD      | rm4d| rm4d| rm4d|     |     |          |
 ADD      | rm4i| rm4i| lm4i|     |     |          |
 ADD      | rm4i| rm4i| rm4i|     |     |          |
 
+------------
+| ADC      |
+------------
+
+Add Op1 and Op2 together with the Carry flag and store into Op0. Vector and
+matricies are added element-wise.
+
+Operation:
+  Op0 <- Op1 + Op2 + C
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  if Op* is integral:
+    O <- Did (all) operations overflow?
+    C <- Did (all) operations experience a carry?
+  else:
+    O <- 0
+    C <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ADC      | rnu | rnu | lu  |     |     |          | # ADC for scalar U registers
+ADC      | rnu | rnu | lu  |     |     |          |
 ADC      | rnu | ru  | lu  |     |     |          |
 ADC      | rnu | ru  | ru  |     |     |          |
 ADC      | rnu | ru  | rnu |     |     |          |
@@ -724,9 +743,28 @@ ADC      | ru  | ru  | rnu |     |     |          |
 ADC      | ru  | rnu | ru  |     |     |          |
 ADC      | ru  | rnu | rnu |     |     |          |
 
+------------
+| SUB      |
+------------
+
+Sub Op2 from Op1 and store into Op0. Vector and matricies are subtracted
+element-wise.
+
+Operation:
+  Op0 <- Op1 - Op2
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  if Op* is integral:
+    O <- Did (all) operations experience a overflow? (out of representation)
+    C <- Did (all) operations experience a borrow?
+  else:
+    O <- 0
+    C <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SUB      | rnu | rnu | lu  |     |     |          | # SUB for scalar U registers
+SUB      | rnu | rnu | lu  |     |     |          |
 SUB      | rnu | ru  | lu  |     |     |          |
 SUB      | rnu | ru  | ru  |     |     |          |
 SUB      | rnu | ru  | rnu |     |     |          |
@@ -738,7 +776,7 @@ SUB      | ru  | ru  | ru  |     |     |          |
 SUB      | ru  | ru  | rnu |     |     |          |
 SUB      | ru  | rnu | ru  |     |     |          |
 SUB      | ru  | rnu | rnu |     |     |          |
-SUB      | rnd | rnd | ld  |     |     |          | # SUB for scalar D regisers
+SUB      | rnd | rnd | ld  |     |     |          |
 SUB      | rnd | rd  | ld  |     |     |          |
 SUB      | rnd | rd  | rd  |     |     |          |
 SUB      | rnd | rd  | rnd |     |     |          |
@@ -750,82 +788,139 @@ SUB      | rd  | rd  | rd  |     |     |          |
 SUB      | rd  | rd  | rnd |     |     |          |
 SUB      | rd  | rnd | rd  |     |     |          |
 SUB      | rd  | rnd | rnd |     |     |          |
-SUB      | rv2d| rv2d| lv2d|     |     |          | # SUB group for V2D
+SUB      | rv2d| rv2d| lv2d|     |     |          |
 SUB      | rv2d| rv2d| rv2d|     |     |          |
-SUB      | rv2i| rv2i| lv2i|     |     |          | # SUB group for V2I
+SUB      | rv2i| rv2i| lv2i|     |     |          |
 SUB      | rv2i| rv2i| rv2i|     |     |          |
-SUB      | rv3d| rv3d| lv3d|     |     |          | # SUB group for V3D
+SUB      | rv3d| rv3d| lv3d|     |     |          |
 SUB      | rv3d| rv3d| rv3d|     |     |          |
-SUB      | rv3i| rv3i| lv3i|     |     |          | # SUB group for V3I
+SUB      | rv3i| rv3i| lv3i|     |     |          |
 SUB      | rv3i| rv3i| rv3i|     |     |          |
-SUB      | rv4d| rv4d| lv4d|     |     |          | # SUB group for V4D
+SUB      | rv4d| rv4d| lv4d|     |     |          |
 SUB      | rv4d| rv4d| rv4d|     |     |          |
-SUB      | rv4i| rv4i| lv4i|     |     |          | # SUB group for V4I
+SUB      | rv4i| rv4i| lv4i|     |     |          |
 SUB      | rv4i| rv4i| rv4i|     |     |          |
-SUB      | rm2d| rm2d| lm2d|     |     |          | # SUB group for M2D
+SUB      | rm2d| rm2d| lm2d|     |     |          |
 SUB      | rm2d| rm2d| rm2d|     |     |          |
-SUB      | rm2i| rm2i| lm2i|     |     |          | # SUB group for M2I
+SUB      | rm2i| rm2i| lm2i|     |     |          |
 SUB      | rm2i| rm2i| rm2i|     |     |          |
-SUB      | rm3d| rm3d| lm3d|     |     |          | # SUB group for M3D
+SUB      | rm3d| rm3d| lm3d|     |     |          |
 SUB      | rm3d| rm3d| rm3d|     |     |          |
-SUB      | rm3i| rm3i| lm3i|     |     |          | # SUB group for M3I
+SUB      | rm3i| rm3i| lm3i|     |     |          |
 SUB      | rm3i| rm3i| rm3i|     |     |          |
-SUB      | rm4d| rm4d| lm4d|     |     |          | # SUB group for M4D
+SUB      | rm4d| rm4d| lm4d|     |     |          |
 SUB      | rm4d| rm4d| rm4d|     |     |          |
-SUB      | rm4i| rm4i| lm4i|     |     |          | # SUB group for M4I
+SUB      | rm4i| rm4i| lm4i|     |     |          |
 SUB      | rm4i| rm4i| rm4i|     |     |          |
+
+------------
+| UMUL     |
+------------
+
+Unsigned 128bit multiply Op1 and Op2 and store into (hi) Op0 (lo) Op0+1.
+of Op0+1 and Op1 and/or Op2 overlap, the multiplication will proceed normally
+and destroy the overlapped registers with the correct answer.
+
+Operation:
+  Op0, Op0+1 <- Op1 * Op2
+  If Op0 and Op0+1 is zero then Z <- 1 else Z <- 0
+  If Op0+1 is negative then N <- 1 else N <- 0
+  If Op0 == 0:
+    O <- 0
+    C <- 0
+  else:
+    O <- 1
+    C <- 1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-UMUL     | ru  | rnu | lu  |     |     |          | # UMUL: 128bit ru hi, ru+1 lo
+UMUL     | ru  | rnu | lu  |     |     |          |
 UMUL     | ru  | ru  | lu  |     |     |          |
 UMUL     | ru  | ru  | ru  |     |     |          |
 UMUL     | ru  | ru  | rnu |     |     |          |
 UMUL     | ru  | rnu | ru  |     |     |          |
 UMUL     | ru  | rnu | rnu |     |     |          |
 
+
+------------
+| MUL      |
+------------
+
+Signed 128bit multiply Op1 and Op2 and store into (hi) Op0 (lo) Op0+1.
+of Op0+1 and Op1 and/or Op2 overlap, the multiplication will proceed normally
+and destroy the overlapped registers with the correct answer.
+
+Operation:
+  Op0, Op0+1 <- Op1 * Op2
+  If Op0 and Op0+1 is zero then Z <- 1 else Z <- 0
+  If Op0+1 is negative then N <- 1 else N <- 0
+  If Op0 == 0:
+    O <- 0
+    C <- 0
+  else:
+    O <- 1
+    C <- 1
+
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-MUL      | ru  | rnu | lu  |     |     |          | # MUL: 128bit, ru hi, ru+1 lo
+MUL      | ru  | rnu | lu  |     |     |          |
 MUL      | ru  | ru  | lu  |     |     |          |
 MUL      | ru  | ru  | ru  |     |     |          |
 MUL      | ru  | ru  | rnu |     |     |          |
 MUL      | ru  | rnu | ru  |     |     |          |
 MUL      | ru  | rnu | rnu |     |     |          |
-MUL      | rd  | rnd | ld  |     |     |          | # MUL: rd is only result
+MUL      | rd  | rnd | ld  |     |     |          |
 MUL      | rd  | rd  | ld  |     |     |          |
 MUL      | rd  | rd  | rd  |     |     |          |
 MUL      | rd  | rd  | rnd |     |     |          |
 MUL      | rd  | rnd | rd  |     |     |          |
 MUL      | rd  | rnd | rnd |     |     |          |
-MUL      | rv2d| rv2d| lv2d|     |     |          | # MUL group for V2D element-wise
+MUL      | rv2d| rv2d| lv2d|     |     |          |
 MUL      | rv2d| rv2d| rv2d|     |     |          |
-MUL      | rv2i| rv2i| lv2i|     |     |          | # MUL group for V2I element-wise
+MUL      | rv2i| rv2i| lv2i|     |     |          |
 MUL      | rv2i| rv2i| rv2i|     |     |          |
-MUL      | rv3d| rv3d| lv3d|     |     |          | # MUL group for V3D element-wise
+MUL      | rv3d| rv3d| lv3d|     |     |          |
 MUL      | rv3d| rv3d| rv3d|     |     |          |
-MUL      | rv3i| rv3i| lv3i|     |     |          | # MUL group for V3I element-wise
+MUL      | rv3i| rv3i| lv3i|     |     |          |
 MUL      | rv3i| rv3i| rv3i|     |     |          |
-MUL      | rv4d| rv4d| lv4d|     |     |          | # MUL group for V4D element-wise
+MUL      | rv4d| rv4d| lv4d|     |     |          |
 MUL      | rv4d| rv4d| rv4d|     |     |          |
-MUL      | rv4i| rv4i| lv4i|     |     |          | # MUL group for V4I element-wise
+MUL      | rv4i| rv4i| lv4i|     |     |          |
 MUL      | rv4i| rv4i| rv4i|     |     |          |
-MUL      | rm2d| rm2d| lm2d|     |     |          | # MUL group for M2D element-wise
+MUL      | rm2d| rm2d| lm2d|     |     |          |
 MUL      | rm2d| rm2d| rm2d|     |     |          |
-MUL      | rm2i| rm2i| lm2i|     |     |          | # MUL group for M2I element-wise
+MUL      | rm2i| rm2i| lm2i|     |     |          |
 MUL      | rm2i| rm2i| rm2i|     |     |          |
-MUL      | rm3d| rm3d| lm3d|     |     |          | # MUL group for M3D element-wise
+MUL      | rm3d| rm3d| lm3d|     |     |          |
 MUL      | rm3d| rm3d| rm3d|     |     |          |
-MUL      | rm3i| rm3i| lm3i|     |     |          | # MUL group for M3I element-wise
+MUL      | rm3i| rm3i| lm3i|     |     |          |
 MUL      | rm3i| rm3i| rm3i|     |     |          |
-MUL      | rm4d| rm4d| lm4d|     |     |          | # MUL group for M4D element-wise
+MUL      | rm4d| rm4d| lm4d|     |     |          |
 MUL      | rm4d| rm4d| rm4d|     |     |          |
-MUL      | rm4i| rm4i| lm4i|     |     |          | # MUL group for M4I element-wise
+MUL      | rm4i| rm4i| lm4i|     |     |          |
 MUL      | rm4i| rm4i| rm4i|     |     |          |
+
+------------
+| DOT      |
+------------
+
+Perform the dot product between Op1 and Op2 and store result in Op0.
+
+Operation:
+  Op0 <- Op1 dot Op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  if Op* is integral:
+    O <- Did (all) operations overflow?
+    C <- Did (all) operations experience a carry?
+  else:
+    O <- 0
+    C <- 0
+  If Op0 is NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-DOT      | rv2d| rv2d| lv2d|     |     |          | # Dot prod: op0 <- op1 dot op2
+DOT      | rv2d| rv2d| lv2d|     |     |          |
 DOT      | rv2d| rv2d| rv2d|     |     |          |
 DOT      | rv2i| rv2i| lv21|     |     |          |
 DOT      | rv2i| rv2i| rv21|     |     |          |
@@ -837,6 +932,26 @@ DOT      | rv4d| rv4d| lv4d|     |     |          |
 DOT      | rv4d| rv4d| rv4d|     |     |          |
 DOT      | rv4i| rv4i| lv41|     |     |          |
 DOT      | rv4i| rv4i| rv41|     |     |          |
+
+------------
+| CROSS    |
+------------
+
+Perform the cross product between Op1 and Op2 and store result in Op0.
+
+KEEP GOING.
+
+Operation:
+  Op0 <- Op1 cross Op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  if Op* is integral:
+    O <- Did (all) operations overflow?
+    C <- Did (all) operations experience a carry?
+  else:
+    O <- 0
+    C <- 0
+  If Op0 is NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
