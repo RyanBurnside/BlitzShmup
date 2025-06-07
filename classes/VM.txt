@@ -5,8 +5,8 @@ Harvard Architecture
 
 This is a LOAD-STORE architecture. So most arithmetic operations and such only
 use registers. There are specific LOAD and STORE instructions to move data from
-memory to registers and back again. Stack disciplines (for PUSH and POP) are
-full ascending unless otherwise indicated.
+memory to registers and back again. All Stack disciplines are full ascending
+unless otherwise indicated.
 
 Registers:
   RegSys
