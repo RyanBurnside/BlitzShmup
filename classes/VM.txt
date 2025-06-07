@@ -660,54 +660,54 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ADD      | rnu | rnu | lu  |     |     |          |
-ADD      | rnu | ru  | lu  |     |     |          |
-ADD      | rnu | ru  | ru  |     |     |          |
-ADD      | rnu | ru  | rnu |     |     |          |
-ADD      | rnu | rnu | ru  |     |     |          |
-ADD      | rnu | rnu | rnu |     |     |          |
-ADD      | ru  | rnu | lu  |     |     |          |
-ADD      | ru  | ru  | lu  |     |     |          |
-ADD      | ru  | ru  | ru  |     |     |          |
-ADD      | ru  | ru  | rnu |     |     |          |
-ADD      | ru  | rnu | ru  |     |     |          |
-ADD      | ru  | rnu | rnu |     |     |          |
-ADD      | rnd | rnd | ld  |     |     |          |
-ADD      | rnd | rd  | ld  |     |     |          |
-ADD      | rnd | rd  | rd  |     |     |          |
-ADD      | rnd | rd  | rnd |     |     |          |
-ADD      | rnd | rnd | rd  |     |     |          |
-ADD      | rnd | rnd | rnd |     |     |          |
-ADD      | rd  | rnd | ld  |     |     |          |
-ADD      | rd  | rd  | ld  |     |     |          |
-ADD      | rd  | rd  | rd  |     |     |          |
-ADD      | rd  | rd  | rnd |     |     |          |
-ADD      | rd  | rnd | rd  |     |     |          |
-ADD      | rd  | rnd | rnd |     |     |          |
-ADD      | rv2d| rv2d| lv2d|     |     |          |
-ADD      | rv2d| rv2d| rv2d|     |     |          |
-ADD      | rv2i| rv2i| lv2i|     |     |          |
-ADD      | rv2i| rv2i| rv2i|     |     |          |
-ADD      | rv3d| rv3d| lv3d|     |     |          |
-ADD      | rv3d| rv3d| rv3d|     |     |          |
-ADD      | rv3i| rv3i| lv3i|     |     |          |
-ADD      | rv3i| rv3i| rv3i|     |     |          |
-ADD      | rv4d| rv4d| lv4d|     |     |          |
-ADD      | rv4d| rv4d| rv4d|     |     |          |
-ADD      | rv4i| rv4i| lv4i|     |     |          |
-ADD      | rv4i| rv4i| rv4i|     |     |          |
-ADD      | rm2d| rm2d| lm2d|     |     |          |
-ADD      | rm2d| rm2d| rm2d|     |     |          |
-ADD      | rm2i| rm2i| lm2i|     |     |          |
-ADD      | rm2i| rm2i| rm2i|     |     |          |
-ADD      | rm3d| rm3d| lm3d|     |     |          |
-ADD      | rm3d| rm3d| rm3d|     |     |          |
-ADD      | rm3i| rm3i| lm3i|     |     |          |
-ADD      | rm3i| rm3i| rm3i|     |     |          |
-ADD      | rm4d| rm4d| lm4d|     |     |          |
-ADD      | rm4d| rm4d| rm4d|     |     |          |
-ADD      | rm4i| rm4i| lm4i|     |     |          |
-ADD      | rm4i| rm4i| rm4i|     |     |          |
+ADD      | rnu | rnu | lu  |     |     | ZONCA    |
+ADD      | rnu | ru  | lu  |     |     | ZONCA    |
+ADD      | rnu | ru  | ru  |     |     | ZONCA    |
+ADD      | rnu | ru  | rnu |     |     | ZONCA    |
+ADD      | rnu | rnu | ru  |     |     | ZONCA    |
+ADD      | rnu | rnu | rnu |     |     | ZONCA    |
+ADD      | ru  | rnu | lu  |     |     | ZONCA    |
+ADD      | ru  | ru  | lu  |     |     | ZONCA    |
+ADD      | ru  | ru  | ru  |     |     | ZONCA    |
+ADD      | ru  | ru  | rnu |     |     | ZONCA    |
+ADD      | ru  | rnu | ru  |     |     | ZONCA    |
+ADD      | ru  | rnu | rnu |     |     | ZONCA    |
+ADD      | rnd | rnd | ld  |     |     | ZONCA    |
+ADD      | rnd | rd  | ld  |     |     | ZONCA    |
+ADD      | rnd | rd  | rd  |     |     | ZONCA    |
+ADD      | rnd | rd  | rnd |     |     | ZONCA    |
+ADD      | rnd | rnd | rd  |     |     | ZONCA    |
+ADD      | rnd | rnd | rnd |     |     | ZONCA    |
+ADD      | rd  | rnd | ld  |     |     | ZONCA    |
+ADD      | rd  | rd  | ld  |     |     | ZONCA    |
+ADD      | rd  | rd  | rd  |     |     | ZONCA    |
+ADD      | rd  | rd  | rnd |     |     | ZONCA    |
+ADD      | rd  | rnd | rd  |     |     | ZONCA    |
+ADD      | rd  | rnd | rnd |     |     | ZONCA    |
+ADD      | rv2d| rv2d| lv2d|     |     | ZONCA    |
+ADD      | rv2d| rv2d| rv2d|     |     | ZONCA    |
+ADD      | rv2i| rv2i| lv2i|     |     | ZONCA    |
+ADD      | rv2i| rv2i| rv2i|     |     | ZONCA    |
+ADD      | rv3d| rv3d| lv3d|     |     | ZONCA    |
+ADD      | rv3d| rv3d| rv3d|     |     | ZONCA    |
+ADD      | rv3i| rv3i| lv3i|     |     | ZONCA    |
+ADD      | rv3i| rv3i| rv3i|     |     | ZONCA    |
+ADD      | rv4d| rv4d| lv4d|     |     | ZONCA    |
+ADD      | rv4d| rv4d| rv4d|     |     | ZONCA    |
+ADD      | rv4i| rv4i| lv4i|     |     | ZONCA    |
+ADD      | rv4i| rv4i| rv4i|     |     | ZONCA    |
+ADD      | rm2d| rm2d| lm2d|     |     | ZONCA    |
+ADD      | rm2d| rm2d| rm2d|     |     | ZONCA    |
+ADD      | rm2i| rm2i| lm2i|     |     | ZONCA    |
+ADD      | rm2i| rm2i| rm2i|     |     | ZONCA    |
+ADD      | rm3d| rm3d| lm3d|     |     | ZONCA    |
+ADD      | rm3d| rm3d| rm3d|     |     | ZONCA    |
+ADD      | rm3i| rm3i| lm3i|     |     | ZONCA    |
+ADD      | rm3i| rm3i| rm3i|     |     | ZONCA    |
+ADD      | rm4d| rm4d| lm4d|     |     | ZONCA    |
+ADD      | rm4d| rm4d| rm4d|     |     | ZONCA    |
+ADD      | rm4i| rm4i| lm4i|     |     | ZONCA    |
+ADD      | rm4i| rm4i| rm4i|     |     | ZONCA    |
 
 ------------
 | ADC      |
@@ -730,18 +730,18 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ADC      | rnu | rnu | lu  |     |     |          |
-ADC      | rnu | ru  | lu  |     |     |          |
-ADC      | rnu | ru  | ru  |     |     |          |
-ADC      | rnu | ru  | rnu |     |     |          |
-ADC      | rnu | rnu | ru  |     |     |          |
-ADC      | rnu | rnu | rnu |     |     |          |
-ADC      | ru  | rnu | lu  |     |     |          |
-ADC      | ru  | ru  | lu  |     |     |          |
-ADC      | ru  | ru  | ru  |     |     |          |
-ADC      | ru  | ru  | rnu |     |     |          |
-ADC      | ru  | rnu | ru  |     |     |          |
-ADC      | ru  | rnu | rnu |     |     |          |
+ADC      | rnu | rnu | lu  |     |     | ZONCA    |
+ADC      | rnu | ru  | lu  |     |     | ZONCA    |
+ADC      | rnu | ru  | ru  |     |     | ZONCA    |
+ADC      | rnu | ru  | rnu |     |     | ZONCA    |
+ADC      | rnu | rnu | ru  |     |     | ZONCA    |
+ADC      | rnu | rnu | rnu |     |     | ZONCA    |
+ADC      | ru  | rnu | lu  |     |     | ZONCA    |
+ADC      | ru  | ru  | lu  |     |     | ZONCA    |
+ADC      | ru  | ru  | ru  |     |     | ZONCA    |
+ADC      | ru  | ru  | rnu |     |     | ZONCA    |
+ADC      | ru  | rnu | ru  |     |     | ZONCA    |
+ADC      | ru  | rnu | rnu |     |     | ZONCA    |
 
 ------------
 | SUB      |
@@ -764,54 +764,54 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SUB      | rnu | rnu | lu  |     |     |          |
-SUB      | rnu | ru  | lu  |     |     |          |
-SUB      | rnu | ru  | ru  |     |     |          |
-SUB      | rnu | ru  | rnu |     |     |          |
-SUB      | rnu | rnu | ru  |     |     |          |
-SUB      | rnu | rnu | rnu |     |     |          |
-SUB      | ru  | rnu | lu  |     |     |          |
-SUB      | ru  | ru  | lu  |     |     |          |
-SUB      | ru  | ru  | ru  |     |     |          |
-SUB      | ru  | ru  | rnu |     |     |          |
-SUB      | ru  | rnu | ru  |     |     |          |
-SUB      | ru  | rnu | rnu |     |     |          |
-SUB      | rnd | rnd | ld  |     |     |          |
-SUB      | rnd | rd  | ld  |     |     |          |
-SUB      | rnd | rd  | rd  |     |     |          |
-SUB      | rnd | rd  | rnd |     |     |          |
-SUB      | rnd | rnd | rd  |     |     |          |
-SUB      | rnd | rnd | rnd |     |     |          |
-SUB      | rd  | rnd | ld  |     |     |          |
-SUB      | rd  | rd  | ld  |     |     |          |
-SUB      | rd  | rd  | rd  |     |     |          |
-SUB      | rd  | rd  | rnd |     |     |          |
-SUB      | rd  | rnd | rd  |     |     |          |
-SUB      | rd  | rnd | rnd |     |     |          |
-SUB      | rv2d| rv2d| lv2d|     |     |          |
-SUB      | rv2d| rv2d| rv2d|     |     |          |
-SUB      | rv2i| rv2i| lv2i|     |     |          |
-SUB      | rv2i| rv2i| rv2i|     |     |          |
-SUB      | rv3d| rv3d| lv3d|     |     |          |
-SUB      | rv3d| rv3d| rv3d|     |     |          |
-SUB      | rv3i| rv3i| lv3i|     |     |          |
-SUB      | rv3i| rv3i| rv3i|     |     |          |
-SUB      | rv4d| rv4d| lv4d|     |     |          |
-SUB      | rv4d| rv4d| rv4d|     |     |          |
-SUB      | rv4i| rv4i| lv4i|     |     |          |
-SUB      | rv4i| rv4i| rv4i|     |     |          |
-SUB      | rm2d| rm2d| lm2d|     |     |          |
-SUB      | rm2d| rm2d| rm2d|     |     |          |
-SUB      | rm2i| rm2i| lm2i|     |     |          |
-SUB      | rm2i| rm2i| rm2i|     |     |          |
-SUB      | rm3d| rm3d| lm3d|     |     |          |
-SUB      | rm3d| rm3d| rm3d|     |     |          |
-SUB      | rm3i| rm3i| lm3i|     |     |          |
-SUB      | rm3i| rm3i| rm3i|     |     |          |
-SUB      | rm4d| rm4d| lm4d|     |     |          |
-SUB      | rm4d| rm4d| rm4d|     |     |          |
-SUB      | rm4i| rm4i| lm4i|     |     |          |
-SUB      | rm4i| rm4i| rm4i|     |     |          |
+SUB      | rnu | rnu | lu  |     |     | ZONCA    |
+SUB      | rnu | ru  | lu  |     |     | ZONCA    |
+SUB      | rnu | ru  | ru  |     |     | ZONCA    |
+SUB      | rnu | ru  | rnu |     |     | ZONCA    |
+SUB      | rnu | rnu | ru  |     |     | ZONCA    |
+SUB      | rnu | rnu | rnu |     |     | ZONCA    |
+SUB      | ru  | rnu | lu  |     |     | ZONCA    |
+SUB      | ru  | ru  | lu  |     |     | ZONCA    |
+SUB      | ru  | ru  | ru  |     |     | ZONCA    |
+SUB      | ru  | ru  | rnu |     |     | ZONCA    |
+SUB      | ru  | rnu | ru  |     |     | ZONCA    |
+SUB      | ru  | rnu | rnu |     |     | ZONCA    |
+SUB      | rnd | rnd | ld  |     |     | ZONCA    |
+SUB      | rnd | rd  | ld  |     |     | ZONCA    |
+SUB      | rnd | rd  | rd  |     |     | ZONCA    |
+SUB      | rnd | rd  | rnd |     |     | ZONCA    |
+SUB      | rnd | rnd | rd  |     |     | ZONCA    |
+SUB      | rnd | rnd | rnd |     |     | ZONCA    |
+SUB      | rd  | rnd | ld  |     |     | ZONCA    |
+SUB      | rd  | rd  | ld  |     |     | ZONCA    |
+SUB      | rd  | rd  | rd  |     |     | ZONCA    |
+SUB      | rd  | rd  | rnd |     |     | ZONCA    |
+SUB      | rd  | rnd | rd  |     |     | ZONCA    |
+SUB      | rd  | rnd | rnd |     |     | ZONCA    |
+SUB      | rv2d| rv2d| lv2d|     |     | ZONCA    |
+SUB      | rv2d| rv2d| rv2d|     |     | ZONCA    |
+SUB      | rv2i| rv2i| lv2i|     |     | ZONCA    |
+SUB      | rv2i| rv2i| rv2i|     |     | ZONCA    |
+SUB      | rv3d| rv3d| lv3d|     |     | ZONCA    |
+SUB      | rv3d| rv3d| rv3d|     |     | ZONCA    |
+SUB      | rv3i| rv3i| lv3i|     |     | ZONCA    |
+SUB      | rv3i| rv3i| rv3i|     |     | ZONCA    |
+SUB      | rv4d| rv4d| lv4d|     |     | ZONCA    |
+SUB      | rv4d| rv4d| rv4d|     |     | ZONCA    |
+SUB      | rv4i| rv4i| lv4i|     |     | ZONCA    |
+SUB      | rv4i| rv4i| rv4i|     |     | ZONCA    |
+SUB      | rm2d| rm2d| lm2d|     |     | ZONCA    |
+SUB      | rm2d| rm2d| rm2d|     |     | ZONCA    |
+SUB      | rm2i| rm2i| lm2i|     |     | ZONCA    |
+SUB      | rm2i| rm2i| rm2i|     |     | ZONCA    |
+SUB      | rm3d| rm3d| lm3d|     |     | ZONCA    |
+SUB      | rm3d| rm3d| rm3d|     |     | ZONCA    |
+SUB      | rm3i| rm3i| lm3i|     |     | ZONCA    |
+SUB      | rm3i| rm3i| rm3i|     |     | ZONCA    |
+SUB      | rm4d| rm4d| lm4d|     |     | ZONCA    |
+SUB      | rm4d| rm4d| rm4d|     |     | ZONCA    |
+SUB      | rm4i| rm4i| lm4i|     |     | ZONCA    |
+SUB      | rm4i| rm4i| rm4i|     |     | ZONCA    |
 
 ------------
 | UMUL     |
@@ -834,12 +834,12 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-UMUL     | ru  | rnu | lu  |     |     |          |
-UMUL     | ru  | ru  | lu  |     |     |          |
-UMUL     | ru  | ru  | ru  |     |     |          |
-UMUL     | ru  | ru  | rnu |     |     |          |
-UMUL     | ru  | rnu | ru  |     |     |          |
-UMUL     | ru  | rnu | rnu |     |     |          |
+UMUL     | ru  | rnu | lu  |     |     | ZONCA    |
+UMUL     | ru  | ru  | lu  |     |     | ZONCA    |
+UMUL     | ru  | ru  | ru  |     |     | ZONCA    |
+UMUL     | ru  | ru  | rnu |     |     | ZONCA    |
+UMUL     | ru  | rnu | ru  |     |     | ZONCA    |
+UMUL     | ru  | rnu | rnu |     |     | ZONCA    |
 
 
 ------------
@@ -863,42 +863,42 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-MUL      | ru  | rnu | lu  |     |     |          |
-MUL      | ru  | ru  | lu  |     |     |          |
-MUL      | ru  | ru  | ru  |     |     |          |
-MUL      | ru  | ru  | rnu |     |     |          |
-MUL      | ru  | rnu | ru  |     |     |          |
-MUL      | ru  | rnu | rnu |     |     |          |
-MUL      | rd  | rnd | ld  |     |     |          |
-MUL      | rd  | rd  | ld  |     |     |          |
-MUL      | rd  | rd  | rd  |     |     |          |
-MUL      | rd  | rd  | rnd |     |     |          |
-MUL      | rd  | rnd | rd  |     |     |          |
-MUL      | rd  | rnd | rnd |     |     |          |
-MUL      | rv2d| rv2d| lv2d|     |     |          |
-MUL      | rv2d| rv2d| rv2d|     |     |          |
-MUL      | rv2i| rv2i| lv2i|     |     |          |
-MUL      | rv2i| rv2i| rv2i|     |     |          |
-MUL      | rv3d| rv3d| lv3d|     |     |          |
-MUL      | rv3d| rv3d| rv3d|     |     |          |
-MUL      | rv3i| rv3i| lv3i|     |     |          |
-MUL      | rv3i| rv3i| rv3i|     |     |          |
-MUL      | rv4d| rv4d| lv4d|     |     |          |
-MUL      | rv4d| rv4d| rv4d|     |     |          |
-MUL      | rv4i| rv4i| lv4i|     |     |          |
-MUL      | rv4i| rv4i| rv4i|     |     |          |
-MUL      | rm2d| rm2d| lm2d|     |     |          |
-MUL      | rm2d| rm2d| rm2d|     |     |          |
-MUL      | rm2i| rm2i| lm2i|     |     |          |
-MUL      | rm2i| rm2i| rm2i|     |     |          |
-MUL      | rm3d| rm3d| lm3d|     |     |          |
-MUL      | rm3d| rm3d| rm3d|     |     |          |
-MUL      | rm3i| rm3i| lm3i|     |     |          |
-MUL      | rm3i| rm3i| rm3i|     |     |          |
-MUL      | rm4d| rm4d| lm4d|     |     |          |
-MUL      | rm4d| rm4d| rm4d|     |     |          |
-MUL      | rm4i| rm4i| lm4i|     |     |          |
-MUL      | rm4i| rm4i| rm4i|     |     |          |
+MUL      | ru  | rnu | lu  |     |     | ZONCA    |
+MUL      | ru  | ru  | lu  |     |     | ZONCA    |
+MUL      | ru  | ru  | ru  |     |     | ZONCA    |
+MUL      | ru  | ru  | rnu |     |     | ZONCA    |
+MUL      | ru  | rnu | ru  |     |     | ZONCA    |
+MUL      | ru  | rnu | rnu |     |     | ZONCA    |
+MUL      | rd  | rnd | ld  |     |     | ZONCA    |
+MUL      | rd  | rd  | ld  |     |     | ZONCA    |
+MUL      | rd  | rd  | rd  |     |     | ZONCA    |
+MUL      | rd  | rd  | rnd |     |     | ZONCA    |
+MUL      | rd  | rnd | rd  |     |     | ZONCA    |
+MUL      | rd  | rnd | rnd |     |     | ZONCA    |
+MUL      | rv2d| rv2d| lv2d|     |     | ZONCA    |
+MUL      | rv2d| rv2d| rv2d|     |     | ZONCA    |
+MUL      | rv2i| rv2i| lv2i|     |     | ZONCA    |
+MUL      | rv2i| rv2i| rv2i|     |     | ZONCA    |
+MUL      | rv3d| rv3d| lv3d|     |     | ZONCA    |
+MUL      | rv3d| rv3d| rv3d|     |     | ZONCA    |
+MUL      | rv3i| rv3i| lv3i|     |     | ZONCA    |
+MUL      | rv3i| rv3i| rv3i|     |     | ZONCA    |
+MUL      | rv4d| rv4d| lv4d|     |     | ZONCA    |
+MUL      | rv4d| rv4d| rv4d|     |     | ZONCA    |
+MUL      | rv4i| rv4i| lv4i|     |     | ZONCA    |
+MUL      | rv4i| rv4i| rv4i|     |     | ZONCA    |
+MUL      | rm2d| rm2d| lm2d|     |     | ZONCA    |
+MUL      | rm2d| rm2d| rm2d|     |     | ZONCA    |
+MUL      | rm2i| rm2i| lm2i|     |     | ZONCA    |
+MUL      | rm2i| rm2i| rm2i|     |     | ZONCA    |
+MUL      | rm3d| rm3d| lm3d|     |     | ZONCA    |
+MUL      | rm3d| rm3d| rm3d|     |     | ZONCA    |
+MUL      | rm3i| rm3i| lm3i|     |     | ZONCA    |
+MUL      | rm3i| rm3i| rm3i|     |     | ZONCA    |
+MUL      | rm4d| rm4d| lm4d|     |     | ZONCA    |
+MUL      | rm4d| rm4d| rm4d|     |     | ZONCA    |
+MUL      | rm4i| rm4i| lm4i|     |     | ZONCA    |
+MUL      | rm4i| rm4i| rm4i|     |     | ZONCA    |
 
 ------------
 | DOT      |
@@ -920,26 +920,26 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-DOT      | rv2d| rv2d| lv2d|     |     |          |
-DOT      | rv2d| rv2d| rv2d|     |     |          |
-DOT      | rv2i| rv2i| lv21|     |     |          |
-DOT      | rv2i| rv2i| rv21|     |     |          |
-DOT      | rv3d| rv3d| lv3d|     |     |          |
-DOT      | rv3d| rv3d| rv3d|     |     |          |
-DOT      | rv3i| rv3i| lv31|     |     |          |
-DOT      | rv3i| rv3i| rv31|     |     |          |
-DOT      | rv4d| rv4d| lv4d|     |     |          |
-DOT      | rv4d| rv4d| rv4d|     |     |          |
-DOT      | rv4i| rv4i| lv41|     |     |          |
-DOT      | rv4i| rv4i| rv41|     |     |          |
+DOT      | rv2d| rv2d| lv2d|     |     | ZONCA    |
+DOT      | rv2d| rv2d| rv2d|     |     | ZONCA    |
+DOT      | rv2i| rv2i| lv21|     |     | ZONCA    |
+DOT      | rv2i| rv2i| rv21|     |     | ZONCA    |
+DOT      | rv3d| rv3d| lv3d|     |     | ZONCA    |
+DOT      | rv3d| rv3d| rv3d|     |     | ZONCA    |
+DOT      | rv3i| rv3i| lv31|     |     | ZONCA    |
+DOT      | rv3i| rv3i| rv31|     |     | ZONCA    |
+DOT      | rv4d| rv4d| lv4d|     |     | ZONCA    |
+DOT      | rv4d| rv4d| rv4d|     |     | ZONCA    |
+DOT      | rv4i| rv4i| lv41|     |     | ZONCA    |
+DOT      | rv4i| rv4i| rv41|     |     | ZONCA    |
 
 ------------
 | CROSS    |
 ------------
 
-Perform the cross product between Op1 and Op2 and store result in Op0.
+KEEP GOING. (describe lu purpose)
 
-KEEP GOING.
+Perform the cross product between Op1 and Op2 and store result in Op0.
 
 Operation:
   Op0 <- Op1 cross Op2
@@ -955,10 +955,10 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-CROSS    | rv3d| rv3d| lv3d| lu  |     |          | # 0:0<-1X2 OR 1:0<-2X1, lu:0,1
-CROSS    | rv3d| rv3d| rv3d| lu  |     |          |
-CROSS    | rv3i| rv3i| lv31| lu  |     |          |
-CROSS    | rv3i| rv3i| rv31| lu  |     |          |
+CROSS    | rv3d| rv3d| lv3d| lu  |     | ZONCA    | # 0:0<-1X2 OR 1:0<-2X1, lu:0,1
+CROSS    | rv3d| rv3d| rv3d| lu  |     | ZONCA    |
+CROSS    | rv3i| rv3i| lv31| lu  |     | ZONCA    |
+CROSS    | rv3i| rv3i| rv31| lu  |     | ZONCA    |
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
