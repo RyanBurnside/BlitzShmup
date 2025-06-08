@@ -1017,7 +1017,6 @@ Operation:
   If Op0 is (all) negative then N <- 1 else N <- 0
   If Op0 is (any) NaN then A <- 1 else A <- 0
 
-
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
 MATMUL   | rm2d| rm2d| lm2d| lu  |     | ZNA      |
@@ -1267,7 +1266,7 @@ ROLLCR   | ru  | rnu | ru  |     |     | ZNCA     |
 ROLLCR   | ru  | rnu | rnu |     |     | ZNCA     |
 
 ------------
-| SHIFTAL   |
+| ARITHSHL |
 ------------
 
 KEEP GOING.
@@ -1284,65 +1283,67 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SHIFTAL  | rnu | rnu | lu  |     |     |          |
-SHIFTAL  | rnu | ru  | lu  |     |     |          |
-SHIFTAL  | rnu | ru  | ru  |     |     |          |
-SHIFTAL  | rnu | ru  | rnu |     |     |          |
-SHIFTAL  | rnu | rnu | ru  |     |     |          |
-SHIFTAL  | rnu | rnu | rnu |     |     |          |
-SHIFTAL  | ru  | rnu | lu  |     |     |          |
-SHIFTAL  | ru  | ru  | lu  |     |     |          |
-SHIFTAL  | ru  | ru  | ru  |     |     |          |
-SHIFTAL  | ru  | ru  | rnu |     |     |          |
-SHIFTAL  | ru  | rnu | ru  |     |     |          |
-SHIFTAL  | ru  | rnu | rnu |     |     |          |
+ARITHSHL | rnu | rnu | lu  |     |     |          |
+ARITHSHL | rnu | ru  | lu  |     |     |          |
+ARITHSHL | rnu | ru  | ru  |     |     |          |
+ARITHSHL | rnu | ru  | rnu |     |     |          |
+ARITHSHL | rnu | rnu | ru  |     |     |          |
+ARITHSHL | rnu | rnu | rnu |     |     |          |
+ARITHSHL | ru  | rnu | lu  |     |     |          |
+ARITHSHL | ru  | ru  | lu  |     |     |          |
+ARITHSHL | ru  | ru  | ru  |     |     |          |
+ARITHSHL | ru  | ru  | rnu |     |     |          |
+ARITHSHL | ru  | rnu | ru  |     |     |          |
+ARITHSHL | ru  | rnu | rnu |     |     |          |
 
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SHIFTR   | rnu | rnu | lu  |     |     |          | # SHIFTR for scalar U registers
-SHIFTR   | rnu | ru  | lu  |     |     |          |
-SHIFTR   | rnu | ru  | ru  |     |     |          |
-SHIFTR   | rnu | ru  | rnu |     |     |          |
-SHIFTR   | rnu | rnu | ru  |     |     |          |
-SHIFTR   | rnu | rnu | rnu |     |     |          |
-SHIFTR   | ru  | rnu | lu  |     |     |          |
-SHIFTR   | ru  | ru  | lu  |     |     |          |
-SHIFTR   | ru  | ru  | ru  |     |     |          |
-SHIFTR   | ru  | ru  | rnu |     |     |          |
-SHIFTR   | ru  | rnu | ru  |     |     |          |
-SHIFTR   | ru  | rnu | rnu |     |     |          |
+ARITHSHR | rnu | rnu | lu  |     |     |          |
+ARITHSHR | rnu | ru  | lu  |     |     |          |
+ARITHSHR | rnu | ru  | ru  |     |     |          |
+ARITHSHR | rnu | ru  | rnu |     |     |          |
+ARITHSHR | rnu | rnu | ru  |     |     |          |
+ARITHSHR | rnu | rnu | rnu |     |     |          |
+ARITHSHR | ru  | rnu | lu  |     |     |          |
+ARITHSHR | ru  | ru  | lu  |     |     |          |
+ARITHSHR | ru  | ru  | ru  |     |     |          |
+ARITHSHR | ru  | ru  | rnu |     |     |          |
+ARITHSHR | ru  | rnu | ru  |     |     |          |
+ARITHSHR | ru  | rnu | rnu |     |     |          |
 
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ASHIFTL  | rnu | rnu | lu  |     |     |          | # ASHIFTL for scalar U registers
-ASHIFTL  | rnu | ru  | lu  |     |     |          |
-ASHIFTL  | rnu | ru  | ru  |     |     |          |
-ASHIFTL  | rnu | ru  | rnu |     |     |          |
-ASHIFTL  | rnu | rnu | ru  |     |     |          |
-ASHIFTL  | rnu | rnu | rnu |     |     |          |
-ASHIFTL  | ru  | rnu | lu  |     |     |          |
-ASHIFTL  | ru  | ru  | lu  |     |     |          |
-ASHIFTL  | ru  | ru  | ru  |     |     |          |
-ASHIFTL  | ru  | ru  | rnu |     |     |          |
-ASHIFTL  | ru  | rnu | ru  |     |     |          |
-ASHIFTL  | ru  | rnu | rnu |     |     |          |
+LOGICSHL | rnu | rnu | lu  |     |     |          |
+LOGICSHL | rnu | ru  | lu  |     |     |          |
+LOGICSHL | rnu | ru  | ru  |     |     |          |
+LOGICSHL | rnu | ru  | rnu |     |     |          |
+LOGICSHL | rnu | rnu | ru  |     |     |          |
+LOGICSHL | rnu | rnu | rnu |     |     |          |
+LOGICSHL | ru  | rnu | lu  |     |     |          |
+LOGICSHL | ru  | ru  | lu  |     |     |          |
+LOGICSHL | ru  | ru  | ru  |     |     |          |
+LOGICSHL | ru  | ru  | rnu |     |     |          |
+LOGICSHL | ru  | rnu | ru  |     |     |          |
+LOGICSHL | ru  | rnu | rnu |     |     |          |
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ASHIFTR  | rnu | rnu | lu  |     |     |          | # ASHIFTR for scalar U registers
-ASHIFTR  | rnu | ru  | lu  |     |     |          |
-ASHIFTR  | rnu | ru  | ru  |     |     |          |
-ASHIFTR  | rnu | ru  | rnu |     |     |          |
-ASHIFTR  | rnu | rnu | ru  |     |     |          |
-ASHIFTR  | rnu | rnu | rnu |     |     |          |
-ASHIFTR  | ru  | rnu | lu  |     |     |          |
-ASHIFTR  | ru  | ru  | lu  |     |     |          |
-ASHIFTR  | ru  | ru  | ru  |     |     |          |
-ASHIFTR  | ru  | ru  | rnu |     |     |          |
-ASHIFTR  | ru  | rnu | ru  |     |     |          |
-ASHIFTR  | ru  | rnu | rnu |     |     |          |
+LOGICSHR | rnu | rnu | lu  |     |     |          |
+LOGICSHR | rnu | ru  | lu  |     |     |          |
+LOGICSHR | rnu | ru  | ru  |     |     |          |
+LOGICSHR | rnu | ru  | rnu |     |     |          |
+LOGICSHR | rnu | rnu | ru  |     |     |          |
+LOGICSHR | rnu | rnu | rnu |     |     |          |
+LOGICSHR | ru  | rnu | lu  |     |     |          |
+LOGICSHR | ru  | ru  | lu  |     |     |          |
+LOGICSHR | ru  | ru  | ru  |     |     |          |
+LOGICSHR | ru  | ru  | rnu |     |     |          |
+LOGICSHR | ru  | rnu | ru  |     |     |          |
+LOGICSHR | ru  | rnu | rnu |     |     |          |
+
+
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
