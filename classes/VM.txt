@@ -1,5 +1,10 @@
 Version 1.0 (unfinalized)
 
+TODO: Add these instructions:
+  NORM vector : normalize a vector
+  DET matrix : determinate of a matrix
+  INV matrix : inversion of a matrix
+
 Harvard Architecture
 ====================
 
@@ -286,6 +291,7 @@ and which has an enum specifying its machine opcode value.
 All of these MachOp codes are predictable like this, so we won't explicitly
 specify them in this table. They will go into a giant enum later.
 
+
 ------------
 | NOP      |
 ------------
@@ -296,16 +302,18 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
 NOP      |     |     |     |     |     |          |
 
+
 ------------
 | EFFADDR  |
 ------------
 
-Compute the value of the effective address form in Op1 and store in Op0.
+Compute the value of the effective address form in Op1 and store into Op0.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
 EFFADDR  | ru  | ea  |     |     |     |          |
 EFFADDR  | rnu | ea  |     |     |     |          |
+
 
 ------------
 | LOAD     |
@@ -376,6 +384,7 @@ LOAD     | rq  | ea  |     |     |     | ZNOCA    |
 LOAD     | rq  | dmem|     |     |     | ZNOCA    |
 LOAD     | rq  | smem|     |     |     | ZNOCA    |
 
+
 ------------
 | STORE    |
 ------------
@@ -438,6 +447,7 @@ STORE    | ea  | rq  |     |     |     |          |
 STORE    | dmem| rq  |     |     |     |          |
 STORE    | smem| rq  |     |     |     |          |
 
+
 ------------
 | COPY     |
 ------------
@@ -476,6 +486,7 @@ COPY     | rm4d| rm4d|     |     |     | ZNOCA    |
 COPY     | rm4i| rm4i|     |     |     | ZNOCA    |
 COPY     | rq  | rq  |     |     |     | ZNOCA    |
 
+
 ------------
 | YIELD    |
 ------------
@@ -491,6 +502,7 @@ YIELD    | ru  | rd  | lu  | ld  | ea  |          |
 YIELD    | rnu | rd  | lu  | ld  | ea  |          |
 YIELD    | ru  | rnd | lu  | ld  | ea  |          |
 YIELD    | rnu | rnd | lu  | ld  | ea  |          |
+
 
 ------------
 | PUSH     |
@@ -523,6 +535,7 @@ PUSH     | rm3i|     |     |     |     |          |
 PUSH     | rm4d|     |     |     |     |          |
 PUSH     | rm4i|     |     |     |     |          |
 PUSH     | rq  |     |     |     |     |          |
+
 
 ------------
 | POP      |
@@ -562,6 +575,7 @@ POP      | rm4d|     |     |     |     |          |
 POP      | rm4i|     |     |     |     |          |
 POP      | rq  |     |     |     |     |          |
 
+
 ------------
 | LITERAL  |
 ------------
@@ -590,6 +604,7 @@ LITERAL  | rm4d| lm4d|     |     |     | ZNOCA    |
 LITERAL  | rm4i| lm4i|     |     |     | ZNOCA    |
 LITERAL  | rq  | lq  |     |     |     | ZNOCA    |
 
+
 ------------
 | IDENTITY |
 ------------
@@ -612,6 +627,7 @@ IDENTITY | rm3i|     |     |     |     |          |
 IDENTITY | rm4d|     |     |     |     |          |
 IDENTITY | rm4i|     |     |     |     |          |
 IDENTITY | rq  |     |     |     |     |          |
+
 
 ------------
 | ABS      |
@@ -709,6 +725,7 @@ ADD      | rm4d| rm4d| rm4d|     |     | ZONCA    |
 ADD      | rm4i| rm4i| lm4i|     |     | ZONCA    |
 ADD      | rm4i| rm4i| rm4i|     |     | ZONCA    |
 
+
 ------------
 | ADC      |
 ------------
@@ -742,6 +759,7 @@ ADC      | ru  | ru  | ru  |     |     | ZONCA    |
 ADC      | ru  | ru  | rnu |     |     | ZONCA    |
 ADC      | ru  | rnu | ru  |     |     | ZONCA    |
 ADC      | ru  | rnu | rnu |     |     | ZONCA    |
+
 
 ------------
 | SUB      |
@@ -812,6 +830,7 @@ SUB      | rm4d| rm4d| lm4d|     |     | ZONCA    |
 SUB      | rm4d| rm4d| rm4d|     |     | ZONCA    |
 SUB      | rm4i| rm4i| lm4i|     |     | ZONCA    |
 SUB      | rm4i| rm4i| rm4i|     |     | ZONCA    |
+
 
 ------------
 | UMUL     |
@@ -900,6 +919,7 @@ MUL      | rm4d| rm4d| rm4d|     |     | ZONCA    |
 MUL      | rm4i| rm4i| lm4i|     |     | ZONCA    |
 MUL      | rm4i| rm4i| rm4i|     |     | ZONCA    |
 
+
 ------------
 | DOT      |
 ------------
@@ -916,7 +936,7 @@ Operation:
   else:
     O <- 0
     C <- 0
-  If Op0 is NaN then A <- 1 else A <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -933,177 +953,350 @@ DOT      | rv4d| rv4d| rv4d|     |     | ZONCA    |
 DOT      | rv4i| rv4i| lv41|     |     | ZONCA    |
 DOT      | rv4i| rv4i| rv41|     |     | ZONCA    |
 
+
 ------------
 | CROSS    |
 ------------
 
-KEEP GOING. (describe lu purpose)
-
+We assume a default right handed coordinate system.
 Perform the cross product between Op1 and Op2 and store result in Op0.
+Assume lu == 0 is the default.
 
 Operation:
-  Op0 <- Op1 cross Op2
+  switch lu:
+    case 0:
+      Op0 <- Op1 cross Op2
+      break;
+    case 1:
+      Op0 <- Op2 cross Op1
+      break;
+    default:
+      error
+      break;
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CROSS    | rv3d| rv3d| lv3d| lu  |     | ZNA      |
+CROSS    | rv3d| rv3d| rv3d| lu  |     | ZNA      |
+CROSS    | rv3i| rv3i| lv31| lu  |     | ZNA      |
+CROSS    | rv3i| rv3i| rv31| lu  |     | ZNA      |
+
+
+------------
+| MATMUL   |
+------------
+
+This instruction can multiply matrices of the same rank, or a matrix and a
+vector, or two vectors (to form an outer product). The lu operand indicates the
+ordering of the multiply. Matrix multiplication is not commutative, so the
+ordering must be explicitly specified. Given that, assume lu = 0 as the
+default.
+
+Matrix/vector multiply Op1 * Op2 and store in Op0. Op1 and Op2 may be
+matrices or vectors as defined by the instruction operands. 
+
+Operation:
+  Depending on the operands, one of these will be chosen:
+    matrix0 <- matrix1 * matrix2 OR matrix2 * matrix1 (typical matrix multiply)
+    vector0 <- vector1 * matrix2 OR matrix2 * vector1 (apply mat to point)
+    matrix0 <- vector1 * vector2 OR vector2 * vector1 (outer product!)
+  switch lu:
+    case 0:
+      Op0 <- Op1 * Op2
+      break;
+    case 1:
+      Op0 <- Op2 * Op1
+      break;
+    default:
+      error
+      break;
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+MATMUL   | rm2d| rm2d| lm2d| lu  |     | ZNA      |
+MATMUL   | rm2d| rm2d| rm2d| lu  |     | ZNA      |
+MATMUL   | rm2i| rm2i| lm2i| lu  |     | ZNA      |
+MATMUL   | rm2i| rm2i| rm2i| lu  |     | ZNA      |
+MATMUL   | rm3d| rm3d| lm3d| lu  |     | ZNA      |
+MATMUL   | rm3d| rm3d| rm3d| lu  |     | ZNA      |
+MATMUL   | rm3i| rm3i| lm3i| lu  |     | ZNA      |
+MATMUL   | rm3i| rm3i| rm3i| lu  |     | ZNA      |
+MATMUL   | rm4d| rm4d| lm4d| lu  |     | ZNA      |
+MATMUL   | rm4d| rm4d| rm4d| lu  |     | ZNA      |
+MATMUL   | rm4i| rm4i| lm4i| lu  |     | ZNA      |
+MATMUL   | rm4i| rm4i| rm4i| lu  |     | ZNA      |
+MATMUL   | rv2d| rv2d| lm2d| lu  |     | ZNA      |
+MATMUL   | rv2d| rv2d| rm2d| lu  |     | ZNA      |
+MATMUL   | rv2i| rv2i| lm2i| lu  |     | ZNA      |
+MATMUL   | rv2i| rv2i| rm2i| lu  |     | ZNA      |
+MATMUL   | rv3d| rv3d| lm3d| lu  |     | ZNA      |
+MATMUL   | rv3d| rv3d| rm3d| lu  |     | ZNA      |
+MATMUL   | rv3i| rv3i| lm3i| lu  |     | ZNA      |
+MATMUL   | rv3i| rv3i| rm3i| lu  |     | ZNA      |
+MATMUL   | rv4d| rv4d| lm4d| lu  |     | ZNA      |
+MATMUL   | rv4d| rv4d| rm4d| lu  |     | ZNA      |
+MATMUL   | rv4i| rv4i| lm4i| lu  |     | ZNA      |
+MATMUL   | rv4i| rv4i| rm4i| lu  |     | ZNA      |
+MATMUL   | rm2d| rv2d| lv2d| lu  |     | ZNA      |
+MATMUL   | rm2d| rv2d| rv2d| lu  |     | ZNA      |
+MATMUL   | rm2i| rv2i| lv2i| lu  |     | ZNA      |
+MATMUL   | rm2i| rv2i| rv2i| lu  |     | ZNA      |
+MATMUL   | rm3d| rv3d| lv3d| lu  |     | ZNA      |
+MATMUL   | rm3d| rv3d| rv3d| lu  |     | ZNA      |
+MATMUL   | rm3i| rv3i| lv3i| lu  |     | ZNA      |
+MATMUL   | rm3i| rv3i| rv3i| lu  |     | ZNA      |
+MATMUL   | rm4d| rv4d| lv4d| lu  |     | ZNA      |
+MATMUL   | rm4d| rv4d| rv4d| lu  |     | ZNA      |
+MATMUL   | rm4i| rv4i| lv4i| lu  |     | ZNA      |
+MATMUL   | rm4i| rv4i| rv4i| lu  |     | ZNA      |
+
+
+------------
+| DIV      |
+------------
+
+Divide op1 by op2 and store in op0.
+If op1 and op2 are vectors or matrices then divide them element wise. 
+If op1 is a vector or matrix and op2 is a scalar then divide each element 
+by the single scalar and store into Op0. 
+If op1 is a integer type, then treat the ru or rnu as a _signed_ number
+with doing the division this limits the magnitude of the division.
+
+Operation:
+  op0 <- op1 / op2
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+DIV      | ru  | rnu | lu  |     |     | ZNA      |
+DIV      | ru  | ru  | lu  |     |     | ZNA      |
+DIV      | ru  | ru  | ru  |     |     | ZNA      |
+DIV      | ru  | ru  | rnu |     |     | ZNA      |
+DIV      | ru  | rnu | ru  |     |     | ZNA      |
+DIV      | ru  | rnu | rnu |     |     | ZNA      |
+DIV      | rd  | rnd | ld  |     |     | ZNA      |
+DIV      | rd  | rd  | ld  |     |     | ZNA      |
+DIV      | rd  | rd  | rd  |     |     | ZNA      |
+DIV      | rd  | rd  | rnd |     |     | ZNA      |
+DIV      | rd  | rnd | rd  |     |     | ZNA      |
+DIV      | rd  | rnd | rnd |     |     | ZNA      |
+DIV      | rv2d| rv2d| ld  |     |     | ZNA      |
+DIV      | rv2d| rv2d| rd  |     |     | ZNA      |
+DIV      | rv2d| rv2d| rnd |     |     | ZNA      |
+DIV      | rv2d| rv2d| lv2d|     |     | ZNA      |
+DIV      | rv2d| rv2d| rv2d|     |     | ZNA      |
+DIV      | rv2i| rv2i| lu  |     |     | ZNA      |
+DIV      | rv2i| rv2i| ru  |     |     | ZNA      |
+DIV      | rv2i| rv2i| rnu |     |     | ZNA      |
+DIV      | rv2i| rv2i| lv2i|     |     | ZNA      |
+DIV      | rv2i| rv2i| rv2i|     |     | ZNA      |
+DIV      | rv3d| rv3d| ld  |     |     | ZNA      |
+DIV      | rv3d| rv3d| rd  |     |     | ZNA      |
+DIV      | rv3d| rv3d| rnd |     |     | ZNA      |
+DIV      | rv3d| rv3d| lv3d|     |     | ZNA      |
+DIV      | rv3d| rv3d| rv3d|     |     | ZNA      |
+DIV      | rv3i| rv3i| lu  |     |     | ZNA      |
+DIV      | rv3i| rv3i| ru  |     |     | ZNA      |
+DIV      | rv3i| rv3i| rnu |     |     | ZNA      |
+DIV      | rv3i| rv3i| lv3i|     |     | ZNA      |
+DIV      | rv3i| rv3i| rv3i|     |     | ZNA      |
+DIV      | rv4d| rv4d| ld  |     |     | ZNA      |
+DIV      | rv4d| rv4d| rd  |     |     | ZNA      |
+DIV      | rv4d| rv4d| rnd |     |     | ZNA      |
+DIV      | rv4d| rv4d| lv4d|     |     | ZNA      |
+DIV      | rv4d| rv4d| rv4d|     |     | ZNA      |
+DIV      | rv4i| rv4i| lu  |     |     | ZNA      |
+DIV      | rv4i| rv4i| ru  |     |     | ZNA      |
+DIV      | rv4i| rv4i| rnu |     |     | ZNA      |
+DIV      | rv4i| rv4i| lv4i|     |     | ZNA      |
+DIV      | rv4i| rv4i| rv4i|     |     | ZNA      |
+DIV      | rm2d| rm2d| ld  |     |     | ZNA      |
+DIV      | rm2d| rm2d| rd  |     |     | ZNA      |
+DIV      | rm2d| rm2d| rnd |     |     | ZNA      |
+DIV      | rm2d| rm2d| lm2d|     |     | ZNA      |
+DIV      | rm2d| rm2d| rm2d|     |     | ZNA      |
+DIV      | rm2i| rm2i| lu  |     |     | ZNA      |
+DIV      | rm2i| rm2i| ru  |     |     | ZNA      |
+DIV      | rm2i| rm2i| rnu |     |     | ZNA      |
+DIV      | rm2i| rm2i| lm2i|     |     | ZNA      |
+DIV      | rm2i| rm2i| rm2i|     |     | ZNA      |
+DIV      | rm3d| rm3d| ld  |     |     | ZNA      |
+DIV      | rm3d| rm3d| rd  |     |     | ZNA      |
+DIV      | rm3d| rm3d| rnd |     |     | ZNA      |
+DIV      | rm3d| rm3d| lm3d|     |     | ZNA      |
+DIV      | rm3d| rm3d| rm3d|     |     | ZNA      |
+DIV      | rm3i| rm3i| lu  |     |     | ZNA      |
+DIV      | rm3i| rm3i| ru  |     |     | ZNA      |
+DIV      | rm3i| rm3i| rnu |     |     | ZNA      |
+DIV      | rm3i| rm3i| lm3i|     |     | ZNA      |
+DIV      | rm3i| rm3i| rm3i|     |     | ZNA      |
+DIV      | rm4d| rm4d| ld  |     |     | ZNA      |
+DIV      | rm4d| rm4d| rd  |     |     | ZNA      |
+DIV      | rm4d| rm4d| rnd |     |     | ZNA      |
+DIV      | rm4d| rm4d| lm4d|     |     | ZNA      |
+DIV      | rm4d| rm4d| rm4d|     |     | ZNA      |
+DIV      | rm4i| rm4i| lu  |     |     | ZNA      | 
+DIV      | rm4i| rm4i| ru  |     |     | ZNA      | 
+DIV      | rm4i| rm4i| rnu |     |     | ZNA      | 
+DIV      | rm4i| rm4i| lm4i|     |     | ZNA      | 
+DIV      | rm4i| rm4i| rm4i|     |     | ZNA      |
+
+
+------------
+| ROLLL    |
+------------
+
+Roll Op1 left by (Op2 % 64) bits then store into Op0. Only the bits in the
+register are rolled.
+
+Operation:
+  op0 <- op1 ROLL-LEFT (op2 % 64)
   If Op0 is zero then Z <- 1 else Z <- 0
   If Op0 is negative then N <- 1 else N <- 0
-  if Op* is integral:
-    O <- Did (all) operations overflow?
-    C <- Did (all) operations experience a carry?
-  else:
-    O <- 0
-    C <- 0
-  If Op0 is NaN then A <- 1 else A <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-CROSS    | rv3d| rv3d| lv3d| lu  |     | ZONCA    | # 0:0<-1X2 OR 1:0<-2X1, lu:0,1
-CROSS    | rv3d| rv3d| rv3d| lu  |     | ZONCA    |
-CROSS    | rv3i| rv3i| lv31| lu  |     | ZONCA    |
-CROSS    | rv3i| rv3i| rv31| lu  |     | ZONCA    |
+ROLLL    | rnu | rnu | lu  |     |     | ZNA      
+ROLLL    | rnu | ru  | lu  |     |     | ZNA      |
+ROLLL    | rnu | ru  | ru  |     |     | ZNA      |
+ROLLL    | rnu | ru  | rnu |     |     | ZNA      |
+ROLLL    | rnu | rnu | ru  |     |     | ZNA      |
+ROLLL    | rnu | rnu | rnu |     |     | ZNA      |
+ROLLL    | ru  | rnu | lu  |     |     | ZNA      |
+ROLLL    | ru  | ru  | lu  |     |     | ZNA      |
+ROLLL    | ru  | ru  | ru  |     |     | ZNA      |
+ROLLL    | ru  | ru  | rnu |     |     | ZNA      |
+ROLLL    | ru  | rnu | ru  |     |     | ZNA      |
+ROLLL    | ru  | rnu | rnu |     |     | ZNA      |
+
+
+------------
+| ROLLR    |
+------------
+
+Roll Op1 right by (Op2 % 64) bits then store into Op0. Only the bits in the
+register are rolled.
+
+Operation:
+  op0 <- op1 ROLL-RIGHT (op2 % 64)
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-# matrix * matrix in either direction.
-MATMUL   | rm2d| rm2d| lm2d| lu  |     |          | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
-MATMUL   | rm2d| rm2d| rm2d| lu  |     |          |
-MATMUL   | rm2i| rm2i| lm2i| lu  |     |          |
-MATMUL   | rm2i| rm2i| rm2i| lu  |     |          |
-MATMUL   | rm3d| rm3d| lm3d| lu  |     |          |
-MATMUL   | rm3d| rm3d| rm3d| lu  |     |          |
-MATMUL   | rm3i| rm3i| lm3i| lu  |     |          |
-MATMUL   | rm3i| rm3i| rm3i| lu  |     |          |
-MATMUL   | rm4d| rm4d| lm4d| lu  |     |          |
-MATMUL   | rm4d| rm4d| rm4d| lu  |     |          |
-MATMUL   | rm4i| rm4i| lm4i| lu  |     |          |
-MATMUL   | rm4i| rm4i| rm4i| lu  |     |          |
+ROLLR    | rnu | rnu | lu  |     |     | ZNA      |
+ROLLR    | rnu | ru  | lu  |     |     | ZNA      |
+ROLLR    | rnu | ru  | ru  |     |     | ZNA      |
+ROLLR    | rnu | ru  | rnu |     |     | ZNA      |
+ROLLR    | rnu | rnu | ru  |     |     | ZNA      |
+ROLLR    | rnu | rnu | rnu |     |     | ZNA      |
+ROLLR    | ru  | rnu | lu  |     |     | ZNA      |
+ROLLR    | ru  | ru  | lu  |     |     | ZNA      |
+ROLLR    | ru  | ru  | ru  |     |     | ZNA      |
+ROLLR    | ru  | ru  | rnu |     |     | ZNA      |
+ROLLR    | ru  | rnu | ru  |     |     | ZNA      |
+ROLLR    | ru  | rnu | rnu |     |     | ZNA      |
 
-# vector * matrix in either direction.
-MATMUL   | rv2d| rv2d| lm2d| lu  |     |          | # 0:0<-1*2 OR 1:0<-2*1, lu:0,1
-MATMUL   | rv2d| rv2d| rm2d| lu  |     |          |
-MATMUL   | rv2i| rv2i| lm2i| lu  |     |          |
-MATMUL   | rv2i| rv2i| rm2i| lu  |     |          |
-MATMUL   | rv3d| rv3d| lm3d| lu  |     |          |
-MATMUL   | rv3d| rv3d| rm3d| lu  |     |          |
-MATMUL   | rv3i| rv3i| lm3i| lu  |     |          |
-MATMUL   | rv3i| rv3i| rm3i| lu  |     |          |
-MATMUL   | rv4d| rv4d| lm4d| lu  |     |          |
-MATMUL   | rv4d| rv4d| rm4d| lu  |     |          |
-MATMUL   | rv4i| rv4i| lm4i| lu  |     |          |
-MATMUL   | rv4i| rv4i| rm4i| lu  |     |          |
 
+------------
+| ROLLCL   |
+------------
+
+Roll Op1 left by (Op2 % 65) bits through the carry bit then store into Op0.
+
+Operation:
+  op0 <- op1 ROLL-CARRY-LEFT (op2 % 65)
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  C <- undefined
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-DIV      | ru  | rnu | lu  |     |     |          | # DIV: U op0 <- op1 / op2
-DIV      | ru  | ru  | lu  |     |     |          |
-DIV      | ru  | ru  | ru  |     |     |          |
-DIV      | ru  | ru  | rnu |     |     |          |
-DIV      | ru  | rnu | ru  |     |     |          |
-DIV      | ru  | rnu | rnu |     |     |          |
-DIV      | rd  | rnd | ld  |     |     |          | # DIV: D op0 <- op1 / op2
-DIV      | rd  | rd  | ld  |     |     |          |
-DIV      | rd  | rd  | rd  |     |     |          |
-DIV      | rd  | rd  | rnd |     |     |          |
-DIV      | rd  | rnd | rd  |     |     |          |
-DIV      | rd  | rnd | rnd |     |     |          |
-DIV      | rv2d| rv2d| lv2d|     |     |          | # DIV group for V2D element-wise
-DIV      | rv2d| rv2d| rv2d|     |     |          |
-DIV      | rv2i| rv2i| lv2i|     |     |          | # DIV group for V2I element-wise
-DIV      | rv2i| rv2i| rv2i|     |     |          |
-DIV      | rv3d| rv3d| lv3d|     |     |          | # DIV group for V3D element-wise
-DIV      | rv3d| rv3d| rv3d|     |     |          |
-DIV      | rv3i| rv3i| lv3i|     |     |          | # DIV group for V3I element-wise
-DIV      | rv3i| rv3i| rv3i|     |     |          |
-DIV      | rv4d| rv4d| lv4d|     |     |          | # DIV group for V4D element-wise
-DIV      | rv4d| rv4d| rv4d|     |     |          |
-DIV      | rv4i| rv4i| lv4i|     |     |          | # DIV group for V4I element-wise
-DIV      | rv4i| rv4i| rv4i|     |     |          |
-DIV      | rm2d| rm2d| lm2d|     |     |          | # DIV group for M2D element-wise
-DIV      | rm2d| rm2d| rm2d|     |     |          |
-DIV      | rm2i| rm2i| lm2i|     |     |          | # DIV group for M2I element-wise
-DIV      | rm2i| rm2i| rm2i|     |     |          |
-DIV      | rm3d| rm3d| lm3d|     |     |          | # DIV group for M3D element-wise
-DIV      | rm3d| rm3d| rm3d|     |     |          |
-DIV      | rm3i| rm3i| lm3i|     |     |          | # DIV group for M3I element-wise
-DIV      | rm3i| rm3i| rm3i|     |     |          |
-DIV      | rm4d| rm4d| lm4d|     |     |          | # DIV group for M4D element-wise
-DIV      | rm4d| rm4d| rm4d|     |     |          |
-DIV      | rm4i| rm4i| lm4i|     |     |          | # DIV group for M4I element-wise
-DIV      | rm4i| rm4i| rm4i|     |     |          |
+ROLLCL   | rnu | rnu | lu  |     |     | ZNCA     |
+ROLLCL   | rnu | ru  | lu  |     |     | ZNCA     |
+ROLLCL   | rnu | ru  | ru  |     |     | ZNCA     |
+ROLLCL   | rnu | ru  | rnu |     |     | ZNCA     |
+ROLLCL   | rnu | rnu | ru  |     |     | ZNCA     |
+ROLLCL   | rnu | rnu | rnu |     |     | ZNCA     |
+ROLLCL   | ru  | rnu | lu  |     |     | ZNCA     |
+ROLLCL   | ru  | ru  | lu  |     |     | ZNCA     |
+ROLLCL   | ru  | ru  | ru  |     |     | ZNCA     |
+ROLLCL   | ru  | ru  | rnu |     |     | ZNCA     |
+ROLLCL   | ru  | rnu | ru  |     |     | ZNCA     |
+ROLLCL   | ru  | rnu | rnu |     |     | ZNCA     |
+
+
+------------
+| ROLLCL   |
+------------
+
+Roll Op1 right by (Op2 % 65) bits through the carry bit then store into Op0.
+
+Operation:
+  op0 <- op1 ROLL-CARRY-RIGHT (op2 % 65)
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  C <- undefined
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ROLLL    | rnu | rnu | lu  |     |     |          | # ROLLL for scalar U registers
-ROLLL    | rnu | ru  | lu  |     |     |          |
-ROLLL    | rnu | ru  | ru  |     |     |          |
-ROLLL    | rnu | ru  | rnu |     |     |          |
-ROLLL    | rnu | rnu | ru  |     |     |          |
-ROLLL    | rnu | rnu | rnu |     |     |          |
-ROLLL    | ru  | rnu | lu  |     |     |          |
-ROLLL    | ru  | ru  | lu  |     |     |          |
-ROLLL    | ru  | ru  | ru  |     |     |          |
-ROLLL    | ru  | ru  | rnu |     |     |          |
-ROLLL    | ru  | rnu | ru  |     |     |          |
-ROLLL    | ru  | rnu | rnu |     |     |          |
+ROLLCR   | rnu | rnu | lu  |     |     | ZNCA     |
+ROLLCR   | rnu | ru  | lu  |     |     | ZNCA     |
+ROLLCR   | rnu | ru  | ru  |     |     | ZNCA     |
+ROLLCR   | rnu | ru  | rnu |     |     | ZNCA     |
+ROLLCR   | rnu | rnu | ru  |     |     | ZNCA     |
+ROLLCR   | rnu | rnu | rnu |     |     | ZNCA     |
+ROLLCR   | ru  | rnu | lu  |     |     | ZNCA     |
+ROLLCR   | ru  | ru  | lu  |     |     | ZNCA     |
+ROLLCR   | ru  | ru  | ru  |     |     | ZNCA     |
+ROLLCR   | ru  | ru  | rnu |     |     | ZNCA     |
+ROLLCR   | ru  | rnu | ru  |     |     | ZNCA     |
+ROLLCR   | ru  | rnu | rnu |     |     | ZNCA     |
+
+------------
+| SHIFTAL   |
+------------
+
+KEEP GOING.
+
+Perform an arithmetic shift left of Op1 by Op2 bits then store into Op0.
+
+Operation:
+  op0 <- op1 SHIFT-ARITHMETIC-LEFT op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- undefined
+  C <- undefined
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ROLLR    | rnu | rnu | lu  |     |     |          | # ROLLR for scalar U registers
-ROLLR    | rnu | ru  | lu  |     |     |          |
-ROLLR    | rnu | ru  | ru  |     |     |          |
-ROLLR    | rnu | ru  | rnu |     |     |          |
-ROLLR    | rnu | rnu | ru  |     |     |          |
-ROLLR    | rnu | rnu | rnu |     |     |          |
-ROLLR    | ru  | rnu | lu  |     |     |          |
-ROLLR    | ru  | ru  | lu  |     |     |          |
-ROLLR    | ru  | ru  | ru  |     |     |          |
-ROLLR    | ru  | ru  | rnu |     |     |          |
-ROLLR    | ru  | rnu | ru  |     |     |          |
-ROLLR    | ru  | rnu | rnu |     |     |          |
+SHIFTAL  | rnu | rnu | lu  |     |     |          |
+SHIFTAL  | rnu | ru  | lu  |     |     |          |
+SHIFTAL  | rnu | ru  | ru  |     |     |          |
+SHIFTAL  | rnu | ru  | rnu |     |     |          |
+SHIFTAL  | rnu | rnu | ru  |     |     |          |
+SHIFTAL  | rnu | rnu | rnu |     |     |          |
+SHIFTAL  | ru  | rnu | lu  |     |     |          |
+SHIFTAL  | ru  | ru  | lu  |     |     |          |
+SHIFTAL  | ru  | ru  | ru  |     |     |          |
+SHIFTAL  | ru  | ru  | rnu |     |     |          |
+SHIFTAL  | ru  | rnu | ru  |     |     |          |
+SHIFTAL  | ru  | rnu | rnu |     |     |          |
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-ROLLCL   | rnu | rnu | lu  |     |     |          | # ROLLCL for scalar U registers
-ROLLCL   | rnu | ru  | lu  |     |     |          |
-ROLLCL   | rnu | ru  | ru  |     |     |          |
-ROLLCL   | rnu | ru  | rnu |     |     |          |
-ROLLCL   | rnu | rnu | ru  |     |     |          |
-ROLLCL   | rnu | rnu | rnu |     |     |          |
-ROLLCL   | ru  | rnu | lu  |     |     |          |
-ROLLCL   | ru  | ru  | lu  |     |     |          |
-ROLLCL   | ru  | ru  | ru  |     |     |          |
-ROLLCL   | ru  | ru  | rnu |     |     |          |
-ROLLCL   | ru  | rnu | ru  |     |     |          |
-ROLLCL   | ru  | rnu | rnu |     |     |          |
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-ROLLCR   | rnu | rnu | lu  |     |     |          | # ROLLCR for scalar U registers
-ROLLCR   | rnu | ru  | lu  |     |     |          |
-ROLLCR   | rnu | ru  | ru  |     |     |          |
-ROLLCR   | rnu | ru  | rnu |     |     |          |
-ROLLCR   | rnu | rnu | ru  |     |     |          |
-ROLLCR   | rnu | rnu | rnu |     |     |          |
-ROLLCR   | ru  | rnu | lu  |     |     |          |
-ROLLCR   | ru  | ru  | lu  |     |     |          |
-ROLLCR   | ru  | ru  | ru  |     |     |          |
-ROLLCR   | ru  | ru  | rnu |     |     |          |
-ROLLCR   | ru  | rnu | ru  |     |     |          |
-ROLLCR   | ru  | rnu | rnu |     |     |          |
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-SHIFTL   | rnu | rnu | lu  |     |     |          | # SHIFTL for scalar U registers
-SHIFTL   | rnu | ru  | lu  |     |     |          |
-SHIFTL   | rnu | ru  | ru  |     |     |          |
-SHIFTL   | rnu | ru  | rnu |     |     |          |
-SHIFTL   | rnu | rnu | ru  |     |     |          |
-SHIFTL   | rnu | rnu | rnu |     |     |          |
-SHIFTL   | ru  | rnu | lu  |     |     |          |
-SHIFTL   | ru  | ru  | lu  |     |     |          |
-SHIFTL   | ru  | ru  | ru  |     |     |          |
-SHIFTL   | ru  | ru  | rnu |     |     |          |
-SHIFTL   | ru  | rnu | ru  |     |     |          |
-SHIFTL   | ru  | rnu | rnu |     |     |          |
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -1119,6 +1312,7 @@ SHIFTR   | ru  | ru  | ru  |     |     |          |
 SHIFTR   | ru  | ru  | rnu |     |     |          |
 SHIFTR   | ru  | rnu | ru  |     |     |          |
 SHIFTR   | ru  | rnu | rnu |     |     |          |
+
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
