@@ -1269,169 +1269,330 @@ ROLLCR   | ru  | rnu | rnu |     |     | ZNCA     |
 | ARITHSHL |
 ------------
 
-KEEP GOING.
-
 Perform an arithmetic shift left of Op1 by Op2 bits then store into Op0.
 
 Operation:
-  op0 <- op1 SHIFT-ARITHMETIC-LEFT op2
+  op0 <- op1 ARITHMETIC-SHIFT-LEFT op2 bits
   If Op0 is zero then Z <- 1 else Z <- 0
   If Op0 is negative then N <- 1 else N <- 0
-  O <- undefined
-  C <- undefined
   A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ARITHSHL | rnu | rnu | lu  |     |     |          |
-ARITHSHL | rnu | ru  | lu  |     |     |          |
-ARITHSHL | rnu | ru  | ru  |     |     |          |
-ARITHSHL | rnu | ru  | rnu |     |     |          |
-ARITHSHL | rnu | rnu | ru  |     |     |          |
-ARITHSHL | rnu | rnu | rnu |     |     |          |
-ARITHSHL | ru  | rnu | lu  |     |     |          |
-ARITHSHL | ru  | ru  | lu  |     |     |          |
-ARITHSHL | ru  | ru  | ru  |     |     |          |
-ARITHSHL | ru  | ru  | rnu |     |     |          |
-ARITHSHL | ru  | rnu | ru  |     |     |          |
-ARITHSHL | ru  | rnu | rnu |     |     |          |
+ARITHSHL | rnu | rnu | lu  |     |     | ZNA      |
+ARITHSHL | rnu | ru  | lu  |     |     | ZNA      |
+ARITHSHL | rnu | ru  | ru  |     |     | ZNA      |
+ARITHSHL | rnu | ru  | rnu |     |     | ZNA      |
+ARITHSHL | rnu | rnu | ru  |     |     | ZNA      |
+ARITHSHL | rnu | rnu | rnu |     |     | ZNA      |
+ARITHSHL | ru  | rnu | lu  |     |     | ZNA      |
+ARITHSHL | ru  | ru  | lu  |     |     | ZNA      |
+ARITHSHL | ru  | ru  | ru  |     |     | ZNA      |
+ARITHSHL | ru  | ru  | rnu |     |     | ZNA      |
+ARITHSHL | ru  | rnu | ru  |     |     | ZNA      |
+ARITHSHL | ru  | rnu | rnu |     |     | ZNA      |
 
+------------
+| ARITHSHR |
+------------
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-ARITHSHR | rnu | rnu | lu  |     |     |          |
-ARITHSHR | rnu | ru  | lu  |     |     |          |
-ARITHSHR | rnu | ru  | ru  |     |     |          |
-ARITHSHR | rnu | ru  | rnu |     |     |          |
-ARITHSHR | rnu | rnu | ru  |     |     |          |
-ARITHSHR | rnu | rnu | rnu |     |     |          |
-ARITHSHR | ru  | rnu | lu  |     |     |          |
-ARITHSHR | ru  | ru  | lu  |     |     |          |
-ARITHSHR | ru  | ru  | ru  |     |     |          |
-ARITHSHR | ru  | ru  | rnu |     |     |          |
-ARITHSHR | ru  | rnu | ru  |     |     |          |
-ARITHSHR | ru  | rnu | rnu |     |     |          |
+Perform an arithmetic shift right of Op1 by Op2 bits then store into Op0.
+This instruction preserves the most significant bit as it shifts to the right.
 
+Operation:
+  op0 <- op1 ARITHMETIC-SHIFT-RIGHT op2 bits
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-LOGICSHL | rnu | rnu | lu  |     |     |          |
-LOGICSHL | rnu | ru  | lu  |     |     |          |
-LOGICSHL | rnu | ru  | ru  |     |     |          |
-LOGICSHL | rnu | ru  | rnu |     |     |          |
-LOGICSHL | rnu | rnu | ru  |     |     |          |
-LOGICSHL | rnu | rnu | rnu |     |     |          |
-LOGICSHL | ru  | rnu | lu  |     |     |          |
-LOGICSHL | ru  | ru  | lu  |     |     |          |
-LOGICSHL | ru  | ru  | ru  |     |     |          |
-LOGICSHL | ru  | ru  | rnu |     |     |          |
-LOGICSHL | ru  | rnu | ru  |     |     |          |
-LOGICSHL | ru  | rnu | rnu |     |     |          |
+ARITHSHR | rnu | rnu | lu  |     |     | ZNA      |
+ARITHSHR | rnu | ru  | lu  |     |     | ZNA      |
+ARITHSHR | rnu | ru  | ru  |     |     | ZNA      |
+ARITHSHR | rnu | ru  | rnu |     |     | ZNA      |
+ARITHSHR | rnu | rnu | ru  |     |     | ZNA      |
+ARITHSHR | rnu | rnu | rnu |     |     | ZNA      |
+ARITHSHR | ru  | rnu | lu  |     |     | ZNA      |
+ARITHSHR | ru  | ru  | lu  |     |     | ZNA      |
+ARITHSHR | ru  | ru  | ru  |     |     | ZNA      |
+ARITHSHR | ru  | ru  | rnu |     |     | ZNA      |
+ARITHSHR | ru  | rnu | ru  |     |     | ZNA      |
+ARITHSHR | ru  | rnu | rnu |     |     | ZNA      |
+
+------------
+| LOGICSHL |
+------------
+
+Perform an logcal shift left of Op1 by Op2 bits then store into Op0.
+This instruction is identical to ARITHSHL.
+
+Operation:
+  op0 <- op1 LOGICAL-SHIFT-LEFT op2 bits
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-LOGICSHR | rnu | rnu | lu  |     |     |          |
-LOGICSHR | rnu | ru  | lu  |     |     |          |
-LOGICSHR | rnu | ru  | ru  |     |     |          |
-LOGICSHR | rnu | ru  | rnu |     |     |          |
-LOGICSHR | rnu | rnu | ru  |     |     |          |
-LOGICSHR | rnu | rnu | rnu |     |     |          |
-LOGICSHR | ru  | rnu | lu  |     |     |          |
-LOGICSHR | ru  | ru  | lu  |     |     |          |
-LOGICSHR | ru  | ru  | ru  |     |     |          |
-LOGICSHR | ru  | ru  | rnu |     |     |          |
-LOGICSHR | ru  | rnu | ru  |     |     |          |
-LOGICSHR | ru  | rnu | rnu |     |     |          |
+LOGICSHL | rnu | rnu | lu  |     |     | ZNA      |
+LOGICSHL | rnu | ru  | lu  |     |     | ZNA      |
+LOGICSHL | rnu | ru  | ru  |     |     | ZNA      |
+LOGICSHL | rnu | ru  | rnu |     |     | ZNA      |
+LOGICSHL | rnu | rnu | ru  |     |     | ZNA      |
+LOGICSHL | rnu | rnu | rnu |     |     | ZNA      |
+LOGICSHL | ru  | rnu | lu  |     |     | ZNA      |
+LOGICSHL | ru  | ru  | lu  |     |     | ZNA      |
+LOGICSHL | ru  | ru  | ru  |     |     | ZNA      |
+LOGICSHL | ru  | ru  | rnu |     |     | ZNA      |
+LOGICSHL | ru  | rnu | ru  |     |     | ZNA      |
+LOGICSHL | ru  | rnu | rnu |     |     | ZNA      |
 
+------------
+| LOGICSHR |
+------------
 
+Perform an logical shift right of Op1 by Op2 bits then store into Op0.
+This instruction fills the leftmost bits with 0 as it shifts to the right.
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-AND      | rnu | rnu | lu  |     |     |          | # AND for scalar U registers
-AND      | rnu | ru  | lu  |     |     |          |
-AND      | rnu | ru  | ru  |     |     |          |
-AND      | rnu | ru  | rnu |     |     |          |
-AND      | rnu | rnu | ru  |     |     |          |
-AND      | rnu | rnu | rnu |     |     |          |
-AND      | ru  | rnu | lu  |     |     |          |
-AND      | ru  | ru  | lu  |     |     |          |
-AND      | ru  | ru  | ru  |     |     |          |
-AND      | ru  | ru  | rnu |     |     |          |
-AND      | ru  | rnu | ru  |     |     |          |
-AND      | ru  | rnu | rnu |     |     |          |
+Operation:
+  op0 <- op1 LOGICAL-SHIFT-RIGHT op2 bits
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-OR       | rnu | rnu | lu  |     |     |          | # OR for scalar U registers
-OR       | rnu | ru  | lu  |     |     |          |
-OR       | rnu | ru  | ru  |     |     |          |
-OR       | rnu | ru  | rnu |     |     |          |
-OR       | rnu | rnu | ru  |     |     |          |
-OR       | rnu | rnu | rnu |     |     |          |
-OR       | ru  | rnu | lu  |     |     |          |
-OR       | ru  | ru  | lu  |     |     |          |
-OR       | ru  | ru  | ru  |     |     |          |
-OR       | ru  | ru  | rnu |     |     |          |
-OR       | ru  | rnu | ru  |     |     |          |
-OR       | ru  | rnu | rnu |     |     |          |
+LOGICSHR | rnu | rnu | lu  |     |     | ZNA      |
+LOGICSHR | rnu | ru  | lu  |     |     | ZNA      |
+LOGICSHR | rnu | ru  | ru  |     |     | ZNA      |
+LOGICSHR | rnu | ru  | rnu |     |     | ZNA      |
+LOGICSHR | rnu | rnu | ru  |     |     | ZNA      |
+LOGICSHR | rnu | rnu | rnu |     |     | ZNA      |
+LOGICSHR | ru  | rnu | lu  |     |     | ZNA      |
+LOGICSHR | ru  | ru  | lu  |     |     | ZNA      |
+LOGICSHR | ru  | ru  | ru  |     |     | ZNA      |
+LOGICSHR | ru  | ru  | rnu |     |     | ZNA      |
+LOGICSHR | ru  | rnu | ru  |     |     | ZNA      |
+LOGICSHR | ru  | rnu | rnu |     |     | ZNA      |
+
+------------
+| AND      |
+------------
+
+Perform a logical AND between Op1 and Op2 and store into Op0.
+
+Operation:
+  op0 <- op1 AND op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-XOR      | rnu | rnu | lu  |     |     |          | # XOR for scalar U registers
-XOR      | rnu | ru  | lu  |     |     |          |
-XOR      | rnu | ru  | ru  |     |     |          |
-XOR      | rnu | ru  | rnu |     |     |          |
-XOR      | rnu | rnu | ru  |     |     |          |
-XOR      | rnu | rnu | rnu |     |     |          |
-XOR      | ru  | rnu | lu  |     |     |          |
-XOR      | ru  | ru  | lu  |     |     |          |
-XOR      | ru  | ru  | ru  |     |     |          |
-XOR      | ru  | ru  | rnu |     |     |          |
-XOR      | ru  | rnu | ru  |     |     |          |
-XOR      | ru  | rnu | rnu |     |     |          |
+AND      | rnu | rnu | lu  |     |     | ZONCA    |
+AND      | rnu | ru  | lu  |     |     | ZONCA    |
+AND      | rnu | ru  | ru  |     |     | ZONCA    |
+AND      | rnu | ru  | rnu |     |     | ZONCA    |
+AND      | rnu | rnu | ru  |     |     | ZONCA    |
+AND      | rnu | rnu | rnu |     |     | ZONCA    |
+AND      | ru  | rnu | lu  |     |     | ZONCA    |
+AND      | ru  | ru  | lu  |     |     | ZONCA    |
+AND      | ru  | ru  | ru  |     |     | ZONCA    |
+AND      | ru  | ru  | rnu |     |     | ZONCA    |
+AND      | ru  | rnu | ru  |     |     | ZONCA    |
+AND      | ru  | rnu | rnu |     |     | ZONCA    |
+
+------------
+| OR       |
+------------
+
+Perform a logical OR between Op1 and Op2 and store into Op0.
+
+Operation:
+  op0 <- op1 OR op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-NOT      | ru  | ru  |     |     |     |          | # NOT group for Ulong
-NOT      | ru  | rnu |     |     |     |          |
-NOT      | rnu | ru  |     |     |     |          |
-NOT      | rnu | rnu |     |     |     |          |
+OR       | rnu | rnu | lu  |     |     | ZONCA    |
+OR       | rnu | ru  | lu  |     |     | ZONCA    |
+OR       | rnu | ru  | ru  |     |     | ZONCA    |
+OR       | rnu | ru  | rnu |     |     | ZONCA    |
+OR       | rnu | rnu | ru  |     |     | ZONCA    |
+OR       | rnu | rnu | rnu |     |     | ZONCA    |
+OR       | ru  | rnu | lu  |     |     | ZONCA    |
+OR       | ru  | ru  | lu  |     |     | ZONCA    |
+OR       | ru  | ru  | ru  |     |     | ZONCA    |
+OR       | ru  | ru  | rnu |     |     | ZONCA    |
+OR       | ru  | rnu | ru  |     |     | ZONCA    |
+OR       | ru  | rnu | rnu |     |     | ZONCA    |
+
+------------
+| XOR      |
+------------
+
+Perform an exclusive OR between Op1 and Op2 and store into Op0.
+
+Operation:
+  op0 <- op1 XOR op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-UCAST    | ru  | ld  |     |     |     |          | # Perform cast of D to U
-UCAST    | ru  | rd  |     |     |     |          |
-UCAST    | ru  | rnd |     |     |     |          |
-UCAST    | rnu | ld  |     |     |     |          |
-UCAST    | rnu | rd  |     |     |     |          |
-UCAST    | rnu | rnd |     |     |     |          |
+XOR      | rnu | rnu | lu  |     |     | ZONCA    |
+XOR      | rnu | ru  | lu  |     |     | ZONCA    |
+XOR      | rnu | ru  | ru  |     |     | ZONCA    |
+XOR      | rnu | ru  | rnu |     |     | ZONCA    |
+XOR      | rnu | rnu | ru  |     |     | ZONCA    |
+XOR      | rnu | rnu | rnu |     |     | ZONCA    |
+XOR      | ru  | rnu | lu  |     |     | ZONCA    |
+XOR      | ru  | ru  | lu  |     |     | ZONCA    |
+XOR      | ru  | ru  | ru  |     |     | ZONCA    |
+XOR      | ru  | ru  | rnu |     |     | ZONCA    |
+XOR      | ru  | rnu | ru  |     |     | ZONCA    |
+XOR      | ru  | rnu | rnu |     |     | ZONCA    |
+
+------------
+| NOT      |
+------------
+
+Perform a logical NOT of Op1 and store into Op0.
+
+Operation:
+  op0 <- NOT op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-DCAST    | rd  | lu  |     |     |     |          | # Perform cast of U to D
-DCAST    | rd  | ru  |     |     |     |          |
-DCAST    | rd  | rnu |     |     |     |          |
-DCAST    | rnd | lu  |     |     |     |          |
-DCAST    | rnd | ru  |     |     |     |          |
-DCAST    | rnd | rnu |     |     |     |          |
+NOT      | ru  | ru  |     |     |     | ZONCA    |
+NOT      | ru  | rnu |     |     |     | ZONCA    |
+NOT      | rnu | ru  |     |     |     | ZONCA    |
+NOT      | rnu | rnu |     |     |     | ZONCA    |
+
+------------
+| UCAST    |
+------------
+
+Perform a signed integer cast of the double in Op1 and store into Op0.
+This means that the representable number is from -Long to Long.
+
+Operation:
+  op0 <- Integer Cast of Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- Set if NaN
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SQRT     | rd  | ld  |     |     |     |          | # Perform SQRT
-SQRT     | rd  | rd  |     |     |     |          |
-SQRT     | rd  | rnd |     |     |     |          |
-SQRT     | rnd | ld  |     |     |     |          |
-SQRT     | rnd | rd  |     |     |     |          |
-SQRT     | rnd | rnd |     |     |     |          |
+UCAST    | ru  | ld  |     |     |     | ZONCA    |
+UCAST    | ru  | rd  |     |     |     | ZONCA    |
+UCAST    | ru  | rnd |     |     |     | ZONCA    |
+UCAST    | rnu | ld  |     |     |     | ZONCA    |
+UCAST    | rnu | rd  |     |     |     | ZONCA    |
+UCAST    | rnu | rnd |     |     |     | ZONCA    |
+
+------------
+| DCAST    |
+------------
+
+Perform a double cast of the ULong (treated as a signed long) in 
+Op1 and store into Op0.
+
+Operation:
+  op0 <- Double Cast of Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SIN      | rd  | ld  |     |     |     |          | # Perform SIN
-SIN      | rd  | rd  |     |     |     |          |
-SIN      | rd  | rnd |     |     |     |          |
-SIN      | rnd | ld  |     |     |     |          |
-SIN      | rnd | rd  |     |     |     |          |
-SIN      | rnd | rnd |     |     |     |          |
+DCAST    | rd  | lu  |     |     |     | ZONCA    |
+DCAST    | rd  | ru  |     |     |     | ZONCA    |
+DCAST    | rd  | rnu |     |     |     | ZONCA    |
+DCAST    | rnd | lu  |     |     |     | ZONCA    |
+DCAST    | rnd | ru  |     |     |     | ZONCA    |
+DCAST    | rnd | rnu |     |     |     | ZONCA    |
+
+------------
+| SQRT     |
+------------
+
+Perform a square root of the double in Op1 and store into Op0.
+If Op1 is a negative number, this will result in a NaN.
+
+Operation:
+  op0 <- sqrt Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is negative then A <- 1 else A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SQRT     | rd  | ld  |     |     |     | ZONCA    |
+SQRT     | rd  | rd  |     |     |     | ZONCA    |
+SQRT     | rd  | rnd |     |     |     | ZONCA    |
+SQRT     | rnd | ld  |     |     |     | ZONCA    |
+SQRT     | rnd | rd  |     |     |     | ZONCA    |
+SQRT     | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| SIN      |
+------------
+
+Perform a sine of the double in Op1 and store into Op0.
+
+Operation:
+  op0 <- sin Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+SIN      | rd  | ld  |     |     |     | ZONCA    |
+SIN      | rd  | rd  |     |     |     | ZONCA    |
+SIN      | rd  | rnd |     |     |     | ZONCA    |
+SIN      | rnd | ld  |     |     |     | ZONCA    |
+SIN      | rnd | rd  |     |     |     | ZONCA    |
+SIN      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| ASIN     |
+------------
+
+Perform an arcsine of the in Op1 and store into Op0.
+If Op1 is out of the range of [-1, 1], then the result is a NaN.
+
+Operation:
+  op0 <- arcsin Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is in [-1, 1] then A <- 0 else A <- 1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -1441,6 +1602,8 @@ ASIN     | rd  | rnd |     |     |     |          |
 ASIN     | rnd | ld  |     |     |     |          |
 ASIN     | rnd | rd  |     |     |     |          |
 ASIN     | rnd | rnd |     |     |     |          |
+
+KEEP GOING
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
