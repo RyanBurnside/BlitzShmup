@@ -1,10 +1,5 @@
 Version 1.0 (unfinalized)
 
-TODO: Add these instructions:
-  NORM vector : normalize a vector
-  DET matrix : determinate of a matrix
-  INV matrix : inversion of a matrix
-
 Harvard Architecture
 ====================
 
@@ -953,6 +948,27 @@ DOT      | rv4d| rv4d| rv4d|     |     | ZONCA    |
 DOT      | rv4i| rv4i| lv41|     |     | ZONCA    |
 DOT      | rv4i| rv4i| rv41|     |     | ZONCA    |
 
+------------
+| NORM     |
+------------
+
+Normalize the vector in Op1 and store result in Op0.
+
+Operation:
+  Op0 <- normalize Op1
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+  If normalization was successful then V <- 1 else V <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+NORM     | rv2d| rv2d|     |     |     | ZNVA     |
+NORM     | rv2d| rv2d|     |     |     | ZNVA     |
+NORM     | rv3d| rv3d|     |     |     | ZNVA     |
+NORM     | rv3d| rv3d|     |     |     | ZNVA     |
+NORM     | rv4d| rv4d|     |     |     | ZNVA     |
+NORM     | rv4d| rv4d|     |     |     | ZNVA     |
 
 ------------
 | CROSS    |
@@ -1056,6 +1072,51 @@ MATMUL   | rm4d| rv4d| rv4d| lu  |     | ZNA      |
 MATMUL   | rm4i| rv4i| lv4i| lu  |     | ZNA      |
 MATMUL   | rm4i| rv4i| rv4i| lu  |     | ZNA      |
 
+------------
+| INV      |
+------------
+
+Perform a matrix inverse of Op1 and store in Op0.
+
+Operation:
+  Op0 <- matrix-inverse Op1
+  If Op0 is (all) zero then Z <- 1 else Z <- 0
+  If Op0 is (all) negative then N <- 1 else N <- 0
+  If Op0 is (any) NaN then A <- 1 else A <- 0
+  If matrix is invertible then I <- 1, else I <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+INV      | rm2d| rm2d|     |     |     | ZNIA     |
+INV      | rm3d| rm3d|     |     |     | ZNIA     |
+INV      | rm4d| rm4d|     |     |     | ZNIA     |
+
+------------
+| DET      |
+------------
+
+Calculate the determinant Op1 and store in Op0.
+
+Operation:
+  Op0 <- matrix-inverse Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  If Op0 is NaN then A <- 1 else A <- 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+DET      | rd  | rm2d|     |     |     | ZNA      |
+DET      | rnd | rm2d|     |     |     | ZNA      |
+DET      | rd  | rm2i|     |     |     | ZNA      |
+DET      | rnd | rm2i|     |     |     | ZNA      |
+DET      | rd  | rm3d|     |     |     | ZNA      |
+DET      | rnd | rm3d|     |     |     | ZNA      |
+DET      | rd  | rm3i|     |     |     | ZNA      |
+DET      | rnd | rm3i|     |     |     | ZNA      |
+DET      | rd  | rm4d|     |     |     | ZNA      |
+DET      | rnd | rm4d|     |     |     | ZNA      |
+DET      | rd  | rm4i|     |     |     | ZNA      |
+DET      | rnd | rm4i|     |     |     | ZNA      |
 
 ------------
 | DIV      |
@@ -1560,7 +1621,7 @@ SQRT     | rnd | rnd |     |     |     | ZONCA    |
 | SIN      |
 ------------
 
-Perform a sine of the double in Op1 and store into Op0.
+Perform a sine of Op1 and store into Op0.
 
 Operation:
   op0 <- sin Op1
@@ -1580,10 +1641,10 @@ SIN      | rnd | rd  |     |     |     | ZONCA    |
 SIN      | rnd | rnd |     |     |     | ZONCA    |
 
 ------------
-| ASIN     |
+| ARCSIN   |
 ------------
 
-Perform an arcsine of the in Op1 and store into Op0.
+Perform an arcsine of Op1 and store into Op0.
 If Op1 is out of the range of [-1, 1], then the result is a NaN.
 
 Operation:
@@ -1596,146 +1657,359 @@ Operation:
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ASIN     | rd  | ld  |     |     |     |          | # Perform ARCSIN
-ASIN     | rd  | rd  |     |     |     |          |
-ASIN     | rd  | rnd |     |     |     |          |
-ASIN     | rnd | ld  |     |     |     |          |
-ASIN     | rnd | rd  |     |     |     |          |
-ASIN     | rnd | rnd |     |     |     |          |
+ARCSIN   | rd  | ld  |     |     |     | ZONCA    |
+ARCSIN   | rd  | rd  |     |     |     | ZONCA    |
+ARCSIN   | rd  | rnd |     |     |     | ZONCA    |
+ARCSIN   | rnd | ld  |     |     |     | ZONCA    |
+ARCSIN   | rnd | rd  |     |     |     | ZONCA    |
+ARCSIN   | rnd | rnd |     |     |     | ZONCA    |
 
-KEEP GOING
+------------
+| COS      |
+------------
+
+Perform a cosine of Op1 and store into Op0. If Op1 is a NaN then
+Op0 wil also be a NaN.
+
+Operation:
+  op0 <- cos Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN then A <- 1 else A <- 0
+
+AssemOp  | Op1 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COS      | rd  | ld  |     |     |     | ZONCA    |
+COS      | rd  | rd  |     |     |     | ZONCA    |
+COS      | rd  | rnd |     |     |     | ZONCA    |
+COS      | rnd | ld  |     |     |     | ZONCA    |
+COS      | rnd | rd  |     |     |     | ZONCA    |
+COS      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| ARCCOS   |
+------------
+
+Perform an arccosine of Op1 and store into Op0.  If Op1 is out of the
+range of [-1, 1], then the result is a NaN.
+
+Operation:
+  op0 <- arccos Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is in [-1, 1] then A <- 0 else A <- 1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-CSC      | rd  | ld  |     |     |     |          | # Perform CSC
-CSC      | rd  | rd  |     |     |     |          |
-CSC      | rd  | rnd |     |     |     |          |
-CSC      | rnd | ld  |     |     |     |          |
-CSC      | rnd | rd  |     |     |     |          |
-CSC      | rnd | rnd |     |     |     |          |
+ARCCOS   | rd  | ld  |     |     |     | ZONCA    |
+ARCCOS   | rd  | rd  |     |     |     | ZONCA    |
+ARCCOS   | rd  | rnd |     |     |     | ZONCA    |
+ARCCOS   | rnd | ld  |     |     |     | ZONCA    |
+ARCCOS   | rnd | rd  |     |     |     | ZONCA    |
+ARCCOS   | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| TAN      |
+------------
+
+Perform a tangent of Op1 and store into Op0. If Op1 is a NaN then
+Op0 wil also be a NaN. The legal domain of TAN is pi*Z + (-pi/2, pi/2).
+If Op1 is outside of that domain, it the result is NaN.
+
+Operation:
+  op0 <- tan Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
+
+AssemOp  | Op2 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+TAN      | rd  | ld  |     |     |     | ZONCA    |
+TAN      | rd  | rd  |     |     |     | ZONCA    |
+TAN      | rd  | rnd |     |     |     | ZONCA    |
+TAN      | rnd | ld  |     |     |     | ZONCA    |
+TAN      | rnd | rd  |     |     |     | ZONCA    |
+TAN      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| ARCTAN   |
+------------
+
+Perform an arctangent of Op1 and store into Op0.
+
+Operation:
+  op0 <- arctan Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ACSC     | rd  | ld  |     |     |     |          | # Perform ARCCSC
-ACSC     | rd  | rd  |     |     |     |          |
-ACSC     | rd  | rnd |     |     |     |          |
-ACSC     | rnd | ld  |     |     |     |          |
-ACSC     | rnd | rd  |     |     |     |          |
-ACSC     | rnd | rnd |     |     |     |          |
+ARCTAN   | rd  | ld  |     |     |     | ZONCA    |
+ARCTAN   | rd  | rd  |     |     |     | ZONCA    |
+ARCTAN   | rd  | rnd |     |     |     | ZONCA    |
+ARCTAN   | rnd | ld  |     |     |     | ZONCA    |
+ARCTAN   | rnd | rd  |     |     |     | ZONCA    |
+ARCTAN   | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| COT      |
+------------
+
+Perform a cotangent of Op1 and store into Op0. If Op1 is a NaN then
+Op0 wil also be a NaN. The legal domain of COT is pi*Z + (0, pi).
+If Op1 is outside of that domain, it the result is NaN.
+
+Operation:
+  op0 <- cot Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-COS      | rd  | ld  |     |     |     |          | # Perform COS
-COS      | rd  | rd  |     |     |     |          |
-COS      | rd  | rnd |     |     |     |          |
-COS      | rnd | ld  |     |     |     |          |
-COS      | rnd | rd  |     |     |     |          |
-COS      | rnd | rnd |     |     |     |          |
+COT      | rd  | ld  |     |     |     | ZONCA    |
+COT      | rd  | rd  |     |     |     | ZONCA    |
+COT      | rd  | rnd |     |     |     | ZONCA    |
+COT      | rnd | ld  |     |     |     | ZONCA    |
+COT      | rnd | rd  |     |     |     | ZONCA    |
+COT      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| ARCCOT   |
+------------
+
+Perform an arccot of Op1 and store into Op0.
+
+Operation:
+  op0 <- arccot Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ACOS     | rd  | ld  |     |     |     |          | # Perform ARCCOS
-ACOS     | rd  | rd  |     |     |     |          |
-ACOS     | rd  | rnd |     |     |     |          |
-ACOS     | rnd | ld  |     |     |     |          |
-ACOS     | rnd | rd  |     |     |     |          |
-ACOS     | rnd | rnd |     |     |     |          |
+ARCCOT   | rd  | ld  |     |     |     | ZONCA    |
+ARCCOT   | rd  | rd  |     |     |     | ZONCA    |
+ARCCOT   | rd  | rnd |     |     |     | ZONCA    |
+ARCCOT   | rnd | ld  |     |     |     | ZONCA    |
+ARCCOT   | rnd | rd  |     |     |     | ZONCA    |
+ARCCOT   | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| SEC      |
+------------
+
+Perform a secant of Op1 and store into Op0. If Op1 is a NaN then
+Op0 wil also be a NaN. The legal domain of SEC is pi*Z + (-pi/2, pi/2).
+If Op1 is outside of that domain, it the result is NaN.
+
+Operation:
+  op0 <- sec Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-SEC      | rd  | ld  |     |     |     |          | # Perform SEC
-SEC      | rd  | rd  |     |     |     |          |
-SEC      | rd  | rnd |     |     |     |          |
-SEC      | rnd | ld  |     |     |     |          |
-SEC      | rnd | rd  |     |     |     |          |
-SEC      | rnd | rnd |     |     |     |          |
+SEC      | rd  | ld  |     |     |     | ZONCA    |
+SEC      | rd  | rd  |     |     |     | ZONCA    |
+SEC      | rd  | rnd |     |     |     | ZONCA    |
+SEC      | rnd | ld  |     |     |     | ZONCA    |
+SEC      | rnd | rd  |     |     |     | ZONCA    |
+SEC      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| ARCSEC   |
+------------
+
+Perform an arcsecant of Op1 and store into Op0. If Op1 is a NaN then Op0 wil
+also be a NaN. The legal domain of ARCSEC is R \ (-1, 1).  If Op1 is outside of
+that domain, it the result is NaN.
+
+Operation:
+  op0 <- arcsec Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ASEC     | rd  | ld  |     |     |     |          | # Perform ARCSEC
-ASEC     | rd  | rd  |     |     |     |          |
-ASEC     | rd  | rnd |     |     |     |          |
-ASEC     | rnd | ld  |     |     |     |          |
-ASEC     | rnd | rd  |     |     |     |          |
-ASEC     | rnd | rnd |     |     |     |          |
+ARCSEC   | rd  | ld  |     |     |     | ZONCA    |
+ARCSEC   | rd  | rd  |     |     |     | ZONCA    |
+ARCSEC   | rd  | rnd |     |     |     | ZONCA    |
+ARCSEC   | rnd | ld  |     |     |     | ZONCA    |
+ARCSEC   | rnd | rd  |     |     |     | ZONCA    |
+ARCSEC   | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| CSC      |
+------------
+
+Perform a cosecant of Op1 and store into Op0. If Op1 is a NaN then Op0 wil also
+be a NaN. The legal domain of CSC is pi*Z + (0, pi). If Op1 is outside of that
+domain, it the result is NaN.
+
+Operation:
+  op0 <- csc Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-TAN      | rd  | ld  |     |     |     |          | # Perform TAN
-TAN      | rd  | rd  |     |     |     |          |
-TAN      | rd  | rnd |     |     |     |          |
-TAN      | rnd | ld  |     |     |     |          |
-TAN      | rnd | rd  |     |     |     |          |
-TAN      | rnd | rnd |     |     |     |          |
+CSC      | rd  | ld  |     |     |     | ZONCA    |
+CSC      | rd  | rd  |     |     |     | ZONCA    |
+CSC      | rd  | rnd |     |     |     | ZONCA    |
+CSC      | rnd | ld  |     |     |     | ZONCA    |
+CSC      | rnd | rd  |     |     |     | ZONCA    |
+CSC      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| ARCCSC   |
+------------
+
+Perform an arccsc of Op1 and store into Op0. If Op1 is a NaN then Op0 wil also
+be a NaN. The legal domain of ARCCSC is R \ (-1, 1).  If Op1 is outside of that
+domain, it the result is NaN.
+
+Operation:
+  op0 <- arcsec Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ATAN     | rd  | ld  |     |     |     |          | # Perform ARCTAN
-ATAN     | rd  | rd  |     |     |     |          |
-ATAN     | rd  | rnd |     |     |     |          |
-ATAN     | rnd | ld  |     |     |     |          |
-ATAN     | rnd | rd  |     |     |     |          |
-ATAN     | rnd | rnd |     |     |     |          |
+ARCCSC   | rd  | ld  |     |     |     | ZONCA    |
+ARCCSC   | rd  | rd  |     |     |     | ZONCA    |
+ARCCSC   | rd  | rnd |     |     |     | ZONCA    |
+ARCCSC   | rnd | ld  |     |     |     | ZONCA    |
+ARCCSC   | rnd | rd  |     |     |     | ZONCA    |
+ARCCSC   | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| LOG10    |
+------------
+
+Perform a log base 10 of Op1 and store into Op0.  If Op1 is a NaN then Op0 wil
+also be a NaN. The legal domain of LOG10 is (0, inf).  If Op1 is outside of
+that domain, it the result is NaN.
+
+Operation:
+  op0 <- log-base-10 Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-COT      | rd  | ld  |     |     |     |          | # Perform COT
-COT      | rd  | rd  |     |     |     |          |
-COT      | rd  | rnd |     |     |     |          |
-COT      | rnd | ld  |     |     |     |          |
-COT      | rnd | rd  |     |     |     |          |
-COT      | rnd | rnd |     |     |     |          |
+LOG10    | rd  | ld  |     |     |     | ZONCA    |
+LOG10    | rd  | rd  |     |     |     | ZONCA    |
+LOG10    | rd  | rnd |     |     |     | ZONCA    |
+LOG10    | rnd | ld  |     |     |     | ZONCA    |
+LOG10    | rnd | rd  |     |     |     | ZONCA    |
+LOG10    | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| LM       |
+------------
+
+Perform a natural logarithm (base e) of Op1 and store into Op0.  If Op1 is a
+NaN then Op0 wil also be a NaN. The legal domain of LN is (0, inf).  If Op1 is
+outside of that domain, it the result is NaN.
+
+Operation:
+  op0 <- log-base-10 Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN (or not in domain) then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-ACOT     | rd  | ld  |     |     |     |          | # Perform ARCCOT
-ACOT     | rd  | rd  |     |     |     |          |
-ACOT     | rd  | rnd |     |     |     |          |
-ACOT     | rnd | ld  |     |     |     |          |
-ACOT     | rnd | rd  |     |     |     |          |
-ACOT     | rnd | rnd |     |     |     |          |
+LN       | rd  | ld  |     |     |     | ZONCA    |
+LN       | rd  | rd  |     |     |     | ZONCA    |
+LN       | rd  | rnd |     |     |     | ZONCA    |
+LN       | rnd | ld  |     |     |     | ZONCA    |
+LN       | rnd | rd  |     |     |     | ZONCA    |
+LN       | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| EXP      |
+------------
+
+Raise e to Op1 and store into Op0.  If Op1 is a NaN then Op0 wil also be a NaN.
+
+Operation:
+  op0 <- exp Op1
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-LOG10    | rd  | ld  |     |     |     |          | # Perform LOG base 10
-LOG10    | rd  | rd  |     |     |     |          |
-LOG10    | rd  | rnd |     |     |     |          |
-LOG10    | rnd | ld  |     |     |     |          |
-LOG10    | rnd | rd  |     |     |     |          |
-LOG10    | rnd | rnd |     |     |     |          |
+EXP      | rd  | ld  |     |     |     | ZONCA    |
+EXP      | rd  | rd  |     |     |     | ZONCA    |
+EXP      | rd  | rnd |     |     |     | ZONCA    |
+EXP      | rnd | ld  |     |     |     | ZONCA    |
+EXP      | rnd | rd  |     |     |     | ZONCA    |
+EXP      | rnd | rnd |     |     |     | ZONCA    |
+
+------------
+| EXPT     |
+------------
+
+Raise Op1 to Op2 and store into Op0.
+If Op1 and/or Op2 are NaN then Op0 wil also be a NaN.
+
+Operation:
+  op0 <- Op1 ^ Op2
+  If Op0 is zero then Z <- 1 else Z <- 0
+  If Op0 is negative then N <- 1 else N <- 0
+  O <- 0
+  C <- 0
+  If Op1 is NaN then A <- 1 else A <- 0
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-LN       | rd  | ld  |     |     |     |          | # Perform LOG base e
-LN       | rd  | rd  |     |     |     |          |
-LN       | rd  | rnd |     |     |     |          |
-LN       | rnd | ld  |     |     |     |          |
-LN       | rnd | rd  |     |     |     |          |
-LN       | rnd | rnd |     |     |     |          |
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-EXP      | rd  | ld  |     |     |     |          | # Perform EXP: op0 <- e ^ op1
-EXP      | rd  | rd  |     |     |     |          |
-EXP      | rd  | rnd |     |     |     |          |
-EXP      | rnd | ld  |     |     |     |          |
-EXP      | rnd | rd  |     |     |     |          |
-EXP      | rnd | rnd |     |     |     |          |
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-POW      | rnd | rnd | ld  |     |     |          | # Perform POW: op0 < op1 ^ op2
-POW      | rnd | rd  | ld  |     |     |          |
-POW      | rnd | rd  | rd  |     |     |          |
-POW      | rnd | rd  | rnd |     |     |          |
-POW      | rnd | rnd | rd  |     |     |          |
-POW      | rnd | rnd | rnd |     |     |          |
-POW      | rd  | rnd | ld  |     |     |          |
-POW      | rd  | rd  | ld  |     |     |          |
-POW      | rd  | rd  | rd  |     |     |          |
-POW      | rd  | rd  | rnd |     |     |          |
-POW      | rd  | rnd | rd  |     |     |          |
-POW      | rd  | rnd | rnd |     |     |          |
+EXPT     | rnd | rnd | ld  |     |     | ZONCA    |
+EXPT     | rnd | rd  | ld  |     |     | ZONCA    |
+EXPT     | rnd | rd  | rd  |     |     | ZONCA    |
+EXPT     | rnd | rd  | rnd |     |     | ZONCA    |
+EXPT     | rnd | rnd | rd  |     |     | ZONCA    |
+EXPT     | rnd | rnd | rnd |     |     | ZONCA    |
+EXPT     | rd  | rnd | ld  |     |     | ZONCA    |
+EXPT     | rd  | rd  | ld  |     |     | ZONCA    |
+EXPT     | rd  | rd  | rd  |     |     | ZONCA    |
+EXPT     | rd  | rd  | rnd |     |     | ZONCA    |
+EXPT     | rd  | rnd | rd  |     |     | ZONCA    |
+EXPT     | rd  | rnd | rnd |     |     | ZONCA    |
 
 
 # [Part I]
@@ -1862,6 +2136,30 @@ JBELOWEQ | ea  |     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 JBELOWEQ | dmem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 JBELOWEQ | smem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JINV     | ea  |     |     |     |     |          | # I = 1
+JINV     | dmem|     |     |     |     |          | # I = 1
+JINV     | smem|     |     |     |     |          | # I = 1
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNOTINV  | ea  |     |     |     |     |          | # I = 0
+JNOTINV  | dmem|     |     |     |     |          | # I = 0
+JNOTINV  | smem|     |     |     |     |          | # I = 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNORM    | ea  |     |     |     |     |          | # V = 1
+JNORM    | dmem|     |     |     |     |          | # V = 1
+JNORM    | smem|     |     |     |     |          | # V = 1
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JNOTNORM | ea  |     |     |     |     |          | # V = 0
+JNOTNORM | dmem|     |     |     |     |          | # V = 0
+JNOTNORM | smem|     |     |     |     |          | # V = 0
+
 # CALL instructions and varients using flags
 # the 'ea' operand in these instructions are direct IMEM defaults.
 
@@ -1966,6 +2264,30 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 CBELOWEQ | ea  |     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 CBELOWEQ | dmem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
 CBELOWEQ | smem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CINV     | ea  |     |     |     |     |          | # I = 1
+CINV     | dmem|     |     |     |     |          | # I = 1
+CINV     | smem|     |     |     |     |          | # I = 1
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTINV  | ea  |     |     |     |     |          | # I = 0
+CNOTINV  | dmem|     |     |     |     |          | # I = 0
+CNOTINV  | smem|     |     |     |     |          | # I = 0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNORM    | ea  |     |     |     |     |          | # V = 1
+CNORM    | dmem|     |     |     |     |          | # V = 1
+CNORM    | smem|     |     |     |     |          | # V = 1
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTNORM | ea  |     |     |     |     |          | # V = 0
+CNOTNORM | dmem|     |     |     |     |          | # V = 0
+CNOTNORM | smem|     |     |     |     |          | # V = 0
 
 # [Part II]
 
