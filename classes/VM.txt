@@ -2016,20 +2016,39 @@ EXPT     | rd  | rnd | rnd |     |     | ZONCA    |
 
 # Traditional CMP instructions: (op0 - op1) then set flags
 
+------------
+| CMP      |
+------------
+
+Do a signed subtract (if integral registers, double subtract otherwise)
+of Op1 from Op0, discard result and set flags.
+
+Operation:
+  Calculate Op0 - Op1 and discard result
+  If result was zero then Z <- 1 else Z <- 0
+  If result was negative then N <- 1 else N <- 0
+  if result was integral:
+    O <- Did the result experience a overflow?
+    C <- Did the result experience a borrow?
+  else:
+    O <- 0
+    C <- 0
+  If result was NaN then A <- 1 else A <- 0
+
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-CMP      | ru  | lu  |     |     |     |          | # CMP U regs (set ZONC flags)
-CMP      | ru  | ru  |     |     |     |          |
-CMP      | ru  | rnu |     |     |     |          |
-CMP      | rnu | lu  |     |     |     |          |
-CMP      | rnu | ru  |     |     |     |          |
-CMP      | rnu | rnu |     |     |     |          |
-CMP      | rd  | ld  |     |     |     |          | # CMP D regs TODO Tol schema?
-CMP      | rd  | rd  |     |     |     |          |
-CMP      | rd  | rnd |     |     |     |          |
-CMP      | rnd | ld  |     |     |     |          |
-CMP      | rnd | rd  |     |     |     |          |
-CMP      | rnd | rnd |     |     |     |          |
+CMP      | ru  | lu  |     |     |     | ZONCA    |
+CMP      | ru  | ru  |     |     |     | ZONCA    |
+CMP      | ru  | rnu |     |     |     | ZONCA    |
+CMP      | rnu | lu  |     |     |     | ZONCA    |
+CMP      | rnu | ru  |     |     |     | ZONCA    |
+CMP      | rnu | rnu |     |     |     | ZONCA    |
+CMP      | rd  | ld  |     |     |     | ZONCA    |
+CMP      | rd  | rd  |     |     |     | ZONCA    |
+CMP      | rd  | rnd |     |     |     | ZONCA    |
+CMP      | rnd | ld  |     |     |     | ZONCA    |
+CMP      | rnd | rd  |     |     |     | ZONCA    |
+CMP      | rnd | rnd |     |     |     | ZONCA    |
 
 # Traditional JUMP instructions that check ZONC flags
 # the 'ea' operand in these instructions are direct IMEM defaults.
