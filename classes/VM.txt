@@ -2051,97 +2051,207 @@ CMP      | rnd | rd  |     |     |     | ZONCA    |
 CMP      | rnd | rnd |     |     |     | ZONCA    |
 
 # Traditional JUMP instructions that check ZONC flags
-# the 'ea' operand in these instructions are direct IMEM defaults.
+
+------------
+| JUMP     |
+------------
+
+Compute or load an address from Op0, then jump to it unconditionally.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JUMP     | ea  |     |     |     |     |          | # unconditional
-JUMP     | dmem|     |     |     |     |          | # unconditional
-JUMP     | smem|     |     |     |     |          | # unconditional
+JUMP     | ea  |     |     |     |     |          |
+JUMP     | dmem|     |     |     |     |          |
+JUMP     | smem|     |     |     |     |          |
+
+------------
+| JZERO    |
+------------
+
+Compute or load an address from Op0, then jump to it if Z = 0.
+This is "jump if zero".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JZERO    | ea  |     |     |     |     |          | # Z = 0
-JZERO    | dmem|     |     |     |     |          | # Z = 0
-JZERO    | smem|     |     |     |     |          | # Z = 0
+JZERO    | ea  |     |     |     |     |          |
+JZERO    | dmem|     |     |     |     |          |
+JZERO    | smem|     |     |     |     |          |
+
+------------
+| JNOTZERO |
+------------
+
+Compute or load an address from Op0, then jump to it if Z = 1.
+This is "jump if not zero".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTZERO | ea  |     |     |     |     |          | # Z = 1
-JNOTZERO | dmem|     |     |     |     |          | # Z = 1
-JNOTZERO | smem|     |     |     |     |          | # Z = 1
+JNOTZERO | ea  |     |     |     |     |          |
+JNOTZERO | dmem|     |     |     |     |          |
+JNOTZERO | smem|     |     |     |     |          |
+
+------------
+| JNEG     |
+------------
+
+Compute or load an address from Op0, then jump to it if N = 1.
+This is "jump if negative".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNEG     | ea  |     |     |     |     |          | # N = 1
-JNEG     | dmem|     |     |     |     |          | # N = 1
-JNEG     | smem|     |     |     |     |          | # N = 1
+JNEG     | ea  |     |     |     |     |          |
+JNEG     | dmem|     |     |     |     |          |
+JNEG     | smem|     |     |     |     |          |
+
+------------
+| JNOTNEG  |
+------------
+
+Compute or load an address from Op0, then jump to it if N = 0.
+This is "jump if not negative".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTNEG  | ea  |     |     |     |     |          | # N = 0
-JNOTNEG  | dmem|     |     |     |     |          | # N = 0
-JNOTNEG  | smem|     |     |     |     |          | # N = 0
+JNOTNEG  | ea  |     |     |     |     |          |
+JNOTNEG  | dmem|     |     |     |     |          |
+JNOTNEG  | smem|     |     |     |     |          |
+
+------------
+| JCARRY   |
+------------
+
+Compute or load an address from Op0, then jump to it if C = 1.
+This is an unsigned check.
+This is "jump if there was a carry".
+This instruction is a duplicate to JBELOW.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JCARRY   | eam |     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
-JCARRY   | dmem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
-JCARRY   | smem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
+JCARRY   | eam |     |     |     |     |          |
+JCARRY   | dmem|     |     |     |     |          |
+JCARRY   | smem|     |     |     |     |          |
+
+------------
+| JNOTCARRY|
+------------
+
+Compute or load an address from Op0, then jump to it if C = 0.
+This is "jump if there was no carry".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTCARRY| eam |     |     |     |     |          | # C = 0
-JNOTCARRY| dmem|     |     |     |     |          | # C = 0
-JNOTCARRY| smem|     |     |     |     |          | # C = 0
+JNOTCARRY| eam |     |     |     |     |          |
+JNOTCARRY| dmem|     |     |     |     |          |
+JNOTCARRY| smem|     |     |     |     |          |
+
+------------
+| JOVERF   |
+------------
+
+Compute or load an address from Op0, then jump to it if O = 1.
+This is "jump if overflowed".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JOVERF   | ea  |     |     |     |     |          | # O = 1
-JOVERF   | dmem|     |     |     |     |          | # O = 1
-JOVERF   | smem|     |     |     |     |          | # O = 1
+JOVERF   | ea  |     |     |     |     |          |
+JOVERF   | dmem|     |     |     |     |          |
+JOVERF   | smem|     |     |     |     |          |
+
+------------
+| JNOTOVERF|
+------------
+
+Compute or load an address from Op0, then jump to it if O = 0.
+This is "jump if not overflowed".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTOVERF| ea  |     |     |     |     |          | # O = 0
-JNOTOVERF| dmem|     |     |     |     |          | # O = 0
-JNOTOVERF| smem|     |     |     |     |          | # O = 0
+JNOTOVERF| ea  |     |     |     |     |          |
+JNOTOVERF| dmem|     |     |     |     |          |
+JNOTOVERF| smem|     |     |     |     |          |
+
+------------
+| JGREAT   |
+------------
+
+Compute or load an address from Op0, then jump to it if N = 0 and Z = 0.
+This is "jump if greater".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JGREAT   | eam |     |     |     |     |          | # N = O and Z = 0
-JGREAT   | dmem|     |     |     |     |          | # N = O and Z = 0
-JGREAT   | smem|     |     |     |     |          | # N = O and Z = 0
+JGREAT   | eam |     |     |     |     |          |
+JGREAT   | dmem|     |     |     |     |          |
+JGREAT   | smem|     |     |     |     |          |
+
+------------
+| JGREATEQ |
+------------
+
+Compute or load an address from Op0, then jump to it if N = 0 or Z = 1.
+This is "jump if greater or equal to".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JGREATEQ | ea  |     |     |     |     |          | # N = O or Z = 1
-JGREATEQ | dmem|     |     |     |     |          | # N = O or Z = 1
-JGREATEQ | smem|     |     |     |     |          | # N = O or Z = 1
+JGREATEQ | ea  |     |     |     |     |          |
+JGREATEQ | dmem|     |     |     |     |          |
+JGREATEQ | smem|     |     |     |     |          |
+
+------------
+| JABOVE   |
+------------
+
+Compute or load an address from Op0, then jump to it if C = 0 and Z = 0.
+This is an unsigned check.
+This is "jump if above".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JABOVE   | ea  |     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
-JABOVE   | dmem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
-JABOVE   | smem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
+JABOVE   | ea  |     |     |     |     |          |
+JABOVE   | dmem|     |     |     |     |          |
+JABOVE   | smem|     |     |     |     |          |
+
+------------
+| JABOVEEQ |
+------------
+
+Compute or load an address from Op0, then jump to it if C = 0 or Z = 1.
+This is an unsigned check.
+This is "jump if above".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JABOVEEQ | ea  |     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
-JABOVEEQ | dmem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
-JABOVEEQ | smem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
+JABOVEEQ | ea  |     |     |     |     |          |
+JABOVEEQ | dmem|     |     |     |     |          |
+JABOVEEQ | smem|     |     |     |     |          |
+
+------------
+| JLESS    |
+------------
+
+Compute or load an address from Op0, then jump to it if N = 1.
+This is "jump if less".
+This is a duplicate of JNEG.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JLESS    | ea  |     |     |     |     |          | # N != O
-JLESS    | dmem|     |     |     |     |          | # N != O
-JLESS    | smem|     |     |     |     |          | # N != O
+JLESS    | ea  |     |     |     |     |          |
+JLESS    | dmem|     |     |     |     |          |
+JLESS    | smem|     |     |     |     |          |
+
+------------
+| JLESSEQ  |
+------------
+
+Compute or load an address from Op0, then jump to it if N = 1 or Z = 1.
+This is "jump if less or equal to".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JLESSEQ  | ea  |     |     |     |     |          | # N != O or Z = 1
-JLESSEQ  | dmem|     |     |     |     |          | # N != O or Z = 1
-JLESSEQ  | smem|     |     |     |     |          | # N != O or Z = 1
+JLESSEQ  | ea  |     |     |     |     |          |
+JLESSEQ  | dmem|     |     |     |     |          |
+JLESSEQ  | smem|     |     |     |     |          |
+
+KEEP GOING.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2262,15 +2372,15 @@ CABOVEEQ | smem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-CLESS    | ea  |     |     |     |     |          | # N != O
-CLESS    | dmem|     |     |     |     |          | # N != O
-CLESS    | smem|     |     |     |     |          | # N != O
+CLESS    | ea  |     |     |     |     |          | # N = 1
+CLESS    | dmem|     |     |     |     |          | # N = 1
+CLESS    | smem|     |     |     |     |          | # N = 1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-CLESSEQ  | ea  |     |     |     |     |          | # N != O or Z = 1
-CLESSEQ  | dmem|     |     |     |     |          | # N != O or Z = 1
-CLESSEQ  | smem|     |     |     |     |          | # N != O or Z = 1
+CLESSEQ  | ea  |     |     |     |     |          | # N = 1 or Z = 1
+CLESSEQ  | dmem|     |     |     |     |          | # N = 1 or Z = 1
+CLESSEQ  | smem|     |     |     |     |          | # N = 1 or Z = 1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
