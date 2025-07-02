@@ -8,6 +8,21 @@ use registers. There are specific LOAD and STORE instructions to move data from
 memory to registers and back again. All Stack disciplines are full ascending
 unless otherwise indicated.
 
+Fundamental Execution Cycle
+---------------------------
+
+Execution Cycle for a single instruction:
+  The BPU has a two cycle execution for each instruction:
+    Cycle 1:
+      FETCH the instruction at current PC.
+      Increment PC.
+    Cycle 2
+      EXECUTE instruction.
+
+
+Register Description
+--------------------
+
 Registers:
   RegSysIntU  - Array 4 ULong, names start at 0 index. These registers are
                 internal registers not normally targets of regular
@@ -2352,136 +2367,350 @@ JNOTNORM | ea  |     |     |     |     |          |
 JNOTNORM | dmem|     |     |     |     |          |
 JNOTNORM | smem|     |     |     |     |          |
 
+# CALL instructions and variants using flags
+
+------------
+| CALL     |
+------------
+
+The ea operand defaults to the IMEM memory.
+Compute or load an address from Op0.
+Push PC onto return stack.
+Unconditionally jump to Op0.
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CALL     | ea  |     |     |     |     |          |
+CALL     | dmem|     |     |     |     |          |
+CALL     | smem|     |     |     |     |          |
+
+------------
+| CZERO    |
+------------
+
+The ea operand defaults to the IMEM memory.
+if Z = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CZERO    | ea  |     |     |     |     |          |
+CZERO    | dmem|     |     |     |     |          |
+CZERO    | smem|     |     |     |     |          |
+
+------------
+| CNOTZERO |
+------------
+
+The ea operand defaults to the IMEM memory.
+if Z = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTZERO | ea  |     |     |     |     |          |
+CNOTZERO | dmem|     |     |     |     |          |
+CNOTZERO | smem|     |     |     |     |          |
+
+------------
+| CNEG     |
+------------
+
+The ea operand defaults to the IMEM memory.
+if N = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNEG     | ea  |     |     |     |     |          |
+CNEG     | dmem|     |     |     |     |          |
+CNEG     | smem|     |     |     |     |          |
+
+------------
+| CNOTNEG  |
+------------
+
+The ea operand defaults to the IMEM memory.
+if N = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTNEG  | ea  |     |     |     |     |          |
+CNOTNEG  | dmem|     |     |     |     |          |
+CNOTNEG  | smem|     |     |     |     |          |
+
+------------
+| CCARRY   |
+------------
+
+The ea operand defaults to the IMEM memory.
+This is an unsigned check.
+This is a dup of CBELOW.
+if C = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CCARRY   | ea  |     |     |     |     |          |
+CCARRY   | dmem|     |     |     |     |          |
+CCARRY   | smem|     |     |     |     |          |
+
+------------
+| CNOTCARRY|
+------------
+
+The ea operand defaults to the IMEM memory.
+if C = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTCARRY| ea  |     |     |     |     |          |
+CNOTCARRY| dmem|     |     |     |     |          |
+CNOTCARRY| smem|     |     |     |     |          |
+
+------------
+| COVERF   |
+------------
+
+The ea operand defaults to the IMEM memory.
+if O = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+COVERF   | ea  |     |     |     |     |          |
+COVERF   | dmem|     |     |     |     |          |
+COVERF   | smem|     |     |     |     |          |
+
+------------
+| CNOTOVERF|
+------------
+
+The ea operand defaults to the IMEM memory.
+if O = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTOVERF| ea  |     |     |     |     |          |
+CNOTOVERF| dmem|     |     |     |     |          |
+CNOTOVERF| smem|     |     |     |     |          |
+
+------------
+| CGREAT   |
+------------
+
+The ea operand defaults to the IMEM memory.
+if N = 0 and Z = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CGREAT   | ea  |     |     |     |     |          |
+CGREAT   | dmem|     |     |     |     |          |
+CGREAT   | smem|     |     |     |     |          |
+
+------------
+| CGREATEQ |
+------------
+
+The ea operand defaults to the IMEM memory.
+if N = 0 or Z = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CGREATEQ | ea  |     |     |     |     |          |
+CGREATEQ | dmem|     |     |     |     |          |
+CGREATEQ | smem|     |     |     |     |          |
+
+------------
+| CABOVE   |
+------------
+
+The ea operand defaults to the IMEM memory.
+This is an unsigned check.
+if C = 0 and Z = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CABOVE   | ea  |     |     |     |     |          |
+CABOVE   | dmem|     |     |     |     |          |
+CABOVE   | smem|     |     |     |     |          |
+
+------------
+| CABOVEEQ |
+------------
+
+The ea operand defaults to the IMEM memory.
+This is an unsigned check.
+if C = 0 or Z = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CABOVEEQ | ea  |     |     |     |     |          |
+CABOVEEQ | dmem|     |     |     |     |          |
+CABOVEEQ | smem|     |     |     |     |          |
+
+------------
+| CLESS    |
+------------
+
+The ea operand defaults to the IMEM memory.
+if N = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CLESS    | ea  |     |     |     |     |          |
+CLESS    | dmem|     |     |     |     |          |
+CLESS    | smem|     |     |     |     |          |
+
+------------
+| CLESSEQ  |
+------------
+
+The ea operand defaults to the IMEM memory.
+if N = 1 or Z = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CLESSEQ  | ea  |     |     |     |     |          |
+CLESSEQ  | dmem|     |     |     |     |          |
+CLESSEQ  | smem|     |     |     |     |          |
+
+------------
+| CBELOW   |
+------------
+
+The ea operand defaults to the IMEM memory.
+This is an unsigned check.
+if C = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CBELOW   | ea  |     |     |     |     |          |
+CBELOW   | dmem|     |     |     |     |          |
+CBELOW   | smem|     |     |     |     |          |
+
+------------
+| CBELOWEQ |
+------------
+
+The ea operand defaults to the IMEM memory.
+This is an unsigned check.
+if C = 1 or Z = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CBELOWEQ | ea  |     |     |     |     |          |
+CBELOWEQ | dmem|     |     |     |     |          |
+CBELOWEQ | smem|     |     |     |     |          |
+
+------------
+| CINV     |
+------------
+
+The ea operand defaults to the IMEM memory.
+if I = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CINV     | ea  |     |     |     |     |          |
+CINV     | dmem|     |     |     |     |          |
+CINV     | smem|     |     |     |     |          |
+
+------------
+| CNOTINV  |
+------------
+
+The ea operand defaults to the IMEM memory.
+if I = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTINV  | ea  |     |     |     |     |          |
+CNOTINV  | dmem|     |     |     |     |          |
+CNOTINV  | smem|     |     |     |     |          |
+
+------------
+| CNORM    |
+------------
+
+The ea operand defaults to the IMEM memory.
+if V = 1:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNORM    | ea  |     |     |     |     |          |
+CNORM    | dmem|     |     |     |     |          |
+CNORM    | smem|     |     |     |     |          |
+
+------------
+| CNOTNORM |
+------------
+
+The ea operand defaults to the IMEM memory.
+if V = 0:
+  Compute or load an address from Op0.
+  Push PC onto retStack.
+  Jump to Op0
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+CNOTNORM | ea  |     |     |     |     |          |
+CNOTNORM | dmem|     |     |     |     |          |
+CNOTNORM | smem|     |     |     |     |          |
+
 KEEP GOING
-
-# CALL instructions and varients using flags
-# the 'ea' operand in these instructions are direct IMEM defaults.
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CALL     | ea  |     |     |     |     |          | # unconditional CALL
-CALL     | dmem|     |     |     |     |          | # unconditional CALL
-CALL     | smem|     |     |     |     |          | # unconditional CALL
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CZERO    | ea  |     |     |     |     |          | # Z = 0
-CZERO    | dmem|     |     |     |     |          | # Z = 0
-CZERO    | smem|     |     |     |     |          | # Z = 0
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNOTZERO | ea  |     |     |     |     |          | # Z = 1
-CNOTZERO | dmem|     |     |     |     |          | # Z = 1
-CNOTZERO | smem|     |     |     |     |          | # Z = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNEG     | ea  |     |     |     |     |          | # N = 1
-CNEG     | dmem|     |     |     |     |          | # N = 1
-CNEG     | smem|     |     |     |     |          | # N = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNOTNEG  | ea  |     |     |     |     |          | # N = 0
-CNOTNEG  | dmem|     |     |     |     |          | # N = 0
-CNOTNEG  | smem|     |     |     |     |          | # N = 0
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CCARRY   | ea  |     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
-CCARRY   | dmem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
-CCARRY   | smem|     |     |     |     |          | # C = 1 (unsigned) (dup JBELOW)
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNOTCARRY| ea  |     |     |     |     |          | # C = 0
-CNOTCARRY| dmem|     |     |     |     |          | # C = 0
-CNOTCARRY| smem|     |     |     |     |          | # C = 0
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-COVERF   | ea  |     |     |     |     |          | # O = 1
-COVERF   | dmem|     |     |     |     |          | # O = 1
-COVERF   | smem|     |     |     |     |          | # O = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNOTOVERF| ea  |     |     |     |     |          | # O = 0
-CNOTOVERF| dmem|     |     |     |     |          | # O = 0
-CNOTOVERF| smem|     |     |     |     |          | # O = 0
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CGREAT   | ea  |     |     |     |     |          | # N = O and Z = 0
-CGREAT   | dmem|     |     |     |     |          | # N = O and Z = 0
-CGREAT   | smem|     |     |     |     |          | # N = O and Z = 0
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CGREATEQ | ea  |     |     |     |     |          | # N = O or Z = 1
-CGREATEQ | dmem|     |     |     |     |          | # N = O or Z = 1
-CGREATEQ | smem|     |     |     |     |          | # N = O or Z = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CABOVE   | ea  |     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
-CABOVE   | dmem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
-CABOVE   | smem|     |     |     |     |          | # C = 0 and Z = 0 (unsigned)
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CABOVEEQ | ea  |     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
-CABOVEEQ | dmem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
-CABOVEEQ | smem|     |     |     |     |          | # C = 0 or Z = 1 (unsigned)
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CLESS    | ea  |     |     |     |     |          | # N = 1
-CLESS    | dmem|     |     |     |     |          | # N = 1
-CLESS    | smem|     |     |     |     |          | # N = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CLESSEQ  | ea  |     |     |     |     |          | # N = 1 or Z = 1
-CLESSEQ  | dmem|     |     |     |     |          | # N = 1 or Z = 1
-CLESSEQ  | smem|     |     |     |     |          | # N = 1 or Z = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CBELOW   | ea  |     |     |     |     |          | # C = 1 (unsigned)
-CBELOW   | dmem|     |     |     |     |          | # C = 1 (unsigned)
-CBELOW   | smem|     |     |     |     |          | # C = 1 (unsigned)
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CBELOWEQ | ea  |     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
-CBELOWEQ | dmem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
-CBELOWEQ | smem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CINV     | ea  |     |     |     |     |          | # I = 1
-CINV     | dmem|     |     |     |     |          | # I = 1
-CINV     | smem|     |     |     |     |          | # I = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNOTINV  | ea  |     |     |     |     |          | # I = 0
-CNOTINV  | dmem|     |     |     |     |          | # I = 0
-CNOTINV  | smem|     |     |     |     |          | # I = 0
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNORM    | ea  |     |     |     |     |          | # V = 1
-CNORM    | dmem|     |     |     |     |          | # V = 1
-CNORM    | smem|     |     |     |     |          | # V = 1
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-CNOTNORM | ea  |     |     |     |     |          | # V = 0
-CNOTNORM | dmem|     |     |     |     |          | # V = 0
-CNOTNORM | smem|     |     |     |     |          | # V = 0
 
 # [Part II]
 
