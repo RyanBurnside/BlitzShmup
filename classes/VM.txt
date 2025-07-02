@@ -2057,6 +2057,7 @@ CMP      | rnd | rnd |     |     |     | ZONCA    |
 ------------
 
 Compute or load an address from Op0, then jump to it unconditionally.
+The ea operand defaults to the IMEM memory.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2069,6 +2070,7 @@ JUMP     | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if Z = 0.
+The ea operand defaults to the IMEM memory.
 This is "jump if zero".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2082,6 +2084,7 @@ JZERO    | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if Z = 1.
+The ea operand defaults to the IMEM memory.
 This is "jump if not zero".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2095,6 +2098,7 @@ JNOTZERO | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 1.
+The ea operand defaults to the IMEM memory.
 This is "jump if negative".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2108,6 +2112,7 @@ JNEG     | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 0.
+The ea operand defaults to the IMEM memory.
 This is "jump if not negative".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2121,13 +2126,14 @@ JNOTNEG  | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 1.
+The ea operand defaults to the IMEM memory.
 This is an unsigned check.
 This is "jump if there was a carry".
 This instruction is a duplicate to JBELOW.
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JCARRY   | eam |     |     |     |     |          |
+JCARRY   | ea  |     |     |     |     |          |
 JCARRY   | dmem|     |     |     |     |          |
 JCARRY   | smem|     |     |     |     |          |
 
@@ -2136,11 +2142,12 @@ JCARRY   | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 0.
+The ea operand defaults to the IMEM memory.
 This is "jump if there was no carry".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTCARRY| eam |     |     |     |     |          |
+JNOTCARRY| ea  |     |     |     |     |          |
 JNOTCARRY| dmem|     |     |     |     |          |
 JNOTCARRY| smem|     |     |     |     |          |
 
@@ -2149,6 +2156,7 @@ JNOTCARRY| smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if O = 1.
+The ea operand defaults to the IMEM memory.
 This is "jump if overflowed".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2162,6 +2170,7 @@ JOVERF   | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if O = 0.
+The ea operand defaults to the IMEM memory.
 This is "jump if not overflowed".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2175,11 +2184,12 @@ JNOTOVERF| smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 0 and Z = 0.
+The ea operand defaults to the IMEM memory.
 This is "jump if greater".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JGREAT   | eam |     |     |     |     |          |
+JGREAT   | ea  |     |     |     |     |          |
 JGREAT   | dmem|     |     |     |     |          |
 JGREAT   | smem|     |     |     |     |          |
 
@@ -2188,6 +2198,7 @@ JGREAT   | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 0 or Z = 1.
+The ea operand defaults to the IMEM memory.
 This is "jump if greater or equal to".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2201,6 +2212,7 @@ JGREATEQ | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 0 and Z = 0.
+The ea operand defaults to the IMEM memory.
 This is an unsigned check.
 This is "jump if above".
 
@@ -2215,6 +2227,7 @@ JABOVE   | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 0 or Z = 1.
+The ea operand defaults to the IMEM memory.
 This is an unsigned check.
 This is "jump if above".
 
@@ -2229,6 +2242,7 @@ JABOVEEQ | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 1.
+The ea operand defaults to the IMEM memory.
 This is "jump if less".
 This is a duplicate of JNEG.
 
@@ -2243,6 +2257,7 @@ JLESS    | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 1 or Z = 1.
+The ea operand defaults to the IMEM memory.
 This is "jump if less or equal to".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2256,6 +2271,7 @@ JLESSEQ  | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 1
+The ea operand defaults to the IMEM memory.
 This is an unsigned check.
 This is "jump if below".
 
@@ -2270,6 +2286,7 @@ JBELOW   | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 1 or Z = 1
+The ea operand defaults to the IMEM memory.
 This is an unsigned check.
 This is "jump if below or equal".
 
@@ -2284,6 +2301,7 @@ JBELOWEQ | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if I = 1
+The ea operand defaults to the IMEM memory.
 This is "jump if matrix inversion was ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2297,6 +2315,7 @@ JINV     | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if I = 0
+The ea operand defaults to the IMEM memory.
 This is "jump if matrix inversion was not ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2310,6 +2329,7 @@ JNOTINV  | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if V = 1
+The ea operand defaults to the IMEM memory.
 This is "jump if vector normalization was ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2323,6 +2343,7 @@ JNORM    | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if V = 0
+The ea operand defaults to the IMEM memory.
 This is "jump if vector normalization was not ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
@@ -2552,7 +2573,7 @@ JUMPIF   | rd  | drel| rnd | ea  |     |          |
 JUMPIF   | rd  | drel| rnd | dmem|     |          |
 JUMPIF   | rd  | drel| rnd | smem|     |          |
 
-JUMPIF   | rnd | drel| ld  | eam |     |          |
+JUMPIF   | rnd | drel| ld  | ea  |     |          |
 JUMPIF   | rnd | drel| ld  | dmem|     |          |
 JUMPIF   | rnd | drel| ld  | smem|     |          |
 
