@@ -2251,43 +2251,87 @@ JLESSEQ  | ea  |     |     |     |     |          |
 JLESSEQ  | dmem|     |     |     |     |          |
 JLESSEQ  | smem|     |     |     |     |          |
 
-KEEP GOING.
+------------
+| JBELOW   |
+------------
+
+Compute or load an address from Op0, then jump to it if C = 1
+This is an unsigned check.
+This is "jump if below".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JBELOW   | ea  |     |     |     |     |          | # C = 1 (unsigned)
-JBELOW   | dmem|     |     |     |     |          | # C = 1 (unsigned)
-JBELOW   | smem|     |     |     |     |          | # C = 1 (unsigned)
+JBELOW   | ea  |     |     |     |     |          |
+JBELOW   | dmem|     |     |     |     |          |
+JBELOW   | smem|     |     |     |     |          |
+
+------------
+| JBELOWEQ |
+------------
+
+Compute or load an address from Op0, then jump to it if C = 1 or Z = 1
+This is an unsigned check.
+This is "jump if below or equal".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JBELOWEQ | ea  |     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
-JBELOWEQ | dmem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
-JBELOWEQ | smem|     |     |     |     |          | # C = 1 or Z = 1 (unsigned)
+JBELOWEQ | ea  |     |     |     |     |          |
+JBELOWEQ | dmem|     |     |     |     |          |
+JBELOWEQ | smem|     |     |     |     |          |
+
+------------
+| JINV     |
+------------
+
+Compute or load an address from Op0, then jump to it if I = 1
+This is "jump if matrix inversion was ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JINV     | ea  |     |     |     |     |          | # I = 1
-JINV     | dmem|     |     |     |     |          | # I = 1
-JINV     | smem|     |     |     |     |          | # I = 1
+JINV     | ea  |     |     |     |     |          |
+JINV     | dmem|     |     |     |     |          |
+JINV     | smem|     |     |     |     |          |
+
+------------
+| JNOTINV  |
+------------
+
+Compute or load an address from Op0, then jump to it if I = 0
+This is "jump if matrix inversion was not ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTINV  | ea  |     |     |     |     |          | # I = 0
-JNOTINV  | dmem|     |     |     |     |          | # I = 0
-JNOTINV  | smem|     |     |     |     |          | # I = 0
+JNOTINV  | ea  |     |     |     |     |          |
+JNOTINV  | dmem|     |     |     |     |          |
+JNOTINV  | smem|     |     |     |     |          |
+
+------------
+| JNORM    |
+------------
+
+Compute or load an address from Op0, then jump to it if V = 1
+This is "jump if vector normalization was ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNORM    | ea  |     |     |     |     |          | # V = 1
-JNORM    | dmem|     |     |     |     |          | # V = 1
-JNORM    | smem|     |     |     |     |          | # V = 1
+JNORM    | ea  |     |     |     |     |          |
+JNORM    | dmem|     |     |     |     |          |
+JNORM    | smem|     |     |     |     |          |
+
+------------
+| JNOTNORM |
+------------
+
+Compute or load an address from Op0, then jump to it if V = 0
+This is "jump if vector normalization was not ok".
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
-JNOTNORM | ea  |     |     |     |     |          | # V = 0
-JNOTNORM | dmem|     |     |     |     |          | # V = 0
-JNOTNORM | smem|     |     |     |     |          | # V = 0
+JNOTNORM | ea  |     |     |     |     |          |
+JNOTNORM | dmem|     |     |     |     |          |
+JNOTNORM | smem|     |     |     |     |          |
+
+KEEP GOING
 
 # CALL instructions and varients using flags
 # the 'ea' operand in these instructions are direct IMEM defaults.
