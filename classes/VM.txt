@@ -92,11 +92,11 @@ Registers:
   QRegQ       - Array 32 Quaternion Registers
 
 Memory:
-  memInst       - Array 256K MachInst types
-  memData       - Array 256K MemValue types
-  retStack      - Array 256K ULong: Return Address Stack (used only by call/ret)
-  dataStack     - Array 256K MemValue: Stack of MemValues (used by push/pop)
-  dataTypeStack - Array 256K UByte: Type of thing pushed to dataStack.
+  IMEM: memInst    - Array 256K MachInst types
+  DMEM: memData    - Array 256K MemValue types
+  RMEM: retStack   - Array 256K ULong: Return Address Stack (used call/ret)
+  SMEM: dataStack  - Array 256K MemValue: Stack of MemValues (used by push/pop)
+  TMEM: dataTypeStack - Array 256K UByte: Type of thing pushed to dataStack.
 
 Operands Hierarchy
 ------------------
@@ -179,11 +179,11 @@ ea       |    OpEffectiveAddress
          |      OpEffAdrISA
          |      OpEffAdrBISA
          |    OpMemory (always contains an OpEffectiveAddress derivative)
+imem     |      OpInstMemory : IMEM
 dmem     |      OpDataMemory : DMEM
+rmem     |      OpReturnStackMemory : RMEM
 smem     |      OpDataStackMemory : SMEM
 tmem     |      OpDataTypeStackMemory : TMEM
-imem     |      OpInstMemory : IMEM
-rmem     |      OpReturnStackMemory : RMEM
 
 Effective Address Specification
 -------------------------------
@@ -306,7 +306,10 @@ specify them in this table. They will go into a giant enum later.
 | NOP      |
 ------------
 
-No operation, increment PC by 1.
+Do not perform any work. Do not change any flags.
+
+Operation:
+  Nop
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -318,6 +321,9 @@ NOP      |     |     |     |     |     |          |
 ------------
 
 Compute the value of the effective address form in Op1 and store into Op0.
+
+Operation:
+  Op0 <- EffAddr(Op1)
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -333,7 +339,8 @@ Load into Op0 the Value at Memory Address specified in Op1.
 Any ea operand defaults to DMEM.
 
 Operation:
-  Op0 <- Op1
+  mem <- MemoryKind(Op1)
+  Op0 <- MemoryValue(mem, EffAddr(Op1))
   If Op0 is (all) zero then Z <- 1 else Z <- 0
   If Op0 is (all) negative then N <- 1 else N <- 0
   O <- 0
@@ -400,8 +407,11 @@ LOAD     | rq  | smem|     |     |     | ZNOCA    |
 ------------
 
 Store into Memory Address specified in Op0 the value in Op1.
-Op0 <- Op1
 Any ea operand defaults to DMEM.
+
+Operation:
+  mem <- MemoryKind(Op0)
+  MemoryValue(mem, EffAddr(Op1)) <- Op1
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2074,11 +2084,19 @@ CMP      | rnd | rnd |     |     |     | ZONCA    |
 Compute or load an address from Op0, then jump to it unconditionally.
 The ea operand defaults to the IMEM memory.
 
+Operation:
+  mem <- MemoryKind(Op0)
+  value <- MemoryValue(mem, EffAddr(Op0))
+  PC <- value
+
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
 JUMP     | ea  |     |     |     |     |          |
 JUMP     | dmem|     |     |     |     |          |
 JUMP     | smem|     |     |     |     |          |
+
+KEEP GOING: Fix all of the ea/dmem/smem/etc to use the Operation steps above
+to decide what to do and when to change the PC.
 
 ------------
 | JZERO    |
