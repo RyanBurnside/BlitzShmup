@@ -33,23 +33,24 @@ Registers:
     RS        - ReturnStack Address
     DT        - DataTypeStack Address
     ST        - Status Register: (bitstart:bitend=defval)
+                Action: w - write, r - read, n - not touched, u - undefined
                   Integer OR Double operation Flags
-                    B: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
-                    Z: Zero             (1:1=0)
-                    N: Negative         (2:2=0)
+                    BF: Bool             (0:0=0) (COND/JUMPIF/CALLIF)
+                    ZF: Zero             (1:1=0)
+                    NF: Negative         (2:2=0)
                   Integer operation flags
-                    O: Overflow         (3:3=0)
-                    C: Carry            (4:4=0)
+                    OF: Overflow         (3:3=0)
+                    CF: Carry            (4:4=0)
                   Double operation flags
-                    A: NAN              (5:5=0)
+                    AF: NAN              (5:5=0)
                   Matrix/Vector operation flags
-                    I: Inverse Success  (6:6=0)
-                    V: Norm Success     (7:7=0)
+                    IF: Inverse Success  (6:6=0)
+                    VF: Norm Success     (7:7=0)
 
   RegNamU     - Array 5 ULong, names start at 0 index. Named registers.
     C0        - Configuration Register: (bitstart:bitend=defval)
                   Implicit configuration state.
-                    T: DEQTestTol       (0:1=1) 0=raw, 1=absdiff, 2=reldiff
+                    TF: DEQTestTol       (0:1=1) 0=raw, 1=absdiff, 2=reldiff
     DS        - DataStack Address
     FP        - DataStack Frame Address
     SL        - Sleep Ticks
@@ -91,7 +92,8 @@ Registers:
   # Quaternion Registers
   QRegQ       - Array 32 Quaternion Registers
 
-Memory:
+Memory Kinds:
+  EA:   nil        - Not a memory kind, but a bare Effective Address
   IMEM: memInst    - Array 256K MachInst types
   DMEM: memData    - Array 256K MemValue types
   RMEM: retStack   - Array 256K ULong: Return Address Stack (used call/ret)
@@ -311,10 +313,11 @@ Do not perform any work. Do not change any flags.
 Operation:
   Nop
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-NOP      |     |     |     |     |     |          |
+Flags: (BF n) (ZF n) (NF n) (OF n) (CF n) (AF n) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+NOP      |     |     |     |     |     |
 
 ------------
 | EFFADDR  |
@@ -325,148 +328,159 @@ Compute the value of the effective address form in Op1 and store into Op0.
 Operation:
   Op0 <- EffAddr(Op1)
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-EFFADDR  | ru  | ea  |     |     |     |          |
-EFFADDR  | rnu | ea  |     |     |     |          |
+Flags: (BF n) (ZF n) (NF n) (OF n) (CF n) (AF n) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+EFFADDR  | ru  | ea  |     |     |     |
+EFFADDR  | rnu | ea  |     |     |     |
 
 ------------
 | LOAD     |
 ------------
 
-Load into Op0 the Value at Memory Address specified in Op1.
+TODO: FIXME to handle LOADing types with more than one element.
+
+Compute the address specified in Op1, then load the value found at that
+address in the memory specified by Op1 into Op0.
 Any ea operand defaults to DMEM.
 
 Operation:
-  mem <- MemoryKind(Op1)
-  Op0 <- MemoryValue(mem, EffAddr(Op1))
-  If Op0 is (all) zero then Z <- 1 else Z <- 0
-  If Op0 is (all) negative then N <- 1 else N <- 0
-  O <- 0
-  C <- 0
-  If Op0 is (any) NaN then A <- 1 else A <- 0
+  mem <- MemoryKind(Op1, :default DMEM)
+  addr <- EffAddr(Op1)
+  Op0 <- MemoryValue(addr, mem)
+  if zerop(Op0): ZF <- 1 else: ZF <- 0
+  if neg(Op0): NF <- 1 else: NF <- 0
+  OF <- 0
+  CF <- 0
+  If isNaN(Op0): AF <- 1 else: AF <- 0
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-LOAD     | ru  | ea  |     |     |     | ZNOCA    |
-LOAD     | ru  | dmem|     |     |     | ZNOCA    |
-LOAD     | ru  | smem|     |     |     | ZNOCA    |
-LOAD     | rnu | ea  |     |     |     | ZNOCA    |
-LOAD     | rnu | dmem|     |     |     | ZNOCA    |
-LOAD     | rnu | smem|     |     |     | ZNOCA    |
-LOAD     | rd  | ea  |     |     |     | ZNOCA    |
-LOAD     | rd  | dmem|     |     |     | ZNOCA    |
-LOAD     | rd  | smem|     |     |     | ZNOCA    |
-LOAD     | rnd | ea  |     |     |     | ZNOCA    |
-LOAD     | rnd | dmem|     |     |     | ZNOCA    |
-LOAD     | rnd | smem|     |     |     | ZNOCA    |
-LOAD     | rv2d| ea  |     |     |     | ZNOCA    |
-LOAD     | rv2d| dmem|     |     |     | ZNOCA    |
-LOAD     | rv2d| smem|     |     |     | ZNOCA    |
-LOAD     | rv2i| ea  |     |     |     | ZNOCA    |
-LOAD     | rv2i| dmem|     |     |     | ZNOCA    |
-LOAD     | rv2i| smem|     |     |     | ZNOCA    |
-LOAD     | rv3d| ea  |     |     |     | ZNOCA    |
-LOAD     | rv3d| dmem|     |     |     | ZNOCA    |
-LOAD     | rv3d| smem|     |     |     | ZNOCA    |
-LOAD     | rv3i| ea  |     |     |     | ZNOCA    |
-LOAD     | rv3i| dmem|     |     |     | ZNOCA    |
-LOAD     | rv3i| smem|     |     |     | ZNOCA    |
-LOAD     | rv4d| ea  |     |     |     | ZNOCA    |
-LOAD     | rv4d| dmem|     |     |     | ZNOCA    |
-LOAD     | rv4d| smem|     |     |     | ZNOCA    |
-LOAD     | rv4i| ea  |     |     |     | ZNOCA    |
-LOAD     | rv4i| dmem|     |     |     | ZNOCA    |
-LOAD     | rv4i| smem|     |     |     | ZNOCA    |
-LOAD     | rm2d| ea  |     |     |     | ZNOCA    |
-LOAD     | rm2d| dmem|     |     |     | ZNOCA    |
-LOAD     | rm2d| smem|     |     |     | ZNOCA    |
-LOAD     | rm2i| ea  |     |     |     | ZNOCA    |
-LOAD     | rm2i| dmem|     |     |     | ZNOCA    |
-LOAD     | rm2i| smem|     |     |     | ZNOCA    |
-LOAD     | rm3d| ea  |     |     |     | ZNOCA    |
-LOAD     | rm3d| dmem|     |     |     | ZNOCA    |
-LOAD     | rm3d| smem|     |     |     | ZNOCA    |
-LOAD     | rm3i| ea  |     |     |     | ZNOCA    |
-LOAD     | rm3i| dmem|     |     |     | ZNOCA    |
-LOAD     | rm3i| smem|     |     |     | ZNOCA    |
-LOAD     | rm4d| ea  |     |     |     | ZNOCA    |
-LOAD     | rm4d| dmem|     |     |     | ZNOCA    |
-LOAD     | rm4d| smem|     |     |     | ZNOCA    |
-LOAD     | rm4i| ea  |     |     |     | ZNOCA    |
-LOAD     | rm4i| dmem|     |     |     | ZNOCA    |
-LOAD     | rm4i| smem|     |     |     | ZNOCA    |
-LOAD     | rq  | ea  |     |     |     | ZNOCA    |
-LOAD     | rq  | dmem|     |     |     | ZNOCA    |
-LOAD     | rq  | smem|     |     |     | ZNOCA    |
+Flags: (BF n) (ZF w) (NF w) (OF w) (CF w) (AF w) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+LOAD     | ru  | ea  |     |     |     |
+LOAD     | ru  | dmem|     |     |     |
+LOAD     | ru  | smem|     |     |     |
+LOAD     | rnu | ea  |     |     |     |
+LOAD     | rnu | dmem|     |     |     |
+LOAD     | rnu | smem|     |     |     |
+LOAD     | rd  | ea  |     |     |     |
+LOAD     | rd  | dmem|     |     |     |
+LOAD     | rd  | smem|     |     |     |
+LOAD     | rnd | ea  |     |     |     |
+LOAD     | rnd | dmem|     |     |     |
+LOAD     | rnd | smem|     |     |     |
+LOAD     | rv2d| ea  |     |     |     |
+LOAD     | rv2d| dmem|     |     |     |
+LOAD     | rv2d| smem|     |     |     |
+LOAD     | rv2i| ea  |     |     |     |
+LOAD     | rv2i| dmem|     |     |     |
+LOAD     | rv2i| smem|     |     |     |
+LOAD     | rv3d| ea  |     |     |     |
+LOAD     | rv3d| dmem|     |     |     |
+LOAD     | rv3d| smem|     |     |     |
+LOAD     | rv3i| ea  |     |     |     |
+LOAD     | rv3i| dmem|     |     |     |
+LOAD     | rv3i| smem|     |     |     |
+LOAD     | rv4d| ea  |     |     |     |
+LOAD     | rv4d| dmem|     |     |     |
+LOAD     | rv4d| smem|     |     |     |
+LOAD     | rv4i| ea  |     |     |     |
+LOAD     | rv4i| dmem|     |     |     |
+LOAD     | rv4i| smem|     |     |     |
+LOAD     | rm2d| ea  |     |     |     |
+LOAD     | rm2d| dmem|     |     |     |
+LOAD     | rm2d| smem|     |     |     |
+LOAD     | rm2i| ea  |     |     |     |
+LOAD     | rm2i| dmem|     |     |     |
+LOAD     | rm2i| smem|     |     |     |
+LOAD     | rm3d| ea  |     |     |     |
+LOAD     | rm3d| dmem|     |     |     |
+LOAD     | rm3d| smem|     |     |     |
+LOAD     | rm3i| ea  |     |     |     |
+LOAD     | rm3i| dmem|     |     |     |
+LOAD     | rm3i| smem|     |     |     |
+LOAD     | rm4d| ea  |     |     |     |
+LOAD     | rm4d| dmem|     |     |     |
+LOAD     | rm4d| smem|     |     |     |
+LOAD     | rm4i| ea  |     |     |     |
+LOAD     | rm4i| dmem|     |     |     |
+LOAD     | rm4i| smem|     |     |     |
+LOAD     | rq  | ea  |     |     |     |
+LOAD     | rq  | dmem|     |     |     |
+LOAD     | rq  | smem|     |     |     |
 
 ------------
 | STORE    |
 ------------
 
-Store into Memory Address specified in Op0 the value in Op1.
+TODO: FIXME to handle STOREing types with more than one element.
+
+Compute the address specified in Op0, then store the value in Op1 at that
+address in the memory specified by Op1.
 Any ea operand defaults to DMEM.
 
 Operation:
-  mem <- MemoryKind(Op0)
-  MemoryValue(mem, EffAddr(Op1)) <- Op1
+  mem <- MemoryKind(Op0, :default DMEM)
+  addr <- EffAddr(Op0)
+  MemoryValue(addr, mem) <- Op1
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-STORE    | ea  | ru  |     |     |     |          |
-STORE    | dmem| ru  |     |     |     |          |
-STORE    | smem| ru  |     |     |     |          |
-STORE    | ea  | rnu |     |     |     |          |
-STORE    | dmem| rnu |     |     |     |          |
-STORE    | smem| rnu |     |     |     |          |
-STORE    | ea  | rd  |     |     |     |          |
-STORE    | dmem| rd  |     |     |     |          |
-STORE    | smem| rd  |     |     |     |          |
-STORE    | ea  | rnd |     |     |     |          |
-STORE    | dmem| rnd |     |     |     |          |
-STORE    | smem| rnd |     |     |     |          |
-STORE    | ea  | rv2d|     |     |     |          |
-STORE    | dmem| rv2d|     |     |     |          |
-STORE    | smem| rv2d|     |     |     |          |
-STORE    | ea  | rv2i|     |     |     |          |
-STORE    | dmem| rv2i|     |     |     |          |
-STORE    | smem| rv2i|     |     |     |          |
-STORE    | ea  | rv3d|     |     |     |          |
-STORE    | dmem| rv3d|     |     |     |          |
-STORE    | smem| rv3d|     |     |     |          |
-STORE    | ea  | rv3i|     |     |     |          |
-STORE    | dmem| rv3i|     |     |     |          |
-STORE    | smem| rv3i|     |     |     |          |
-STORE    | ea  | rv4d|     |     |     |          |
-STORE    | dmem| rv4d|     |     |     |          |
-STORE    | smem| rv4d|     |     |     |          |
-STORE    | ea  | rv4i|     |     |     |          |
-STORE    | dmem| rv4i|     |     |     |          |
-STORE    | smem| rv4i|     |     |     |          |
-STORE    | ea  | rm2d|     |     |     |          |
-STORE    | dmem| rm2d|     |     |     |          |
-STORE    | smem| rm2d|     |     |     |          |
-STORE    | ea  | rm2i|     |     |     |          |
-STORE    | dmem| rm2i|     |     |     |          |
-STORE    | smem| rm2i|     |     |     |          |
-STORE    | ea  | rm3d|     |     |     |          |
-STORE    | dmem| rm3d|     |     |     |          |
-STORE    | smem| rm3d|     |     |     |          |
-STORE    | ea  | rm3i|     |     |     |          |
-STORE    | dmem| rm3i|     |     |     |          |
-STORE    | smem| rm3i|     |     |     |          |
-STORE    | ea  | rm4d|     |     |     |          |
-STORE    | dmem| rm4d|     |     |     |          |
-STORE    | smem| rm4d|     |     |     |          |
-STORE    | ea  | rm4i|     |     |     |          |
-STORE    | dmem| rm4i|     |     |     |          |
-STORE    | smem| rm4i|     |     |     |          |
-STORE    | ea  | rq  |     |     |     |          |
-STORE    | dmem| rq  |     |     |     |          |
-STORE    | smem| rq  |     |     |     |          |
+Flags: (BF n) (ZF n) (NF n) (OF n) (CF n) (AF n) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+STORE    | ea  | ru  |     |     |     |
+STORE    | dmem| ru  |     |     |     |
+STORE    | smem| ru  |     |     |     |
+STORE    | ea  | rnu |     |     |     |
+STORE    | dmem| rnu |     |     |     |
+STORE    | smem| rnu |     |     |     |
+STORE    | ea  | rd  |     |     |     |
+STORE    | dmem| rd  |     |     |     |
+STORE    | smem| rd  |     |     |     |
+STORE    | ea  | rnd |     |     |     |
+STORE    | dmem| rnd |     |     |     |
+STORE    | smem| rnd |     |     |     |
+STORE    | ea  | rv2d|     |     |     |
+STORE    | dmem| rv2d|     |     |     |
+STORE    | smem| rv2d|     |     |     |
+STORE    | ea  | rv2i|     |     |     |
+STORE    | dmem| rv2i|     |     |     |
+STORE    | smem| rv2i|     |     |     |
+STORE    | ea  | rv3d|     |     |     |
+STORE    | dmem| rv3d|     |     |     |
+STORE    | smem| rv3d|     |     |     |
+STORE    | ea  | rv3i|     |     |     |
+STORE    | dmem| rv3i|     |     |     |
+STORE    | smem| rv3i|     |     |     |
+STORE    | ea  | rv4d|     |     |     |
+STORE    | dmem| rv4d|     |     |     |
+STORE    | smem| rv4d|     |     |     |
+STORE    | ea  | rv4i|     |     |     |
+STORE    | dmem| rv4i|     |     |     |
+STORE    | smem| rv4i|     |     |     |
+STORE    | ea  | rm2d|     |     |     |
+STORE    | dmem| rm2d|     |     |     |
+STORE    | smem| rm2d|     |     |     |
+STORE    | ea  | rm2i|     |     |     |
+STORE    | dmem| rm2i|     |     |     |
+STORE    | smem| rm2i|     |     |     |
+STORE    | ea  | rm3d|     |     |     |
+STORE    | dmem| rm3d|     |     |     |
+STORE    | smem| rm3d|     |     |     |
+STORE    | ea  | rm3i|     |     |     |
+STORE    | dmem| rm3i|     |     |     |
+STORE    | smem| rm3i|     |     |     |
+STORE    | ea  | rm4d|     |     |     |
+STORE    | dmem| rm4d|     |     |     |
+STORE    | smem| rm4d|     |     |     |
+STORE    | ea  | rm4i|     |     |     |
+STORE    | dmem| rm4i|     |     |     |
+STORE    | smem| rm4i|     |     |     |
+STORE    | ea  | rq  |     |     |     |
+STORE    | dmem| rq  |     |     |     |
+STORE    | smem| rq  |     |     |     |
 
 ------------
 | COPY     |
@@ -476,36 +490,37 @@ Copy into Op0 the value from Op1.
 
 Operation:
   Op0 <- Op1
-  If Op0 is (all) zero then Z <- 1 else Z <- 0
-  If Op0 is (all) negative then N <- 1 else N <- 0
-  O <- 0
-  C <- 0
-  If Op0 is (any) NaN then A <- 1 else A <- 0
+  if zerop(Op0): ZF <- 1 else: ZF <- 0
+  if neg(Op0): NF <- 1 else: NF <- 0
+  OF <- 0
+  CF <- 0
+  If isNaN(Op0): AF <- 1 else: AF <- 0
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-COPY     | ru  | ru  |     |     |     | ZNOCA    |
-COPY     | ru  | rnu |     |     |     | ZNOCA    |
-COPY     | rnu | ru  |     |     |     | ZNOCA    |
-COPY     | rnu | rnu |     |     |     | ZNOCA    |
-COPY     | rd  | rd  |     |     |     | ZNOCA    |
-COPY     | rd  | rnd |     |     |     | ZNOCA    |
-COPY     | rnd | rd  |     |     |     | ZNOCA    |
-COPY     | rnd | rnd |     |     |     | ZNOCA    |
-COPY     | rv2d| rv2d|     |     |     | ZNOCA    |
-COPY     | rv2i| rv2i|     |     |     | ZNOCA    |
-COPY     | rv3d| rv3d|     |     |     | ZNOCA    |
-COPY     | rv3i| rv3i|     |     |     | ZNOCA    |
-COPY     | rv4d| rv4d|     |     |     | ZNOCA    |
-COPY     | rv4i| rv4i|     |     |     | ZNOCA    |
-COPY     | rm2d| rm2d|     |     |     | ZNOCA    |
-COPY     | rm2i| rm2i|     |     |     | ZNOCA    |
-COPY     | rm3d| rm3d|     |     |     | ZNOCA    |
-COPY     | rm3i| rm3i|     |     |     | ZNOCA    |
-COPY     | rm4d| rm4d|     |     |     | ZNOCA    |
-COPY     | rm4i| rm4i|     |     |     | ZNOCA    |
-COPY     | rq  | rq  |     |     |     | ZNOCA    |
+Flags: (BF n) (ZF w) (NF w) (OF w) (CF w) (AF w) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+COPY     | ru  | ru  |     |     |     |
+COPY     | ru  | rnu |     |     |     |
+COPY     | rnu | ru  |     |     |     |
+COPY     | rnu | rnu |     |     |     |
+COPY     | rd  | rd  |     |     |     |
+COPY     | rd  | rnd |     |     |     |
+COPY     | rnd | rd  |     |     |     |
+COPY     | rnd | rnd |     |     |     |
+COPY     | rv2d| rv2d|     |     |     |
+COPY     | rv2i| rv2i|     |     |     |
+COPY     | rv3d| rv3d|     |     |     |
+COPY     | rv3i| rv3i|     |     |     |
+COPY     | rv4d| rv4d|     |     |     |
+COPY     | rv4i| rv4i|     |     |     |
+COPY     | rm2d| rm2d|     |     |     |
+COPY     | rm2i| rm2i|     |     |     |
+COPY     | rm3d| rm3d|     |     |     |
+COPY     | rm3i| rm3i|     |     |     |
+COPY     | rm4d| rm4d|     |     |     |
+COPY     | rm4i| rm4i|     |     |     |
+COPY     | rq  | rq  |     |     |     |
 
 ------------
 | YIELD    |
@@ -516,13 +531,17 @@ specified operand values to the invoker of the BPU. If the BPU is restarted
 from the last YIELD (as opposed to a reinitialization and a start from some
 other address), then restart at the IMEM address specified by Op4.
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-YIELD    | ru  | rd  | lu  | ld  | ea  |          |
-YIELD    | rnu | rd  | lu  | ld  | ea  |          |
-YIELD    | ru  | rnd | lu  | ld  | ea  |          |
-YIELD    | rnu | rnd | lu  | ld  | ea  |          |
+Operation:
+  yield
 
+Flags: (BF n) (ZF n) (NF n) (OF n) (CF n) (AF n) (IF n) (VF n) (TF n)
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+YIELD    | ru  | rd  | lu  | ld  | ea  |
+YIELD    | rnu | rd  | lu  | ld  | ea  |
+YIELD    | ru  | rnd | lu  | ld  | ea  |
+YIELD    | rnu | rnd | lu  | ld  | ea  |
 
 ------------
 | PUSH     |
@@ -532,30 +551,31 @@ PUSH will push the indicated value in Op0 onto the dataStack. It will also push
 the type of Op0 onto the dataTypeStack.
 
 Operation:
-  Repeat sizeof(Op0) times:
-    Increment DS
-    Write value to SMEM B(DS)
-  Increment DT by 1
-  Write Type(Op0) to TMEM B(DT)
+  for idx from 0 below NumElems(Op0):
+    DS <- DS + 1
+    MemoryValue(DS, SMEM) <- Op0[idx]
+  DT <- DT + 1
+  MemoryValue(DT, TMEM) <- Type(Op0)
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-PUSH     | ru  |     |     |     |     |          |
-PUSH     | rnu |     |     |     |     |          |
-PUSH     | rv2d|     |     |     |     |          |
-PUSH     | rv2i|     |     |     |     |          |
-PUSH     | rv3d|     |     |     |     |          |
-PUSH     | rv3i|     |     |     |     |          |
-PUSH     | rv4d|     |     |     |     |          |
-PUSH     | rv4i|     |     |     |     |          |
-PUSH     | rm2d|     |     |     |     |          |
-PUSH     | rm2i|     |     |     |     |          |
-PUSH     | rm3d|     |     |     |     |          |
-PUSH     | rm3i|     |     |     |     |          |
-PUSH     | rm4d|     |     |     |     |          |
-PUSH     | rm4i|     |     |     |     |          |
-PUSH     | rq  |     |     |     |     |          |
+Flags: (BF n) (ZF n) (NF n) (OF n) (CF n) (AF n) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+PUSH     | ru  |     |     |     |     |
+PUSH     | rnu |     |     |     |     |
+PUSH     | rv2d|     |     |     |     |
+PUSH     | rv2i|     |     |     |     |
+PUSH     | rv3d|     |     |     |     |
+PUSH     | rv3i|     |     |     |     |
+PUSH     | rv4d|     |     |     |     |
+PUSH     | rv4i|     |     |     |     |
+PUSH     | rm2d|     |     |     |     |
+PUSH     | rm2i|     |     |     |     |
+PUSH     | rm3d|     |     |     |     |
+PUSH     | rm3i|     |     |     |     |
+PUSH     | rm4d|     |     |     |     |
+PUSH     | rm4i|     |     |     |     |
+PUSH     | rq  |     |     |     |     |
 
 ------------
 | POP      |
@@ -568,33 +588,43 @@ popped from the dataStack into Op0 and the dataTypeStack has one entry
 popped from it.
 
 Operation:
-  Read TypeSize from TMEM B(DT)
-  Check that it matches Type(Op0), error if not.
-  Decrement DT by 1
-  Repeat TypeSize times:
-    Read value into Op0 from SMEM B(DS)
-    Decrement DS
+  type <- MemoryValue(DT, TMEM)
+  if type != Type(Op0):
+    error
+  DT <- DT - 1
+  for idx from (NumElems(Op0) - 1) downto 0:
+    Op0[idx] <- MemoryValue(DS, SMEM)
+    DS <- DS - 1
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-POP      | ru  |     |     |     |     |          |
-POP      | rnu |     |     |     |     |          |
-POP      | rd  |     |     |     |     |          |
-POP      | rnd |     |     |     |     |          |
-POP      | rv2d|     |     |     |     |          |
-POP      | rv2i|     |     |     |     |          |
-POP      | rv3d|     |     |     |     |          |
-POP      | rv3i|     |     |     |     |          |
-POP      | rv4d|     |     |     |     |          |
-POP      | rv4i|     |     |     |     |          |
-POP      | rm2d|     |     |     |     |          |
-POP      | rm2i|     |     |     |     |          |
-POP      | rm3d|     |     |     |     |          |
-POP      | rm3i|     |     |     |     |          |
-POP      | rm4d|     |     |     |     |          |
-POP      | rm4i|     |     |     |     |          |
-POP      | rq  |     |     |     |     |          |
+  if zerop(Op0): ZF <- 1 else: ZF <- 0
+  if neg(Op0): NF <- 1 else: NF <- 0
+  OF <- 0
+  CF <- 0
+  If isNaN(Op0): AF <- 1 else: AF <- 0
 
+Flags: (BF n) (ZF w) (NF w) (OF w) (CF w) (AF w) (IF n) (VF n) (TF n)
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+POP      | ru  |     |     |     |     |
+POP      | rnu |     |     |     |     |
+POP      | rd  |     |     |     |     |
+POP      | rnd |     |     |     |     |
+POP      | rv2d|     |     |     |     |
+POP      | rv2i|     |     |     |     |
+POP      | rv3d|     |     |     |     |
+POP      | rv3i|     |     |     |     |
+POP      | rv4d|     |     |     |     |
+POP      | rv4i|     |     |     |     |
+POP      | rm2d|     |     |     |     |
+POP      | rm2i|     |     |     |     |
+POP      | rm3d|     |     |     |     |
+POP      | rm3i|     |     |     |     |
+POP      | rm4d|     |     |     |     |
+POP      | rm4i|     |     |     |     |
+POP      | rq  |     |     |     |     |
+
+KEEP GOING (improve mimicrocode, remove GLAGS column, add Flags: line)
 
 ------------
 | LITERAL  |
@@ -2082,12 +2112,32 @@ CMP      | rnd | rnd |     |     |     | ZONCA    |
 ------------
 
 Compute or load an address from Op0, then jump to it unconditionally.
-The ea operand defaults to the IMEM memory.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
 
 Operation:
-  mem <- MemoryKind(Op0)
-  value <- MemoryValue(mem, EffAddr(Op0))
+  mem <- MemoryKind(Op0, :default EA)
+  addr <- EffAddr(Op0)
+  if IsMemKind(mem, EA):
+    value <- addr
+  else:
+    value <- MemoryValue(mem, addr)
   PC <- value
+
+Examples:
+  # Jump to address 0x30 in IMEM:
+  JUMP A(0x30)
+
+  # Jump 10 instructions forward (starting after the JUMP instr):
+  JUMP BA(PC, 0x0a)
+
+  # Dereference address 0x111 in DMEM and then jump in IMEM to whatever value
+  # was found there.
+  JUMP DMEM A(0x111)
+
+  # Dereference address FP + 0x4 in SMEM and then jump in IMEM to whatever
+  # value was found there.
+  JUMP SMEM BA(FP, 0x4)
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2095,16 +2145,193 @@ JUMP     | ea  |     |     |     |     |          |
 JUMP     | dmem|     |     |     |     |          |
 JUMP     | smem|     |     |     |     |          |
 
-KEEP GOING: Fix all of the ea/dmem/smem/etc to use the Operation steps above
-to decide what to do and when to change the PC.
+------------
+| JABOVE   |
+------------
+
+Compute or load an address from Op0, then jump to it if C == 0 and Z == 0.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if C == 0 and Z == 0:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JABOVE   | ea  |     |     |     |     |          |
+JABOVE   | dmem|     |     |     |     |          |
+JABOVE   | smem|     |     |     |     |          |
+
+------------
+| JABOVEEQ |
+------------
+
+Compute or load an address from Op0, then jump to it if C == 0.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if C == 0:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JABOVEEQ | ea  |     |     |     |     |          |
+JABOVEEQ | dmem|     |     |     |     |          |
+JABOVEEQ | smem|     |     |     |     |          |
+
+------------
+| JBELOW   |
+------------
+
+Compute or load an address from Op0, then jump to it if C == 1.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if C == 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JBELOW   | ea  |     |     |     |     |          |
+JBELOW   | dmem|     |     |     |     |          |
+JBELOW   | smem|     |     |     |     |          |
+
+------------
+| JBELOWEQ |
+------------
+
+Compute or load an address from Op0, then jump to it if C = 1 or Z = 1
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if C == 1 or Z == 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JBELOWEQ | ea  |     |     |     |     |          |
+JBELOWEQ | dmem|     |     |     |     |          |
+JBELOWEQ | smem|     |     |     |     |          |
+
+------------
+| JCARRY   |
+------------
+
+Compute or load an address from Op0, then jump to it if C == 1.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if C == 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JCARRY   | ea  |     |     |     |     |          |
+JCARRY   | dmem|     |     |     |     |          |
+JCARRY   | smem|     |     |     |     |          |
+
+------------
+| JEQUAL   |
+------------
+
+Compute or load an address from Op0, then jump to it if Z == 1.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if Z == 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JEQUAL   | ea  |     |     |     |     |          |
+JEQUAL   | dmem|     |     |     |     |          |
+JEQUAL   | smem|     |     |     |     |          |
+
+------------
+| JGREAT   |
+------------
+
+Compute or load an address from Op0, then jump to it if ZF == 0 and SF == OF.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if ZF == 0 and SF == OF;
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
+---------------------------------------------------
+JGREAT   | ea  |     |     |     |     |          |
+JGREAT   | dmem|     |     |     |     |          |
+JGREAT   | smem|     |     |     |     |          |
+
+KEEP GOING (follow page 1147 ordering intelarchmanual)
 
 ------------
 | JZERO    |
 ------------
 
-Compute or load an address from Op0, then jump to it if Z = 0.
-The ea operand defaults to the IMEM memory.
-This is "jump if zero".
+Compute or load an address from Op0, then jump to it if Z == 0.
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if Z = 0:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2117,8 +2344,18 @@ JZERO    | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if Z = 1.
-The ea operand defaults to the IMEM memory.
-This is "jump if not zero".
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if Z = 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2131,8 +2368,18 @@ JNOTZERO | smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 1.
-The ea operand defaults to the IMEM memory.
-This is "jump if negative".
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if N = 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2140,13 +2387,24 @@ JNEG     | ea  |     |     |     |     |          |
 JNEG     | dmem|     |     |     |     |          |
 JNEG     | smem|     |     |     |     |          |
 
+
 ------------
 | JNOTNEG  |
 ------------
 
 Compute or load an address from Op0, then jump to it if N = 0.
-The ea operand defaults to the IMEM memory.
-This is "jump if not negative".
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if N = 0:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2155,28 +2413,22 @@ JNOTNEG  | dmem|     |     |     |     |          |
 JNOTNEG  | smem|     |     |     |     |          |
 
 ------------
-| JCARRY   |
-------------
-
-Compute or load an address from Op0, then jump to it if C = 1.
-The ea operand defaults to the IMEM memory.
-This is an unsigned check.
-This is "jump if there was a carry".
-This instruction is a duplicate to JBELOW.
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-JCARRY   | ea  |     |     |     |     |          |
-JCARRY   | dmem|     |     |     |     |          |
-JCARRY   | smem|     |     |     |     |          |
-
-------------
 | JNOTCARRY|
 ------------
 
 Compute or load an address from Op0, then jump to it if C = 0.
-The ea operand defaults to the IMEM memory.
-This is "jump if there was no carry".
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if C = 0:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2189,8 +2441,19 @@ JNOTCARRY| smem|     |     |     |     |          |
 ------------
 
 Compute or load an address from Op0, then jump to it if O = 1.
-The ea operand defaults to the IMEM memory.
-This is "jump if overflowed".
+The ea operand is treated as the absolute address in IMEM that is the
+target of the jump. No dereference of memory happen with an ea operand.
+
+Operation:
+  if O = 1:
+    mem <- MemoryKind(Op0, :default EA)
+    addr <- EffAddr(Op0)
+    if IsMemKind(mem, EA):
+      value <- addr
+    else:
+      value <- MemoryValue(mem, addr)
+    PC <- value
+
 
 AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 ---------------------------------------------------
@@ -2213,20 +2476,6 @@ JNOTOVERF| dmem|     |     |     |     |          |
 JNOTOVERF| smem|     |     |     |     |          |
 
 ------------
-| JGREAT   |
-------------
-
-Compute or load an address from Op0, then jump to it if N = 0 and Z = 0.
-The ea operand defaults to the IMEM memory.
-This is "jump if greater".
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-JGREAT   | ea  |     |     |     |     |          |
-JGREAT   | dmem|     |     |     |     |          |
-JGREAT   | smem|     |     |     |     |          |
-
-------------
 | JGREATEQ |
 ------------
 
@@ -2239,36 +2488,6 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 JGREATEQ | ea  |     |     |     |     |          |
 JGREATEQ | dmem|     |     |     |     |          |
 JGREATEQ | smem|     |     |     |     |          |
-
-------------
-| JABOVE   |
-------------
-
-Compute or load an address from Op0, then jump to it if C = 0 and Z = 0.
-The ea operand defaults to the IMEM memory.
-This is an unsigned check.
-This is "jump if above".
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-JABOVE   | ea  |     |     |     |     |          |
-JABOVE   | dmem|     |     |     |     |          |
-JABOVE   | smem|     |     |     |     |          |
-
-------------
-| JABOVEEQ |
-------------
-
-Compute or load an address from Op0, then jump to it if C = 0 or Z = 1.
-The ea operand defaults to the IMEM memory.
-This is an unsigned check.
-This is "jump if above".
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-JABOVEEQ | ea  |     |     |     |     |          |
-JABOVEEQ | dmem|     |     |     |     |          |
-JABOVEEQ | smem|     |     |     |     |          |
 
 ------------
 | JLESS    |
@@ -2298,36 +2517,6 @@ AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
 JLESSEQ  | ea  |     |     |     |     |          |
 JLESSEQ  | dmem|     |     |     |     |          |
 JLESSEQ  | smem|     |     |     |     |          |
-
-------------
-| JBELOW   |
-------------
-
-Compute or load an address from Op0, then jump to it if C = 1
-The ea operand defaults to the IMEM memory.
-This is an unsigned check.
-This is "jump if below".
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-JBELOW   | ea  |     |     |     |     |          |
-JBELOW   | dmem|     |     |     |     |          |
-JBELOW   | smem|     |     |     |     |          |
-
-------------
-| JBELOWEQ |
-------------
-
-Compute or load an address from Op0, then jump to it if C = 1 or Z = 1
-The ea operand defaults to the IMEM memory.
-This is an unsigned check.
-This is "jump if below or equal".
-
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-JBELOWEQ | ea  |     |     |     |     |          |
-JBELOWEQ | dmem|     |     |     |     |          |
-JBELOWEQ | smem|     |     |     |     |          |
 
 ------------
 | JINV     |
@@ -2728,7 +2917,7 @@ CNOTNORM | ea  |     |     |     |     |          |
 CNOTNORM | dmem|     |     |     |     |          |
 CNOTNORM | smem|     |     |     |     |          |
 
-KEEP GOING
+KEEP GOING (add current descriptions to future instructions).
 
 # [Part II]
 
@@ -2916,23 +3105,4 @@ FIRE     |     |     |     |     |     |          | # fire a bullet
 
 NOTES
 =====
-
-Some examples:
-
-# jump to instruction address 0x111 in instruction memory
-# default is OpEffectiveAddress, interpreted to be undereferenced.
-JUMP A(0x111)
-
-# Jump 10 instructions forward, (the pc after the JUMP + 0)
-JUMP BA(PC, 0x0)
-
-# jump to instruction whose actual inst addr is located in data memory 0x111
-# Operand is OpDataMemory(A(0x111))
-JUMP DMEM A(0x111)
-
-# jump to instruction whose actual inst addr is located at this effective
-# address in data stack memory.
-# Operand is OpDataStackMemory(BA(FP, 0x4))
-JUMP SMEM BA(FP, 0x4)
-
 
