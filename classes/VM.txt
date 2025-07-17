@@ -339,8 +339,6 @@ EFFADDR  | rnu | ea  |     |     |     |
 | LOAD     |
 ------------
 
-TODO: FIXME to handle LOADing types with more than one element.
-
 Compute the address specified in Op1, then load the value found at that
 address in the memory specified by Op1 into Op0.
 Any ea operand defaults to DMEM.
@@ -348,7 +346,9 @@ Any ea operand defaults to DMEM.
 Operation:
   mem <- MemoryKind(Op1, :default DMEM)
   addr <- EffAddr(Op1)
-  Op0 <- MemoryValue(addr, mem)
+  for idx from 0 below NumElems(Op0):
+    Op0[idx] <- MemoryValue(addr+idx, mem)
+
   if zerop(Op0): ZF <- 1 else: ZF <- 0
   if neg(Op0): NF <- 1 else: NF <- 0
   OF <- 0
@@ -415,8 +415,6 @@ LOAD     | rq  | smem|     |     |     |
 | STORE    |
 ------------
 
-TODO: FIXME to handle STOREing types with more than one element.
-
 Compute the address specified in Op0, then store the value in Op1 at that
 address in the memory specified by Op1.
 Any ea operand defaults to DMEM.
@@ -424,7 +422,8 @@ Any ea operand defaults to DMEM.
 Operation:
   mem <- MemoryKind(Op0, :default DMEM)
   addr <- EffAddr(Op0)
-  MemoryValue(addr, mem) <- Op1
+  for idx from 0 below NumElems(Op0):
+    MemoryValue(addr+idx, mem) <- Op1[idx]
 
 Flags: (BF n) (ZF n) (NF n) (OF n) (CF n) (AF n) (IF n) (VF n) (TF n)
 
@@ -489,7 +488,8 @@ STORE    | smem| rq  |     |     |     |
 Copy into Op0 the value from Op1.
 
 Operation:
-  Op0 <- Op1
+  for idx from 0 below NumElems(Op0):
+    Op0[idx] <- Op1[idx]
   if zerop(Op0): ZF <- 1 else: ZF <- 0
   if neg(Op0): NF <- 1 else: NF <- 0
   OF <- 0
@@ -624,7 +624,6 @@ POP      | rm4d|     |     |     |     |
 POP      | rm4i|     |     |     |     |
 POP      | rq  |     |     |     |     |
 
-KEEP GOING (improve mimicrocode, remove GLAGS column, add Flags: line)
 
 ------------
 | LITERAL  |
@@ -632,28 +631,38 @@ KEEP GOING (improve mimicrocode, remove GLAGS column, add Flags: line)
 
 Put the literal in Op1 into Op0.
 
-Op0 <- Op1
+Operation:
+  for idx from 0 below NumElems(Op0):
+    Op0[idx] <- Op1[idx]
+  if zerop(Op0): ZF <- 1 else: ZF <- 0
+  if neg(Op0): NF <- 1 else: NF <- 0
+  OF <- 0
+  CF <- 0
+  If isNaN(Op0): AF <- 1 else: AF <- 0
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-LITERAL  | rnu | lu  |     |     |     | ZNOCA    |
-LITERAL  | rnd | ld  |     |     |     | ZNOCA    |
-LITERAL  | ru  | lu  |     |     |     | ZNOCA    |
-LITERAL  | rd  | ld  |     |     |     | ZNOCA    |
-LITERAL  | rv2d| lv2d|     |     |     | ZNOCA    |
-LITERAL  | rv2i| lv2i|     |     |     | ZNOCA    |
-LITERAL  | rv3d| lv3d|     |     |     | ZNOCA    |
-LITERAL  | rv3i| lv3i|     |     |     | ZNOCA    |
-LITERAL  | rv4d| lv4d|     |     |     | ZNOCA    |
-LITERAL  | rv4i| lv4i|     |     |     | ZNOCA    |
-LITERAL  | rm2d| lm2d|     |     |     | ZNOCA    |
-LITERAL  | rm2i| lm2i|     |     |     | ZNOCA    |
-LITERAL  | rm3d| lm3d|     |     |     | ZNOCA    |
-LITERAL  | rm3i| lm3i|     |     |     | ZNOCA    |
-LITERAL  | rm4d| lm4d|     |     |     | ZNOCA    |
-LITERAL  | rm4i| lm4i|     |     |     | ZNOCA    |
-LITERAL  | rq  | lq  |     |     |     | ZNOCA    |
+Flags: (BF n) (ZF w) (NF w) (OF w) (CF w) (AF w) (IF n) (VF n) (TF n)
 
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+LITERAL  | rnu | lu  |     |     |     |
+LITERAL  | rnd | ld  |     |     |     |
+LITERAL  | ru  | lu  |     |     |     |
+LITERAL  | rd  | ld  |     |     |     |
+LITERAL  | rv2d| lv2d|     |     |     |
+LITERAL  | rv2i| lv2i|     |     |     |
+LITERAL  | rv3d| lv3d|     |     |     |
+LITERAL  | rv3i| lv3i|     |     |     |
+LITERAL  | rv4d| lv4d|     |     |     |
+LITERAL  | rv4i| lv4i|     |     |     |
+LITERAL  | rm2d| lm2d|     |     |     |
+LITERAL  | rm2i| lm2i|     |     |     |
+LITERAL  | rm3d| lm3d|     |     |     |
+LITERAL  | rm3i| lm3i|     |     |     |
+LITERAL  | rm4d| lm4d|     |     |     |
+LITERAL  | rm4i| lm4i|     |     |     |
+LITERAL  | rq  | lq  |     |     |     |
+
+KEEP GOING (improve mimicrocode, add oploop, remove FLAGS col, add Flags: line)
 
 ------------
 | IDENTITY |
