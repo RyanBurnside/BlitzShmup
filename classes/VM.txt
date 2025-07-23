@@ -662,8 +662,6 @@ LITERAL  | rm4d| lm4d|     |     |     |
 LITERAL  | rm4i| lm4i|     |     |     |
 LITERAL  | rq  | lq  |     |     |     |
 
-KEEP GOING (improve mimicrocode, add oploop, remove FLAGS col, add Flags: line)
-
 ------------
 | IDENTITY |
 ------------
@@ -673,20 +671,118 @@ The identity type is whatever ONE is in the mathematical
 object contained in Op0. For rq, the identity is a
 quaternion with no rotations.
 
-AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 | FLAGS    |
----------------------------------------------------
-IDENTITY | ru  |     |     |     |     |          |
-IDENTITY | rnu |     |     |     |     |          |
-IDENTITY | rd  |     |     |     |     |          |
-IDENTITY | rnd |     |     |     |     |          |
-IDENTITY | rm2d|     |     |     |     |          |
-IDENTITY | rm2i|     |     |     |     |          |
-IDENTITY | rm3d|     |     |     |     |          |
-IDENTITY | rm3i|     |     |     |     |          |
-IDENTITY | rm4d|     |     |     |     |          |
-IDENTITY | rm4i|     |     |     |     |          |
-IDENTITY | rq  |     |     |     |     |          |
+Operation:
+  type = OpType(Op0) # ULong, Double
+  kind = OpKind(Op0) # Scalar, Vector, Matrix, Quaternion
 
+  if (kind == Scalar):
+    if (type == Ulong):
+      op0[0] = 1
+    elif (type == Double):
+      op0[0] = 1.0
+    else:
+      error
+  elif (kind == Quat):
+    Op0[0] = 0.0
+    Op0[1] = 0.0
+    Op0[2] = 0.0
+    Op0[3] = 1.0
+  elif (kind == Matrix):
+    elems = NumElems(Op0) # number of elements of the operand.
+    if (type == ULong):
+      if (elems == 4):
+        op0[0] = 1
+        op0[1] = 0
+        op0[2] = 0
+        op0[3] = 1
+      elif (elems == 9):
+        op0[0] = 1
+        op0[1] = 0
+        op0[2] = 0
+        op0[3] = 0
+        op0[4] = 1
+        op0[5] = 0
+        op0[6] = 0
+        op0[7] = 0
+        op0[8] = 1
+      elif (elems == 16):
+        op0[0] = 1
+        op0[1] = 0
+        op0[2] = 0
+        op0[3] = 0
+        op0[4] = 0
+        op0[5] = 1
+        op0[6] = 0
+        op0[7] = 0
+        op0[8] = 0
+        op0[9] = 0
+        op0[10] = 1
+        op0[11] = 0
+        op0[12] = 0
+        op0[13] = 0
+        op0[14] = 0
+        op0[15] = 1
+    elif (type == Double):
+      if (elems == 4):
+        op0[0] = 1.0
+        op0[1] = 0.0
+        op0[2] = 0.0
+        op0[3] = 1.0
+      elif (elems == 9):
+        op0[0] = 1.0
+        op0[1] = 0.0
+        op0[2] = 0.0
+        op0[3] = 0.0
+        op0[4] = 1.0
+        op0[5] = 0.0
+        op0[6] = 0.0
+        op0[7] = 0.0
+        op0[8] = 1.0
+      elif (elems == 16):
+        op0[0] = 1.0
+        op0[1] = 0.0
+        op0[2] = 0.0
+        op0[3] = 0.0
+        op0[4] = 0.0
+        op0[5] = 1.0
+        op0[6] = 0.0
+        op0[7] = 0.0
+        op0[8] = 0.0
+        op0[9] = 0.0
+        op0[10] = 1.0
+        op0[11] = 0.0
+        op0[12] = 0.0
+        op0[13] = 0.0
+        op0[14] = 0.0
+        op0[15] = 1.0
+    else:
+      error
+
+  ZF <- 0
+  NF <- 0
+  OF <- 0
+  CF <- 0
+  AF <- 0
+  IF <- 0
+
+Flags: (BF n) (ZF w) (NF w) (OF w) (CF w) (AF w) (IF w) (VF n) (TF n)
+
+AssemOp  | Op0 | Op1 | Op2 | Op3 | Op4 |
+----------------------------------------
+IDENTITY | ru  |     |     |     |     |
+IDENTITY | rnu |     |     |     |     |
+IDENTITY | rd  |     |     |     |     |
+IDENTITY | rnd |     |     |     |     |
+IDENTITY | rm2d|     |     |     |     |
+IDENTITY | rm2i|     |     |     |     |
+IDENTITY | rm3d|     |     |     |     |
+IDENTITY | rm3i|     |     |     |     |
+IDENTITY | rm4d|     |     |     |     |
+IDENTITY | rm4i|     |     |     |     |
+IDENTITY | rq  |     |     |     |     |
+
+
+KEEP GOING (improve mimicrocode, add oploop, remove FLAGS col, add Flags: line)
 
 ------------
 | ABS      |
@@ -694,7 +790,7 @@ IDENTITY | rq  |     |     |     |     |          |
 
 Compute the absolute value of Op1 and store into Op0
 
-Operation
+Operation:
   Op0 <- abs(Op1)
   If Op0 is (all) zero then Z <- 1 else Z <- 0
   N <- 0
@@ -3115,3 +3211,5 @@ FIRE     |     |     |     |     |     |          | # fire a bullet
 NOTES
 =====
 
+Matrix registers are stored row-major order and can be indexed that way in the
+microcode.
